@@ -1,0 +1,79 @@
+[gd_scene load_steps=4 format=3 uid="uid://g3half8qtsa"]
+
+[ext_resource type="Script" uid="uid://cagls3xcdvut3" path="res://ui/menu.gd" id="1_4c782"]
+[ext_resource type="Script" uid="uid://camn067plnl2x" path="res://ui/input_settings.gd" id="1_bwjgb"]
+[ext_resource type="PackedScene" uid="uid://bu75qpwk3isq6" path="res://ui/input_button.tscn" id="2_udkah"]
+
+[node name="menu" type="CanvasLayer"]
+script = ExtResource("1_4c782")
+
+[node name="Title" type="Label" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+size_flags_horizontal = 2
+size_flags_vertical = 0
+text = "Ludum Dare 57: \"Raid the Abyss\" by Static Leap Studios, LLC staticleapstudios.com"
+
+[node name="TitleScreen" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MainOptions" type="VBoxContainer" parent="TitleScreen"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+
+[node name="Start" type="Button" parent="TitleScreen/MainOptions"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "Start"
+
+[node name="Label" type="Label" parent="TitleScreen/MainOptions"]
+layout_mode = 2
+text = "Volume:"
+
+[node name="Volume" type="HSlider" parent="TitleScreen/MainOptions"]
+layout_mode = 2
+min_value = -80.0
+max_value = 0.0
+value = -10.0
+
+[node name="Quit" type="Button" parent="TitleScreen/MainOptions"]
+layout_mode = 2
+text = "Quit"
+
+[node name="Controls" type="VBoxContainer" parent="TitleScreen"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ControlsLabel" type="Label" parent="TitleScreen/Controls"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Controls:"
+vertical_alignment = 1
+
+[node name="ActionList" type="VBoxContainer" parent="TitleScreen/Controls"]
+layout_mode = 2
+size_flags_vertical = 6
+script = ExtResource("1_bwjgb")
+
+[node name="InputButton" parent="TitleScreen/Controls/ActionList" instance=ExtResource("2_udkah")]
+layout_mode = 2
+
+[node name="Reset" type="Button" parent="TitleScreen/Controls"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "Reset"
+
+[connection signal="pressed" from="TitleScreen/MainOptions/Start" to="." method="_on_start_pressed"]
+[connection signal="value_changed" from="TitleScreen/MainOptions/Volume" to="." method="_on_volume_value_changed"]
+[connection signal="pressed" from="TitleScreen/MainOptions/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="TitleScreen/Controls/Reset" to="TitleScreen/Controls/ActionList" method="_on_reset_button_pressed"]

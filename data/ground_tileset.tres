@@ -1,0 +1,24 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://b1kckaipqrht3"]
+
+[ext_resource type="Texture2D" uid="uid://cwqjhtl76btbb" path="res://map/tileset/ground_atlas.png" id="1_e6rtd"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cy4r0"]
+texture = ExtResource("1_e6rtd")
+texture_region_size = Vector2i(51, 22)
+2:7/0 = 0
+5:7/0 = 0
+8:7/0 = 0
+11:7/0 = 0
+2:15/0 = 0
+5:15/0 = 0
+8:15/0 = 0
+11:15/0 = 0
+2:23/0 = 0
+5:23/0 = 0
+8:23/0 = 0
+11:23/0 = 0
+
+[resource]
+tile_size = Vector2i(48, 22)
+sources/12 = SubResource("TileSetAtlasSource_cy4r0")
+tile_proxies/coords_level = [[0, Vector2i(2, 7)], [12, Vector2i(2, 7)], [1, Vector2i(2, 7)], [12, Vector2i(5, 7)], [2, Vector2i(2, 7)], [12, Vector2i(8, 7)], [3, Vector2i(2, 7)], [12, Vector2i(11, 7)], [4, Vector2i(2, 7)], [12, Vector2i(2, 15)], [5, Vector2i(2, 7)], [12, Vector2i(5, 15)], [6, Vector2i(2, 7)], [12, Vector2i(8, 15)], [7, Vector2i(2, 7)], [12, Vector2i(11, 15)], [8, Vector2i(2, 7)], [12, Vector2i(2, 23)], [9, Vector2i(2, 7)], [12, Vector2i(5, 23)], [10, Vector2i(2, 7)], [12, Vector2i(8, 23)], [11, Vector2i(2, 7)], [12, Vector2i(11, 23)]]

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://n1koaitsyfef"]
+
+[ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
+
+[node name="CharacterModel" type="CharacterBody2D"]
+script = ExtResource("1_2xl0c")
