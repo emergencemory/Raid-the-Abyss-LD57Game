@@ -11,7 +11,10 @@ class_name GameManager
 #TODO MINIMAP : Blip moves around circular abyss
 
 @onready var menu_scene : PackedScene = preload("res://ui/menu.tscn")
+@onready var map_scene : PackedScene = preload("res://map/map.tscn")
+
 var menu
+var map
 
 func _ready() -> void:
 	menu = menu_scene.instantiate()
@@ -23,7 +26,12 @@ func _ready() -> void:
 
 
 func start_game() -> void:
-	pass
+	if map:
+		menu.hide()
+	else:
+		map = map_scene.instantiate()
+		add_child(map)
+		menu.hide()
 	#spawn ai manager
 	#spawn input manager
 	#spawn match manager
@@ -45,6 +53,8 @@ func _on_reset_keybindings() -> void:
 		print("Keybindings reset to default.")
 	else:
 		print("No menu instance to reset.")
+
+
 
 func quit() -> void:
 	get_tree().quit()
