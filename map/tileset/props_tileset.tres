@@ -1,0 +1,85 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://c82f48ie268wx"]
+
+[ext_resource type="Texture2D" uid="uid://d1ie34vnglyho" path="res://map/tileset/prop_atlas.png" id="1_b3gck"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k8tny"]
+texture = ExtResource("1_b3gck")
+texture_region_size = Vector2i(51, 22)
+use_texture_padding = false
+1:3/size_in_atlas = Vector2i(3, 7)
+1:3/0 = 0
+4:4/size_in_atlas = Vector2i(5, 5)
+4:4/0 = 0
+9:4/size_in_atlas = Vector2i(5, 5)
+9:4/0 = 0
+15:3/size_in_atlas = Vector2i(3, 7)
+15:3/0 = 0
+19:4/size_in_atlas = Vector2i(3, 5)
+19:4/0 = 0
+23:4/size_in_atlas = Vector2i(3, 5)
+23:4/0 = 0
+27:4/size_in_atlas = Vector2i(3, 5)
+27:4/0 = 0
+31:4/size_in_atlas = Vector2i(3, 5)
+31:4/0 = 0
+1:14/size_in_atlas = Vector2i(3, 5)
+1:14/0 = 0
+5:14/size_in_atlas = Vector2i(3, 5)
+5:14/0 = 0
+9:14/size_in_atlas = Vector2i(3, 5)
+9:14/0 = 0
+13:13/size_in_atlas = Vector2i(3, 7)
+13:13/0 = 0
+17:12/size_in_atlas = Vector2i(3, 7)
+17:12/0 = 0
+21:12/size_in_atlas = Vector2i(3, 7)
+21:12/0 = 0
+25:12/size_in_atlas = Vector2i(3, 7)
+25:12/0 = 0
+29:12/size_in_atlas = Vector2i(3, 7)
+29:12/0 = 0
+2:24/size_in_atlas = Vector2i(1, 5)
+2:24/0 = 0
+4:24/size_in_atlas = Vector2i(3, 5)
+4:24/0 = 0
+8:24/size_in_atlas = Vector2i(3, 5)
+8:24/0 = 0
+12:24/size_in_atlas = Vector2i(3, 5)
+12:24/0 = 0
+16:25/size_in_atlas = Vector2i(3, 3)
+16:25/0 = 0
+20:25/size_in_atlas = Vector2i(3, 4)
+20:25/0 = 0
+24:25/size_in_atlas = Vector2i(3, 4)
+24:25/0 = 0
+28:25/size_in_atlas = Vector2i(3, 4)
+28:25/0 = 0
+0:33/size_in_atlas = Vector2i(5, 6)
+0:33/0 = 0
+6:33/size_in_atlas = Vector2i(3, 6)
+6:33/0 = 0
+10:31/size_in_atlas = Vector2i(3, 9)
+10:31/0 = 0
+13:32/size_in_atlas = Vector2i(5, 7)
+13:32/0 = 0
+18:29/size_in_atlas = Vector2i(5, 9)
+18:29/0 = 0
+23:29/size_in_atlas = Vector2i(5, 9)
+23:29/0 = 0
+28:29/size_in_atlas = Vector2i(5, 9)
+28:29/0 = 0
+0:40/size_in_atlas = Vector2i(5, 9)
+0:40/0 = 0
+6:41/size_in_atlas = Vector2i(3, 8)
+6:41/0 = 0
+10:41/size_in_atlas = Vector2i(3, 8)
+10:41/0 = 0
+14:41/size_in_atlas = Vector2i(3, 8)
+14:41/0 = 0
+18:41/size_in_atlas = Vector2i(3, 8)
+18:41/0 = 0
+
+[resource]
+tile_size = Vector2i(48, 22)
+sources/36 = SubResource("TileSetAtlasSource_k8tny")
+tile_proxies/coords_level = [[0, Vector2i(1, 3)], [36, Vector2i(1, 3)], [1, Vector2i(0, 4)], [36, Vector2i(4, 4)], [2, Vector2i(0, 4)], [36, Vector2i(9, 4)], [3, Vector2i(1, 3)], [36, Vector2i(15, 3)], [4, Vector2i(1, 4)], [36, Vector2i(19, 4)], [5, Vector2i(1, 4)], [36, Vector2i(23, 4)], [6, Vector2i(1, 4)], [36, Vector2i(27, 4)], [7, Vector2i(1, 4)], [36, Vector2i(31, 4)], [8, Vector2i(1, 4)], [36, Vector2i(1, 14)], [9, Vector2i(1, 4)], [36, Vector2i(5, 14)], [10, Vector2i(1, 4)], [36, Vector2i(9, 14)], [11, Vector2i(1, 3)], [36, Vector2i(13, 13)], [12, Vector2i(1, 2)], [36, Vector2i(17, 12)], [13, Vector2i(1, 2)], [36, Vector2i(21, 12)], [14, Vector2i(1, 2)], [36, Vector2i(25, 12)], [15, Vector2i(1, 2)], [36, Vector2i(29, 12)], [16, Vector2i(2, 4)], [36, Vector2i(2, 24)], [17, Vector2i(1, 4)], [36, Vector2i(4, 24)], [18, Vector2i(1, 4)], [36, Vector2i(8, 24)], [19, Vector2i(1, 4)], [36, Vector2i(12, 24)], [20, Vector2i(1, 5)], [36, Vector2i(16, 25)], [21, Vector2i(1, 5)], [36, Vector2i(20, 25)], [22, Vector2i(1, 5)], [36, Vector2i(24, 25)], [23, Vector2i(1, 5)], [36, Vector2i(28, 25)], [24, Vector2i(0, 4)], [36, Vector2i(0, 33)], [25, Vector2i(1, 4)], [36, Vector2i(6, 33)], [26, Vector2i(1, 2)], [36, Vector2i(10, 31)], [27, Vector2i(0, 3)], [36, Vector2i(13, 32)], [28, Vector2i(0, 0)], [36, Vector2i(18, 29)], [29, Vector2i(0, 0)], [36, Vector2i(23, 29)], [30, Vector2i(0, 0)], [36, Vector2i(28, 29)], [31, Vector2i(0, 0)], [36, Vector2i(0, 40)], [32, Vector2i(1, 1)], [36, Vector2i(6, 41)], [33, Vector2i(1, 1)], [36, Vector2i(10, 41)], [34, Vector2i(1, 1)], [36, Vector2i(14, 41)], [35, Vector2i(1, 1)], [36, Vector2i(18, 41)]]

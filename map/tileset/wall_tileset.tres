@@ -1,0 +1,44 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://dqiijpydqqixe"]
+
+[ext_resource type="Texture2D" uid="uid://kaln5r1rnpe4" path="res://map/tileset/wall_atlas.png" id="1_govs2"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e8e5r"]
+texture = ExtResource("1_govs2")
+texture_region_size = Vector2i(51, 22)
+1:2/size_in_atlas = Vector2i(3, 7)
+1:2/0 = 0
+5:2/size_in_atlas = Vector2i(3, 7)
+5:2/0 = 0
+9:2/size_in_atlas = Vector2i(3, 7)
+9:2/0 = 0
+13:2/size_in_atlas = Vector2i(3, 7)
+13:2/0 = 0
+0:10/size_in_atlas = Vector2i(5, 9)
+0:10/0 = 0
+5:10/size_in_atlas = Vector2i(5, 9)
+5:10/0 = 0
+10:10/size_in_atlas = Vector2i(5, 9)
+10:10/0 = 0
+15:9/size_in_atlas = Vector2i(5, 11)
+15:9/0 = 0
+1:21/size_in_atlas = Vector2i(3, 8)
+1:21/0 = 0
+5:21/size_in_atlas = Vector2i(3, 8)
+5:21/0 = 0
+9:21/size_in_atlas = Vector2i(3, 8)
+9:21/0 = 0
+13:21/size_in_atlas = Vector2i(3, 8)
+13:21/0 = 0
+0:29/size_in_atlas = Vector2i(5, 11)
+0:29/0 = 0
+5:29/size_in_atlas = Vector2i(5, 11)
+5:29/0 = 0
+10:29/size_in_atlas = Vector2i(5, 11)
+10:29/0 = 0
+15:29/size_in_atlas = Vector2i(5, 11)
+15:29/0 = 0
+
+[resource]
+tile_size = Vector2i(48, 22)
+sources/16 = SubResource("TileSetAtlasSource_e8e5r")
+tile_proxies/coords_level = [[0, Vector2i(1, 2)], [16, Vector2i(1, 2)], [1, Vector2i(1, 2)], [16, Vector2i(5, 2)], [2, Vector2i(1, 2)], [16, Vector2i(9, 2)], [3, Vector2i(1, 2)], [16, Vector2i(13, 2)], [4, Vector2i(0, 1)], [16, Vector2i(0, 10)], [5, Vector2i(0, 1)], [16, Vector2i(5, 10)], [6, Vector2i(0, 1)], [16, Vector2i(10, 10)], [7, Vector2i(0, 0)], [16, Vector2i(15, 9)], [8, Vector2i(1, 1)], [16, Vector2i(1, 21)], [9, Vector2i(1, 1)], [16, Vector2i(5, 21)], [10, Vector2i(1, 1)], [16, Vector2i(9, 21)], [11, Vector2i(1, 1)], [16, Vector2i(13, 21)], [12, Vector2i(0, 0)], [16, Vector2i(0, 29)], [13, Vector2i(0, 0)], [16, Vector2i(5, 29)], [14, Vector2i(0, 0)], [16, Vector2i(10, 29)], [15, Vector2i(0, 0)], [16, Vector2i(15, 29)]]

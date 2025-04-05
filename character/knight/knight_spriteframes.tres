@@ -1,0 +1,49 @@
+[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://cylkorc3rand4"]
+
+[ext_resource type="Texture2D" uid="uid://d1npd7tvig7h1" path="res://character/knight/0000_E.png" id="1_u1gh8"]
+[ext_resource type="Texture2D" uid="uid://bmebvaf5md426" path="res://character/knight/0000_N.png" id="2_b6opv"]
+[ext_resource type="Texture2D" uid="uid://dt5oydhmnud35" path="res://character/knight/0000_S.png" id="3_xmas2"]
+[ext_resource type="Texture2D" uid="uid://bu7mkhe0x4w26" path="res://character/knight/0000_W.png" id="4_4f4bt"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_u1gh8")
+}],
+"loop": true,
+"name": &"East",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_b6opv")
+}],
+"loop": true,
+"name": &"North",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_xmas2")
+}],
+"loop": true,
+"name": &"South",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_4f4bt")
+}],
+"loop": true,
+"name": &"West",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_xmas2")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
