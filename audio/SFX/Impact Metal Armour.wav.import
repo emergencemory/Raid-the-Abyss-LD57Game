@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dqmi0udhr2ncg"
+path="res://.godot/imported/Impact Metal Armour.wav-9e461d44dd20dd012cc8a2e30dcbaac4.sample"
+
+[deps]
+
+source_file="res://audio/SFX/Impact Metal Armour.wav"
+dest_files=["res://.godot/imported/Impact Metal Armour.wav-9e461d44dd20dd012cc8a2e30dcbaac4.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
