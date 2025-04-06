@@ -952,9 +952,11 @@ _data = {
 [node name="CharacterModel" type="CharacterBody2D"]
 z_index = 1
 y_sort_enabled = true
+texture_filter = 1
 script = ExtResource("1_2xl0c")
 
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
 sprite_frames = ExtResource("2_chf46")
 animation = &"South"
 
@@ -968,12 +970,14 @@ shape = SubResource("CircleShape2D_55pft")
 debug_color = Color(0.920729, 0.234891, 0.397624, 0.42)
 
 [node name="ShieldSprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
 position = Vector2(27, 3)
 sprite_frames = ExtResource("4_waqkf")
 animation = &"West"
 offset = Vector2(-5, 0)
 
 [node name="WeaponSprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
 position = Vector2(-18, 8)
 scale = Vector2(1.2, 1.2)
 sprite_frames = ExtResource("3_r8jhi")

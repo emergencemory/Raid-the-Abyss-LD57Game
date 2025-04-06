@@ -15,6 +15,8 @@ func _ready() -> void:
 	player.position = Vector2(500, 500)
 	var player_controller = INPUT_PARSER.new()
 	player_controller.player = player
+	player.shield_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
+	player.weapon_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
 	player.add_child(player_controller)
 	var player_camera = Camera2D.new()
 	player.add_child(player_camera)
@@ -34,6 +36,8 @@ func spawn_ai() -> void:
 	orc_ai.character_sprite.sprite_frames = ResourceLoader.load("res://character/orc/orc_spriteframes.tres")
 	orc_ai.weapon_sprite.sprite_frames = ResourceLoader.load("res://equipment/axe/axe_spriteframes.tres")
 	orc_ai.shield_sprite.sprite_frames = ResourceLoader.load("res://equipment/round_shield/round_shield_spriteframes.tres")
+	orc_ai.shield_sprite.self_modulate = Color(3.0, 1.0, 1.0, 1.0)
+	orc_ai.weapon_sprite.self_modulate = Color(3.0, 1.0, 1.0, 1.0)
 	var knight_ai = character_scene.instantiate()
 	add_child(knight_ai)
 	knight_ai.position = Vector2(randi_range(0, 500), randi_range(0, 500))
@@ -42,53 +46,47 @@ func spawn_ai() -> void:
 	knight_ai.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
 	knight_ai.weapon_sprite.sprite_frames = ResourceLoader.load("res://equipment/sword/sword_spriteframes.tres")
 	knight_ai.shield_sprite.sprite_frames = ResourceLoader.load("res://equipment/kite_shield/kite_shield_spriteframes.tres")
+	knight_ai.shield_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
+	knight_ai.weapon_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
 	get_tree().create_timer(5.0).timeout.connect(spawn_ai)
 	
 func _physics_process(delta: float) -> void:
 	for character in get_tree().get_nodes_in_group("ai"):
-		if not character.is_queued_for_deletion():
-			if character.has_target == false or character.target.is_in_group("dead"):
-				var target = get_target(character)
-				if target != null:
-					character.has_target = true
-					character.start_target_cooldown()
-					character.target = target
-					if character.stance_cooldown == false:
-						character.combat_stance()
-					#character.current_path = _get_path(character, target)
-				#if character.position.distance_to(target.position) > 50:
-				#	character.velocity = (target.position - character.position).normalized() * 15
-				#	character.position += character.velocity * delta
-				#	character.move_and_slide()
-			var distance_to_target = character.global_position.distance_to(character.target.global_position)
-			var direction_to_target = (character.target.global_position - character.global_position)
-			var speed = 30
-			#print("Distance to target: ", distance_to_target)
-			if character.weapon_on_cooldown == false and distance_to_target < 50:
-				speed = 0
-				character.attack(character.target)
-				character.apply_animation()
-			elif direction_to_target.x > direction_to_target.y:# character.current_path.size() > 0:
-				#var target_position = map.map_to_local(character.current_path.front())
-				if character.velocity.x == 0 and character.direction_cooldown == false:
-					character.start_direction_cooldown()
-					character.velocity = Vector2(direction_to_target.x, 0).normalized()
-					character.apply_animation()	
-			else:
-				if character.velocity.y == 0 and character.direction_cooldown == false:
-					character.start_direction_cooldown()
-					character.velocity = Vector2(0, direction_to_target.y).normalized()
-					character.apply_animation()
-				character.velocity = Vector2(0, direction_to_target.y).normalized()	
-			
-			character.global_position += character.velocity * speed * delta
-			character.move_and_slide()
+		# Check if the character instance is valid
+		if not is_instance_valid(character) or character.is_queued_for_deletion():
+			continue  # Skip invalid or queued-for-deletion instances
 
+		if character.has_target == false or not is_instance_valid(character.target) or character.target.is_in_group("dead"):
+			var target = get_target(character)
+			if target != null:
+				character.has_target = true
+				character.start_target_cooldown()
+				character.target = target
+				if character.stance_cooldown == false:
+					character.update_ai_combat_stance()
 
-				#if character.global_position == target_position:
-				#	character.current_path.pop_front()
+		var distance_to_target = character.global_position.distance_to(character.target.global_position)
+		var direction_to_target = (character.target.global_position - character.global_position)
+		var speed = 30
+
+		if character.weapon_on_cooldown == false and distance_to_target < 50:
+			speed = 0
+			character.attack(character.target)
+			character.update_animations()
+		elif abs(direction_to_target.x) > abs(direction_to_target.y):
+			if character.velocity.x == 0 and character.direction_cooldown == false:
+				character.start_direction_cooldown()
+				character.velocity = Vector2(direction_to_target.x, 0).normalized()
+				character.update_animations()
 		else:
-			print("Invalid character instance.")
+			if character.velocity.y == 0 and character.direction_cooldown == false:
+				character.start_direction_cooldown()
+				character.velocity = Vector2(0, direction_to_target.y).normalized()
+				character.update_animations()
+			character.velocity = Vector2(0, direction_to_target.y).normalized()
+
+		character.global_position += character.velocity * speed * delta
+		character.move_and_slide()
 
 func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	var nearest_target = null
