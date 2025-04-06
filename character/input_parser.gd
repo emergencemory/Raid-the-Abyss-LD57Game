@@ -2,7 +2,7 @@ extends Control
 class_name InputParser
 
 var player: CharacterManager
-var speed: float = 30.0
+var speed: float = 50.0
 var held_directions: Dictionary = { "up": false, "down": false, "left": false, "right": false }
 
 func _input(event: InputEvent) -> void:
@@ -36,6 +36,11 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("block"):
 		update_block_offset()
 		player.update_animations()
+	if event.is_action_pressed("attack"):
+		update_parry_direction()
+		player.update_animations()
+	if event.is_action_released("attack"):
+		player.attack()
 
 func _physics_process(delta: float) -> void:
 	player.global_position += player.velocity * speed * delta
@@ -43,18 +48,19 @@ func _physics_process(delta: float) -> void:
 func update_direction() -> void:
 	if held_directions["up"]:
 		player.velocity = Vector2(0, -1)
-		speed = 30
+		speed = 50
 	elif held_directions["down"]:
 		player.velocity = Vector2(0, 1)
-		speed = 30
+		speed = 50
 	elif held_directions["left"]:
 		player.velocity = Vector2(-1, 0)
-		speed = 30
+		speed = 50
 	elif held_directions["right"]:
 		player.velocity = Vector2(1, 0)
-		speed = 30
+		speed = 50
 	else:
 		speed = 0
+	player.update_directions()
 	player.update_animations()
 
 func update_block_offset() -> void:
@@ -76,6 +82,18 @@ func update_block_offset() -> void:
 	# If the cross product is positive, the mouse is above the line (offset = 1)
 	# If the cross product is negative or zero, the mouse is below the line (offset = 0)
 	if cross_product > 0:
-		player.block_offset = 1
-	else:
 		player.block_offset = 0
+	else:
+		player.block_offset = 1
+
+func update_parry_direction() -> void:
+	# Calculate the mouse position relative to the player
+	var mouse_position = get_global_mouse_position() - player.global_position
+	var mouse_angle = mouse_position.angle()
+
+    # Update the player's parry direction based on the mouse angle
+	player.parry_direction = int(angle_to_direction(mouse_angle).angle() / (PI / 4)) % 8
+	
+func angle_to_direction(angle: float) -> Vector2:
+		# Converts an angle in radians to a normalized direction vector
+	return Vector2(cos(angle), sin(angle))

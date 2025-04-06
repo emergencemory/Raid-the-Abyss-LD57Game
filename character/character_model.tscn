@@ -1,13 +1,18 @@
-[gd_scene load_steps=28 format=3 uid="uid://n1koaitsyfef"]
+[gd_scene load_steps=34 format=3 uid="uid://n1koaitsyfef"]
 
 [ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
 [ext_resource type="SpriteFrames" uid="uid://cylkorc3rand4" path="res://character/knight/knight_spriteframes.tres" id="2_chf46"]
 [ext_resource type="SpriteFrames" uid="uid://jksvghsoyx66" path="res://equipment/sword/sword_spriteframes.tres" id="3_r8jhi"]
 [ext_resource type="SpriteFrames" uid="uid://d21c5j7wbsuw8" path="res://equipment/kite_shield/kite_shield_spriteframes.tres" id="4_waqkf"]
+[ext_resource type="AudioStream" uid="uid://cu1cpquh4inh8" path="res://audio/SFX/Impact Body.wav" id="5_55pft"]
+[ext_resource type="AudioStream" uid="uid://dqmi0udhr2ncg" path="res://audio/SFX/Impact Metal Armour.wav" id="6_uealk"]
+[ext_resource type="AudioStream" uid="uid://ci8u21id8lmbd" path="res://audio/SFX/Impact Sword and Swipe.wav" id="7_y6277"]
+[ext_resource type="AudioStream" uid="uid://c3ne4ep7lnwh5" path="res://audio/SFX/Impact Wooden.wav" id="8_1px7v"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cepk8"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_55pft"]
+radius = 30.0
 
 [sub_resource type="Animation" id="Animation_chf46"]
 length = 0.001
@@ -650,7 +655,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.433333, 0.949546),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(0, 0), Vector2(0, 1), Vector2(0, 0)]
+"values": [Vector2(-10, 0), Vector2(-9, 1), Vector2(-10, 0)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_k67b1"]
@@ -726,7 +731,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.52, 0.933333),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(-15, -15), Vector2(-15, -14), Vector2(-15, -15)]
+"values": [Vector2(20, -15), Vector2(21, -14), Vector2(20, -15)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -806,7 +811,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.433333, 0.949546),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(-5, -5), Vector2(-5, -4), Vector2(-5, -5)]
+"values": [Vector2(-15, -5), Vector2(-14, -4), Vector2(-15, -5)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -882,7 +887,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.533333, 1.03333),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(20, -5), Vector2(20, -4), Vector2(20, -5)]
+"values": [Vector2(-10, -5), Vector2(-9, -4), Vector2(-10, -5)]
 }
 
 [sub_resource type="Animation" id="Animation_6tom0"]
@@ -910,7 +915,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.466667, 1),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(27, 3), Vector2(27, 2), Vector2(27, 3)]
+"values": [Vector2(15, 3), Vector2(14, 2), Vector2(15, 3)]
 }
 
 [sub_resource type="Animation" id="Animation_g6sh8"]
@@ -938,7 +943,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.433333, 0.949546),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(-5, 3), Vector2(-5, 2), Vector2(-5, 3)]
+"values": [Vector2(-15, 3), Vector2(-14, 2), Vector2(-15, 3)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ly5y3"]
@@ -948,6 +953,24 @@ _data = {
 &"idle_s": SubResource("Animation_6tom0"),
 &"idle_w": SubResource("Animation_g6sh8")
 }
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_chf46"]
+radius = 30.0
+
+[sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_8vtqr"]
+clip_count = 4
+clip_0/name = &"Impact Body"
+clip_0/stream = ExtResource("5_55pft")
+clip_0/auto_advance = 0
+clip_1/name = &"Impact Metal Armour"
+clip_1/stream = ExtResource("6_uealk")
+clip_1/auto_advance = 0
+clip_2/name = &"Impact Sword And Swipe"
+clip_2/stream = ExtResource("7_y6277")
+clip_2/auto_advance = 0
+clip_3/name = &"Impact Wooden"
+clip_3/stream = ExtResource("8_1px7v")
+clip_3/auto_advance = 0
 
 [node name="CharacterModel" type="CharacterBody2D"]
 z_index = 1
@@ -961,11 +984,16 @@ sprite_frames = ExtResource("2_chf46")
 animation = &"South"
 
 [node name="CharacterCollider" type="CollisionShape2D" parent="."]
+light_mask = 0
+visibility_layer = 0
 shape = SubResource("CircleShape2D_cepk8")
 
 [node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
 
 [node name="HurtShape" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(0, -11)
 shape = SubResource("CircleShape2D_55pft")
 debug_color = Color(0.920729, 0.234891, 0.397624, 0.42)
 
@@ -973,8 +1001,15 @@ debug_color = Color(0.920729, 0.234891, 0.397624, 0.42)
 texture_filter = 1
 position = Vector2(27, 3)
 sprite_frames = ExtResource("4_waqkf")
-animation = &"West"
+animation = &"North"
 offset = Vector2(-5, 0)
+
+[node name="BlockLabel" type="Label" parent="ShieldSprite"]
+offset_left = 26.0
+offset_top = -59.0
+offset_right = 73.0
+offset_bottom = -36.0
+text = "Block:"
 
 [node name="WeaponSprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
@@ -983,6 +1018,13 @@ scale = Vector2(1.2, 1.2)
 sprite_frames = ExtResource("3_r8jhi")
 animation = &"West"
 offset = Vector2(0, 4)
+
+[node name="ParryLabel" type="Label" parent="WeaponSprite"]
+offset_left = -74.1667
+offset_top = 11.6667
+offset_right = -27.1667
+offset_bottom = 34.6667
+text = "Parry:"
 
 [node name="CharacterAnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -1001,3 +1043,24 @@ libraries = {
 &"": SubResource("AnimationLibrary_uealk"),
 &"shield": SubResource("AnimationLibrary_ly5y3")
 }
+
+[node name="AttackArea" type="Area2D" parent="."]
+position = Vector2(0, 52)
+collision_layer = 0
+collision_mask = 2
+
+[node name="StrikeShape" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("CircleShape2D_chf46")
+disabled = true
+
+[node name="StrikeLabel" type="Label" parent="AttackArea"]
+offset_left = -18.0
+offset_top = 39.0
+offset_right = 36.0
+offset_bottom = 62.0
+text = "Strike: "
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = SubResource("AudioStreamInteractive_8vtqr")
+
+[connection signal="area_entered" from="AttackArea" to="." method="_on_attack_area_entered"]

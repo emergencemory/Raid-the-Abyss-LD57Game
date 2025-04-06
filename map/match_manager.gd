@@ -3,6 +3,8 @@ class_name MatchManager
 
 const INPUT_PARSER : Script = preload("res://character/input_parser.gd")
 
+
+
 @onready var character_scene : PackedScene = preload("res://character/character_model.tscn")
 #var astar : AStarGrid2D
 #var map : TileMapLayer = null
@@ -24,15 +26,19 @@ func _ready() -> void:
 	player.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
 	player.weapon_sprite.sprite_frames = ResourceLoader.load("res://equipment/sword/sword_spriteframes.tres")
 	player.shield_sprite.sprite_frames = ResourceLoader.load("res://equipment/kite_shield/kite_shield_spriteframes.tres")
-	get_tree().create_timer(5.0).timeout.connect(spawn_ai)
-#	SignalBus.pathfinding_update.connect(_on_pathfinding_update)
+	spawn_ai()
+	#get_tree().create_timer(5.0).timeout.connect(spawn_ai)
+
 
 func spawn_ai() -> void:
 	var orc_ai = character_scene.instantiate()
 	add_child(orc_ai)
-	orc_ai.position = Vector2(randi_range(0, 500), randi_range(0, 500))
+	#orc_ai.position = Vector2(randi_range(0, 500), randi_range(0, 500))
+	orc_ai.global_position = Vector2(500, 250)
 	orc_ai.add_to_group("orc")
 	orc_ai.add_to_group("ai")
+	#!orc_ai.hitbox.collision_layer = 3
+	#!orc_ai.attack_area.collision_mask =2
 	orc_ai.character_sprite.sprite_frames = ResourceLoader.load("res://character/orc/orc_spriteframes.tres")
 	orc_ai.weapon_sprite.sprite_frames = ResourceLoader.load("res://equipment/axe/axe_spriteframes.tres")
 	orc_ai.shield_sprite.sprite_frames = ResourceLoader.load("res://equipment/round_shield/round_shield_spriteframes.tres")
@@ -40,22 +46,25 @@ func spawn_ai() -> void:
 	orc_ai.weapon_sprite.self_modulate = Color(3.0, 1.0, 1.0, 1.0)
 	var knight_ai = character_scene.instantiate()
 	add_child(knight_ai)
-	knight_ai.position = Vector2(randi_range(0, 500), randi_range(0, 500))
+	#knight_ai.position = Vector2(randi_range(0, 500), randi_range(0, 500))
+	knight_ai.global_position = Vector2(250, 500)
 	knight_ai.add_to_group("knight")
 	knight_ai.add_to_group("ai")
+	#!knight_ai.hitbox.collision_layer = 2
+	#!knight_ai.attack_area.collision_mask = 3
 	knight_ai.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
 	knight_ai.weapon_sprite.sprite_frames = ResourceLoader.load("res://equipment/sword/sword_spriteframes.tres")
 	knight_ai.shield_sprite.sprite_frames = ResourceLoader.load("res://equipment/kite_shield/kite_shield_spriteframes.tres")
 	knight_ai.shield_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
 	knight_ai.weapon_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
-	get_tree().create_timer(5.0).timeout.connect(spawn_ai)
+	#get_tree().create_timer(5.0).timeout.connect(spawn_ai)
 	
 func _physics_process(delta: float) -> void:
 	for character in get_tree().get_nodes_in_group("ai"):
-		# Check if the character instance is valid
-		if not is_instance_valid(character) or character.is_queued_for_deletion():
-			continue  # Skip invalid or queued-for-deletion instances
+		if not is_instance_valid(character) or character.is_queued_for_deletion() or character.is_in_group("dead"):
+			continue
 
+		# Update facing direction based on target
 		if character.has_target == false or not is_instance_valid(character.target) or character.target.is_in_group("dead"):
 			var target = get_target(character)
 			if target != null:
@@ -71,7 +80,7 @@ func _physics_process(delta: float) -> void:
 
 		if character.weapon_on_cooldown == false and distance_to_target < 50:
 			speed = 0
-			character.attack(character.target)
+			character.attack()
 			character.update_animations()
 		elif abs(direction_to_target.x) > abs(direction_to_target.y):
 			if character.velocity.x == 0 and character.direction_cooldown == false:
@@ -86,7 +95,6 @@ func _physics_process(delta: float) -> void:
 			character.velocity = Vector2(0, direction_to_target.y).normalized()
 
 		character.global_position += character.velocity * speed * delta
-		character.move_and_slide()
 
 func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	var nearest_target = null
