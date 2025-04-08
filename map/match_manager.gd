@@ -25,6 +25,7 @@ func _ready() -> void:
 	player.base_move_cooldown = character_data["move_cooldown"]
 	player.base_kick_stun_duration = character_data["kick_stun"]
 	player.base_kick_cooldown = character_data["kick_cooldown"]
+	player.is_player = true
 	add_child(player)
 	player.add_to_group("knight")
 	player.position = Vector2(54, 128)

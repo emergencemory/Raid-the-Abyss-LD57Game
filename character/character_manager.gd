@@ -50,6 +50,14 @@ var kick_on_cooldown: bool = false
 var base_attack_speed
 var current_attack_speed
 var moving: bool = false
+var is_player: bool = false
+
+signal attack_signal(value: float)
+signal block_signal(value: float)
+signal move_signal(value: float)
+signal kick_signal(value: float)
+signal health_signal(value: int, base_value: int)
+
 
 func _ready() -> void:
 	current_attack_damage = base_attack_damage
@@ -97,6 +105,7 @@ func attack() -> void:
 	# Start weapon cooldown
 	attack_on_cooldown = true
 	get_tree().create_timer(current_attack_cooldown).timeout.connect(_on_attack_cooldown_timeout)
+	emit_signal("attack_signal", current_attack_cooldown)
 
 func block() -> void:
 	if block_on_cooldown:
@@ -113,6 +122,7 @@ func block() -> void:
 	character_sprite.play("block")
 	block_on_cooldown = true
 	get_tree().create_timer(current_block_duration).timeout.connect(_on_block_timeout)
+	emit_signal("block_signal", current_block_cooldown)
 	get_tree().create_timer(current_block_cooldown).timeout.connect(_on_block_cooldown_timeout)
 
 func kick() -> void:
@@ -130,6 +140,7 @@ func kick() -> void:
 	print("Kicking!")
 	character_sprite.play("kick")
 	get_tree().create_timer(current_kick_cooldown).timeout.connect(_on_kick_cooldown_timeout)
+	emit_signal("kick_signal", current_kick_cooldown)
 	get_tree().create_timer(current_kick_stun_duration).timeout.connect(_on_kick_timeout)
 	
 func move(direction: int) -> void:
@@ -159,6 +170,7 @@ func move(direction: int) -> void:
 	get_tree().create_timer((30/current_speed)).timeout.connect(_on_move_timeout)
 	move_on_cooldown = true
 	get_tree().create_timer(current_move_cooldown).timeout.connect(_on_move_cooldown_timeout)
+	emit_signal("move_signal", current_move_cooldown)
 
 func turn(direction : int) -> void:
 	if not strike_shape.disabled:
@@ -258,12 +270,17 @@ func kicked(stun_duration : float) -> void:
 	move_on_cooldown = true
 	kick_on_cooldown = true
 	get_tree().create_timer(stun_duration).timeout.connect(_on_kick_cooldown_timeout)
+	emit_signal("kick_signal", stun_duration)
 	get_tree().create_timer(stun_duration).timeout.connect(_on_attack_cooldown_timeout)
+	emit_signal("attack_signal", stun_duration)
 	get_tree().create_timer(stun_duration).timeout.connect(_on_block_cooldown_timeout)
+	emit_signal("block_signal", stun_duration)
 	get_tree().create_timer(stun_duration).timeout.connect(_on_move_cooldown_timeout)
+	emit_signal("move_signal", stun_duration)
 
 func hit() -> void:
 	current_health -= 1
+	emit_signal("health_signal", current_health, base_health)
 	if current_health <= 0:
 		character_sprite.play("die")
 		add_to_group("dead")
