@@ -7,7 +7,8 @@ enum DIR {
 	SOUTH,
 	WEST
 }
-
+@onready var blood_particle: GPUParticles2D = $BloodParticle
+@onready var spark_particle: GPUParticles2D = $SparkParticle
 @onready var block_right_sprite: Sprite2D = $BlockRightSprite
 @onready var block_left_sprite: Sprite2D = $BlockLeftSprite
 @onready var attack_from_right_sprite: Sprite2D = $AttackFromRightSprite
@@ -327,6 +328,8 @@ func kicked(stun_duration : float) -> void:
 
 func hit(attacker:CharacterBody2D) -> void:
 	current_health -= 1
+	blood_particle.restart()
+	blood_particle.emitting = true
 	emit_signal("health_signal", current_health, base_health)
 	if current_health <= 0:
 		if attacker.is_player and not is_player:
@@ -350,7 +353,8 @@ func die() -> void:
 	add_to_group("dead")
 	z_index = 0
 	for child in get_children():
-		child.queue_free()
+		if not child.name == "BloodParticle":
+			child.queue_free()
 	character_sprite = AnimatedSprite2D.new()
 	character_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
 	add_child(character_sprite)
@@ -370,7 +374,7 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			_target.kicked(current_kick_stun_duration)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
 			audio_stream_player_2d.play()
-			strike_shape.disabled = true
+			strike_shape.set_deferred("disabled" , true)
 			return
 		elif _target.attack_direction == attack_direction:
 			print("Parried!")
@@ -381,6 +385,7 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			get_tree().create_timer(1.0).timeout.connect(parry_label.queue_free)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Metal Armour"
 			audio_stream_player_2d.play()
+			spark_particle.emitting = true
 		elif _target.block_direction == attack_direction:
 			print("Blocked!")
 			var block_label := Label.new()
@@ -390,6 +395,7 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			get_tree().create_timer(1.0).timeout.connect(block_label.queue_free)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Wooden"
 			audio_stream_player_2d.play()
+			spark_particle.emitting = true
 		else:
 			print("Hit!")
 			_target.hit(self)

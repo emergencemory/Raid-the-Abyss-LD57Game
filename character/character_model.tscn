@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://n1koaitsyfef"]
+[gd_scene load_steps=21 format=3 uid="uid://n1koaitsyfef"]
 
 [ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
 [ext_resource type="SpriteFrames" uid="uid://bk3pkrp740tjw" path="res://character/knight/knight_spriteframes.tres" id="2_chf46"]
@@ -8,6 +8,35 @@
 [ext_resource type="AudioStream" uid="uid://ci8u21id8lmbd" path="res://audio/SFX/Impact Sword and Swipe.wav" id="7_y6277"]
 [ext_resource type="AudioStream" uid="uid://c3ne4ep7lnwh5" path="res://audio/SFX/Impact Wooden.wav" id="8_1px7v"]
 [ext_resource type="Texture2D" uid="uid://cujqpoykki85h" path="res://ui/sword_icon.png" id="8_uealk"]
+[ext_resource type="Texture2D" uid="uid://c6rr4j2p122ua" path="res://character/effects/blood.png" id="9_y6277"]
+[ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="10_1px7v"]
+
+[sub_resource type="Curve" id="Curve_8vtqr"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, -276.831, 0, 0, Vector2(0.107527, 100), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_tthh3"]
+curve = SubResource("Curve_8vtqr")
+
+[sub_resource type="Curve" id="Curve_y6277"]
+_limits = [0.0, 3.0, 0.0, 1.0]
+_data = [Vector2(0, 3), 0.0, 0.0, 0, 0, Vector2(1, 0.980769), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_1px7v"]
+curve = SubResource("Curve_y6277")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_k67b1"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+spread = 180.0
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
+scale_over_velocity_curve = SubResource("CurveTexture_1px7v")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chf46"]
 radius = 40.0
@@ -33,12 +62,32 @@ clip_3/name = &"Impact Wooden"
 clip_3/stream = ExtResource("8_1px7v")
 clip_3/auto_advance = 0
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kteb8"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+spread = 180.0
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+
 [node name="CharacterModel" type="CharacterBody2D"]
 z_index = 1
 y_sort_enabled = true
 texture_filter = 1
 collision_mask = 0
 script = ExtResource("1_2xl0c")
+
+[node name="BloodParticle" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+texture = ExtResource("9_y6277")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_k67b1")
 
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
@@ -103,5 +152,16 @@ rotation = 1.5708
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("8_uealk")
 offset = Vector2(-196, 152)
+
+[node name="SparkParticle" type="GPUParticles2D" parent="."]
+position = Vector2(-2, -141)
+emitting = false
+texture = ExtResource("10_1px7v")
+lifetime = 0.5
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_kteb8")
 
 [connection signal="area_entered" from="CharacterSprite/HitBox" to="." method="_on_attack_area_entered"]
