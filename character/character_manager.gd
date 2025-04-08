@@ -56,6 +56,8 @@ var team: String
 var is_attacking: bool = false
 var is_preparing_attack: bool = false
 var attack_charge: float = 0.0
+var base_health_regen: float
+var current_health_regen: float
 
 signal attack_signal(value: float)
 signal block_signal(value: float)
@@ -77,6 +79,7 @@ func _ready() -> void:
 	current_kick_stun_duration = base_kick_stun_duration
 	current_kick_cooldown = base_kick_cooldown
 	current_attack_speed = base_attack_speed
+	current_health_regen = base_health_regen
 
 func prepare_attack() -> void:
 	if swing_from_right:
@@ -347,6 +350,7 @@ func hit(attacker:CharacterBody2D) -> void:
 		#hit_label.global_position = global_position
 		add_child(hit_label)
 		get_tree().create_timer(1.0).timeout.connect(hit_label.queue_free)
+		get_tree().create_timer(2.0/current_health_regen).timeout.connect(_on_health_regen_timeout)
 		character_sprite.play("hit")
 
 func die() -> void:
@@ -364,7 +368,14 @@ func die() -> void:
 		is_player = false
 		get_tree().create_timer(2.0).timeout.connect(get_parent().spawn_player)
 	
-
+func _on_health_regen_timeout() -> void:
+	if is_in_group("dead"):
+		return
+	current_health += 1
+	if current_health > base_health:
+		current_health = base_health
+	emit_signal("health_signal", current_health, base_health)
+	#print("Health regen: ", current_health_regen)
 
 func _on_attack_area_entered(area: Area2D) -> void:
 	var _target = area.get_parent()

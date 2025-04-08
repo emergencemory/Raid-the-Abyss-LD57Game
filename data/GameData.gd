@@ -12,4 +12,5 @@ const character_data: Dictionary = {
     "move_cooldown": 1.0,
     "kick_stun": 0.7,
     "kick_cooldown": 10.0,
+	"health_regen": 0.1
 }

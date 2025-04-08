@@ -47,6 +47,7 @@ func spawn_player() -> void:
 	update_player_hud.connect(hud._on_update_player_hud)
 	player_controller.add_child(hud)
 	var player_camera = Camera2D.new()
+	player_camera.position_smoothing_enabled = true
 	player.add_child(player_camera)
 	your_deaths += 1
 	update_hud()
@@ -66,6 +67,7 @@ func set_data(character:CharacterBody2D) -> void:
 	character.base_move_cooldown = character_data["move_cooldown"]
 	character.base_kick_stun_duration = character_data["kick_stun"]
 	character.base_kick_cooldown = character_data["kick_cooldown"]
+	character.base_health_regen = character_data["health_regen"]
 
 func spawn_ai(team:String) -> void:
 	var character = character_scene.instantiate()
