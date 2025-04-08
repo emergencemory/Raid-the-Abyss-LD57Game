@@ -56,9 +56,9 @@ func _physics_process(delta: float) -> void:
 		#print("move cooldown progress: ", move.value)e
 	if kick.value < 100:
 		kick.value += (delta / kick_cooldown) * 100
-		print("kick cooldown progress: ", kick.value, " / ", kick_cooldown)
+		#print("kick cooldown progress: ", kick.value, " / ", kick_cooldown)
 	elif attack.value >= 100 and block.value >= 170 and move.value >= 100 and kick.value >= 100:
-		print("Cooldowns complete")
+		#print("Cooldowns complete")
 		set_physics_process(false)
 		
 func _on_update_player_hud(_layer:int, current_orcs:int, your_kills:int, your_deaths:int, current_knights:int, knight_kills:int, knight_deaths:int) -> void:

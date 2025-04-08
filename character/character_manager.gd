@@ -149,7 +149,7 @@ func kick() -> void:
 		return
 	kick_on_cooldown = true
 	is_kicking = true
-	#print("Kicking!")
+	strike_shape.disabled = false
 	character_sprite.play("kick")
 	get_tree().create_timer(current_kick_cooldown).timeout.connect(_on_kick_cooldown_timeout)
 	emit_signal("kick_signal", current_kick_cooldown)
@@ -284,6 +284,7 @@ func _on_kick_timeout() -> void:
 		return
 	#print("Kick ended")
 	is_kicking = false
+	strike_shape.disabled = true
 	character_sprite.play("idle")
 
 func _on_kick_cooldown_timeout() -> void:
@@ -305,6 +306,11 @@ func get_block_direction() -> int:
 func kicked(stun_duration : float) -> void:
 	#apply duration to all actions
 	print("Kicked! Stunned for ", stun_duration, " seconds")
+	var kicked_label := Label.new()
+	kicked_label.text = "Kicked! Stunned for " + str(stun_duration) + " seconds"
+	#kicked_label.global_position = global_position
+	add_child(kicked_label)
+	get_tree().create_timer(1.0).timeout.connect(kicked_label.queue_free)
 	character_sprite.play("hit")
 	attack_on_cooldown = true
 	block_on_cooldown = true
@@ -333,6 +339,11 @@ func hit(attacker:CharacterBody2D) -> void:
 		
 	else:
 		print("Hit! Health: ", current_health)
+		var hit_label := Label.new()
+		hit_label.text = "Hit for " + str(attacker.current_attack_damage) + " damage!"
+		#hit_label.global_position = global_position
+		add_child(hit_label)
+		get_tree().create_timer(1.0).timeout.connect(hit_label.queue_free)
 		character_sprite.play("hit")
 
 func die() -> void:
@@ -359,13 +370,24 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			_target.kicked(current_kick_stun_duration)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
 			audio_stream_player_2d.play()
+			strike_shape.disabled = true
 			return
 		elif _target.attack_direction == attack_direction:
 			print("Parried!")
+			var parry_label := Label.new()
+			parry_label.text = "Parried!"
+			#parry_label.global_position = global_position
+			add_child(parry_label)
+			get_tree().create_timer(1.0).timeout.connect(parry_label.queue_free)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Metal Armour"
 			audio_stream_player_2d.play()
 		elif _target.block_direction == attack_direction:
 			print("Blocked!")
+			var block_label := Label.new()
+			block_label.text = "Blocked!"
+			#block_label.global_position = global_position
+			add_child(block_label)
+			get_tree().create_timer(1.0).timeout.connect(block_label.queue_free)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Wooden"
 			audio_stream_player_2d.play()
 		else:
@@ -374,4 +396,9 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
 			audio_stream_player_2d.play()
 	else:
+		var missed_label := Label.new()
+		missed_label.text = "Missed!"
+		#missed_label.global_position = global_position
+		add_child(missed_label)
+		get_tree().create_timer(1.0).timeout.connect(missed_label.queue_free)
 		print("Attack missed!")
