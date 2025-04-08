@@ -95,7 +95,7 @@ func get_valid_spawn(character : CharacterBody2D) -> Vector2:
 	elif character.is_in_group("knight"):
 		team = "knight"
 	else:
-		print("Invalid team for character: ", character.name)
+		printerr("Invalid team for character: ", character.name)
 		return Vector2.ZERO
 	while not valid_spawn:
 		var _spawn_pos : Vector2
@@ -120,17 +120,17 @@ func get_valid_spawn(character : CharacterBody2D) -> Vector2:
 		collision_checker.force_raycast_update()
 		if collision_checker.is_colliding():
 			collision_checker.queue_free()
-			print("Collision detected at: ", spawn_pos)
+			#print("Collision detected at: ", spawn_pos)
 			continue
 		
 		else:
 			collision_checker.queue_free()
-			print("No collision at: ", spawn_pos)
+			#print("No collision at: ", spawn_pos)
 			valid_spawn = true
 	return spawn_pos
 
 #TODO AI turn, move, attack, block, kick	
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	for character in get_tree().get_nodes_in_group("ai"):
 		if not is_instance_valid(character) or character.is_queued_for_deletion() or character.is_in_group("dead"):
 			continue
@@ -140,8 +140,74 @@ func _physics_process(delta: float) -> void:
 				character.has_target = true
 				get_tree().create_timer(1.0).timeout.connect(character._on_target_timeout)
 				character.target = target
-		var distance_to_target = character.global_position.distance_to(character.target.global_position)
-		var direction_to_target = (character.target.global_position - character.global_position)
+		else:
+			ai_action(character)
+
+func ai_action(character: CharacterBody2D) -> void:
+	var coin_flip = randi_range(0, 4)
+	character.ray_cast_2d.force_raycast_update()
+	if character.ray_cast_2d.is_colliding() and character.ray_cast_2d.get_collider() == character.target:
+			if coin_flip == 0: 
+				if character.is_preparing_attack == false:
+					character.swing_from_right = true
+				character.prepare_attack()
+				character.attack_charge += 0.1
+				if character.attack_charge >= character.current_attack_speed:
+					character.attack()
+					character.attack_charge = 0.0
+			elif coin_flip == 1:
+				if character.is_preparing_attack == false:
+					character.swing_from_right = false
+				character.prepare_attack()
+				character.attack_charge += 0.1
+				if character.attack_charge >= character.current_attack_speed:
+					character.attack()
+					character.attack_charge = 0.0
+			elif coin_flip == 2:
+				character.block_to_right = true
+				character.block()
+			elif coin_flip == 3:
+				character.block_to_right = false
+				character.block()
+			else:
+				character.kick()
+	elif character.target.global_position.x < character.global_position.x:
+		if coin_flip == 0 or coin_flip == 1:
+			character.turn(character.DIR.WEST)
+		elif coin_flip == 2:
+			character.turn(character.DIR.NORTH)
+		elif coin_flip == 3:
+			character.turn(character.DIR.SOUTH)
+		else:
+			character.turn(character.DIR.EAST)
+	elif character.target.global_position.x > character.global_position.x:
+		if coin_flip == 0 or coin_flip == 1:
+			character.turn(character.DIR.EAST)
+		elif coin_flip == 2:
+			character.turn(character.DIR.NORTH)
+		elif coin_flip == 3:
+			character.turn(character.DIR.SOUTH)
+		else:
+			character.turn(character.DIR.WEST)
+	elif character.target.global_position.y < character.global_position.y:
+		if coin_flip == 0 or coin_flip == 1:
+			character.turn(character.DIR.NORTH)
+		elif coin_flip == 2:
+			character.turn(character.DIR.EAST)
+		elif coin_flip == 3:
+			character.turn(character.DIR.WEST)
+		else:
+			character.turn(character.DIR.SOUTH)
+	elif character.target.global_position.y > character.global_position.y:
+		if coin_flip == 0 or coin_flip == 1:
+			character.turn(character.DIR.SOUTH)
+		elif coin_flip == 2:
+			character.turn(character.DIR.EAST)
+		elif coin_flip == 3:
+			character.turn(character.DIR.WEST)
+		else:
+			character.turn(character.DIR.NORTH)
+		
 
 		
 

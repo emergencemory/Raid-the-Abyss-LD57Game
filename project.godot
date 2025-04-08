@@ -13,8 +13,8 @@ config_version=5
 config/name="LudumDare57"
 run/main_scene="uid://dx3ishtlsfhpc"
 config/features=PackedStringArray("4.4", "GL Compatibility")
-run/max_fps=60
 config/icon="res://icon.svg"
+run/physics_ticks_per_second=60
 
 [autoload]
 

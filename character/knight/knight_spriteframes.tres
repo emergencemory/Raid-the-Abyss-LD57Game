@@ -201,7 +201,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("25_2a3g5")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_from_left",
 "speed": 24.0
 }, {
@@ -281,7 +281,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("50_jcriu")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_from_right",
 "speed": 24.0
 }, {
@@ -374,7 +374,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("76_db1i2")
 }],
-"loop": true,
+"loop": false,
 "name": &"die",
 "speed": 12.0
 }, {
@@ -400,7 +400,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("83_jcyga")
 }],
-"loop": true,
+"loop": false,
 "name": &"hit",
 "speed": 12.0
 }, {
@@ -488,7 +488,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("109_q3q5c")
 }],
-"loop": true,
+"loop": false,
 "name": &"kick",
 "speed": 20.0
 }, {

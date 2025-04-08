@@ -42,16 +42,16 @@ func calc_relative_mouse_pos() -> bool:
 	marker.global_position = player.global_position
 	marker.look_at(get_global_mouse_position())
 	var mouse_angle = wrapf(marker.global_rotation_degrees - 90, 0, 359)
-	print("Mouse angle: ", mouse_angle)
+	#print("Mouse angle: ", mouse_angle)
 	# Get the player's facing angle in degrees
 	var facing_angle = player.rotation_degrees
-	print("Facing angle: ", facing_angle)# Calculate the relative angle
+	#print("Facing angle: ", facing_angle)# Calculate the relative angle
 	var relative_angle = wrapf(mouse_angle - facing_angle, 0, 359)
-	print("Relative angle: ", relative_angle)
+	#print("Relative angle: ", relative_angle)
 	# Determine if the mouse is to the left or right
 	if relative_angle < 180:
-		print("Mouse is to the left")
+		#print("Mouse is to the left")
 		return false  # Mouse is to the left
 	else:
-		print("Mouse is to the right")
+		#print("Mouse is to the right")
 		return true  # Mouse is to the right

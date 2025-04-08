@@ -53,6 +53,8 @@ var moving: bool = false
 var is_player: bool = false
 var team: String
 var is_attacking: bool = false
+var is_preparing_attack: bool = false
+var attack_charge: float = 0.0
 
 signal attack_signal(value: float)
 signal block_signal(value: float)
@@ -84,22 +86,27 @@ func prepare_attack() -> void:
 		attack_from_right_sprite.hide()
 		attack_from_left_sprite.show()
 		attack_direction = (facing_direction - 1) % 4
+	is_preparing_attack = true
 
 
 func attack() -> void:
 # Activate the attack area
 	attack_from_left_sprite.hide()
 	attack_from_right_sprite.hide()
+	is_preparing_attack = false
 	if attack_on_cooldown:
-		print("Attack on cooldown")
+		#print("Attack on cooldown")
 		return
 	if is_attacking:
-		print("attacking, cannot attack")
+		#print("attacking, cannot attack")
 		return
 	if moving:
-		print("Moving, cannot attack")
+		#print("Moving, cannot attack")
 		return
-	print("Attacking!")
+	if is_kicking:
+		#print("Kicking, cannot attack")
+		return
+	#print("Attacking!")
 	if swing_from_right:
 		character_sprite.play("attack_from_right")
 	else:
@@ -114,16 +121,16 @@ func attack() -> void:
 
 func block() -> void:
 	if block_on_cooldown:
-		print("Block on cooldown")
+		#print("Block on cooldown")
 		return
 	if is_attacking:
-		print("attacking, cannot block")
+		#print("attacking, cannot block")
 		return
 	if moving:
-		print("Moving, cannot block")
+		#print("Moving, cannot block")
 		return
 	block_direction = get_block_direction()
-	print("Blocking!")
+	#print("Blocking!")
 	character_sprite.play("block")
 	block_on_cooldown = true
 	get_tree().create_timer(current_block_duration).timeout.connect(_on_block_timeout)
@@ -132,28 +139,29 @@ func block() -> void:
 
 func kick() -> void:
 	if moving:
-		print("Moving, cannot kick")
+		#print("Moving, cannot kick")
 		return
 	if is_attacking:
-		print("attacking, cannot kick")
+		#print("attacking, cannot kick")
 		return
 	if kick_on_cooldown:
-		print("Kick on cooldown")
+		#print("Kick on cooldown")
 		return
 	kick_on_cooldown = true
 	is_kicking = true
-	print("Kicking!")
+	#print("Kicking!")
 	character_sprite.play("kick")
 	get_tree().create_timer(current_kick_cooldown).timeout.connect(_on_kick_cooldown_timeout)
 	emit_signal("kick_signal", current_kick_cooldown)
 	get_tree().create_timer(current_kick_stun_duration).timeout.connect(_on_kick_timeout)
 	
 func move(direction: int) -> void:
+	ray_cast_2d.force_raycast_update()
 	if ray_cast_2d.is_colliding():
-		print("Collision detected, cannot move")
+		#print("Collision detected, cannot move")
 		return
 	if move_on_cooldown:
-		print("Move on cooldown")
+		#print("Move on cooldown")
 		return
 	character_sprite.play("walk")
 	var previous_position = global_position
@@ -170,7 +178,7 @@ func move(direction: int) -> void:
 	var move_sprite = create_tween()
 	move_sprite.tween_property(character_sprite, "global_position", global_position, (30/current_speed))
 	moving = true
-	print("Moving!")
+	#print("Moving!")
 
 	get_tree().create_timer((30/current_speed)).timeout.connect(_on_move_timeout)
 	move_on_cooldown = true
@@ -179,10 +187,13 @@ func move(direction: int) -> void:
 
 func turn(direction : int) -> void:
 	if is_attacking:
-		print("attacking, cannot turn")
+		#print("attacking, cannot turn")
 		return
 	if moving:
-		print("moving, cannot turn")
+		#print("moving, cannot turn")
+		return
+	if is_kicking:
+		#print("kicking, cannot turn")
 		return
 	match direction:
 		DIR.NORTH:
@@ -209,57 +220,77 @@ func turn(direction : int) -> void:
 			else:
 				rotation_degrees = 270
 				facing_direction = 3
-	print("direction: ", direction)
+	#print("direction: ", direction)
 	#move_on_cooldown = true
 	#get_tree().create_timer(0.1).timeout.connect(_on_move_cooldown_timeout)
 
 func _on_move_timeout() -> void:
+	if is_in_group("dead"):
+		return
 	moving = false
 	character_sprite.play("idle")
 
 func _on_target_timeout() -> void:
-	print("Target cooldown ended")
+	if is_in_group("dead"):
+		return
+	#print("Target cooldown ended")
 	has_target = false
 
 func _on_attack_cooldown_timeout() -> void:
+	if is_in_group("dead"):
+		return
 	attack_on_cooldown = false
-	print("Attack cooldown ended")
+	#print("Attack cooldown ended")
 
 func _on_attack_timeout() -> void:
+	if is_in_group("dead"):
+		return
 	strike_shape.disabled = true
 	is_attacking = false
 	attack_direction = -1
 	character_sprite.play("idle")
-	print("Attack area disabled")
+	#print("Attack area disabled")
 
 func _on_attack_begin() -> void:
+	if is_in_group("dead"):
+		return
 	strike_shape.disabled = false
-	print("Attack area enabled")
+	#print("Attack area enabled")
 
 func _on_block_timeout() -> void:
+	if is_in_group("dead"):
+		return
 	block_direction = -1
 	#character_sprite.play("idle")
 	block_right_sprite.hide()
 	block_left_sprite.hide()
-	print("Block disabled")
+	#print("Block disabled")
 
 func _on_block_cooldown_timeout() -> void:
+	if is_in_group("dead"):
+		return
 	block_on_cooldown = false
-	print("Block cooldown ended")
+	#print("Block cooldown ended")
 
 func _on_move_cooldown_timeout() -> void:
+	if is_in_group("dead"):
+		return
 	move_on_cooldown = false
 	#character_sprite.play("idle")
-	print("Move cooldown ended")
+	#print("Move cooldown ended")
 
 func _on_kick_timeout() -> void:
-	print("Kick ended")
+	if is_in_group("dead"):
+		return
+	#print("Kick ended")
 	is_kicking = false
 	character_sprite.play("idle")
 
 func _on_kick_cooldown_timeout() -> void:
+	if is_in_group("dead"):
+		return
 	kick_on_cooldown = false
-	print("Kick cooldown ended")
+#	print("Kick cooldown ended")
 
 func get_block_direction() -> int:
 	if block_to_right:

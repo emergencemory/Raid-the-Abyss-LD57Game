@@ -1,7 +1,7 @@
 [gd_scene load_steps=13 format=3 uid="uid://n1koaitsyfef"]
 
 [ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
-[ext_resource type="SpriteFrames" uid="uid://cn2o2v7sl57ow" path="res://character/orc/orc_spriteframes.tres" id="2_waqkf"]
+[ext_resource type="SpriteFrames" uid="uid://bk3pkrp740tjw" path="res://character/knight/knight_spriteframes.tres" id="2_chf46"]
 [ext_resource type="AudioStream" uid="uid://cu1cpquh4inh8" path="res://audio/SFX/Impact Body.wav" id="5_55pft"]
 [ext_resource type="AudioStream" uid="uid://dqmi0udhr2ncg" path="res://audio/SFX/Impact Metal Armour.wav" id="6_uealk"]
 [ext_resource type="Texture2D" uid="uid://d28qhgrrd3nni" path="res://ui/shield_icon.png" id="7_55pft"]
@@ -42,28 +42,8 @@ script = ExtResource("1_2xl0c")
 
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-sprite_frames = ExtResource("2_waqkf")
-animation = &"kick"
-
-[node name="BlockLabel" type="Label" parent="CharacterSprite"]
-offset_left = -142.0
-offset_top = -27.0
-offset_right = -95.0
-offset_bottom = -4.0
-text = "Block:"
-
-[node name="ParryLabel" type="Label" parent="CharacterSprite"]
-offset_left = 105.0
-offset_top = -23.0
-offset_right = 152.0
-text = "Parry:"
-
-[node name="StrikeLabel" type="Label" parent="CharacterSprite"]
-offset_left = -50.0
-offset_top = -175.0
-offset_right = 4.0
-offset_bottom = -152.0
-text = "Strike: "
+sprite_frames = ExtResource("2_chf46")
+animation = &"attack_from_right"
 
 [node name="HitBox" type="Area2D" parent="CharacterSprite"]
 position = Vector2(0, -128)
