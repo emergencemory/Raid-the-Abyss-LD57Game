@@ -8,236 +8,265 @@ enum DIR {
 	WEST
 }
 
-
+@onready var block_right_sprite: Sprite2D = $BlockRightSprite
+@onready var block_left_sprite: Sprite2D = $BlockLeftSprite
+@onready var attack_from_right_sprite: Sprite2D = $AttackFromRightSprite
+@onready var attack_from_left_sprite: Sprite2D = $AttackFromLeftSprite
 @onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
-@onready var attack_area: Area2D = $AttackArea
-@onready var hitbox: Area2D = $Hitbox
-@onready var strike_shape: CollisionShape2D = $AttackArea/StrikeShape
+@onready var strike_shape: CollisionShape2D = $CharacterSprite/HitBox/StrikeShape
 @onready var character_sprite: AnimatedSprite2D = $CharacterSprite
-@onready var character_animation_player: AnimationPlayer = $CharacterAnimationPlayer
-@onready var shield_sprite: AnimatedSprite2D = $ShieldSprite
-@onready var shield_animation_player: AnimationPlayer = $ShieldAnimationPlayer
-@onready var weapon_sprite: AnimatedSprite2D = $WeaponSprite
-@onready var weapon_animation_player: AnimationPlayer = $WeaponAnimationPlayer
-@onready var strike_label: Label = $AttackArea/StrikeLabel
-@onready var parry_label: Label = $WeaponSprite/ParryLabel
-@onready var block_label: Label = $ShieldSprite/BlockLabel
+@onready var ray_cast_2d: RayCast2D = $CharacterCollider/RayCast2D
 
-var health: int = 2
-var stance: int = DIR.SOUTH
-var block_offset: int = 0  # 0 = same as stance, 1 = one step clockwise
-var weapon_on_cooldown: bool = false
-var stance_cooldown: bool = false
-var direction_cooldown: bool = false
-var target_cooldown: bool = false
-var target: CharacterBody2D
 var has_target: bool = false
-var parry_direction: int = DIR.NORTH  # Direction the weapon is being held
-var block_direction: int = DIR.NORTH  # Direction the shield is being held
+var target: CharacterBody2D
+var base_health: int
+var base_attack_damage: int
+var base_attack_cooldown : float 
+var base_block_duration: float
+var base_block_cooldown: float 
+var base_speed: float 
+var base_move_cooldown: float 
+var base_kick_stun_duration: float 
+var base_kick_cooldown: float
+var current_health: int = base_health
+var facing_direction: int = 0
+var attack_direction: int = -1
+var swing_from_right: bool = false
+var current_attack_damage: int
+var current_attack_cooldown: float = base_attack_cooldown
+var attack_on_cooldown: bool = false
+var block_direction: int = -1
+var block_to_right: bool = false
+var current_block_duration: float = base_block_duration
+var current_block_cooldown: float = base_block_cooldown
+var block_on_cooldown: bool = false
+var current_speed: float = base_speed
+var current_move_cooldown: float = base_move_cooldown
+var move_on_cooldown: bool = false
+var is_kicking: bool = false
+var current_kick_stun_duration: float = base_kick_stun_duration
+var current_kick_cooldown: float = base_kick_cooldown
+var kick_on_cooldown: bool = false
 
 
 func _ready() -> void:
-	update_animations()
+	current_attack_damage = base_attack_damage
+	current_health = base_health
+	current_attack_cooldown = base_attack_cooldown
+	current_block_duration = base_block_duration
+	current_block_cooldown = base_block_cooldown
+	current_speed = base_speed
+	current_move_cooldown = base_move_cooldown
+	current_kick_stun_duration = base_kick_stun_duration
+	current_kick_cooldown = base_kick_cooldown
+
+func prepare_attack() -> void:
+	if swing_from_right:
+		attack_from_right_sprite.show()
+		attack_from_left_sprite.hide()
+		attack_direction = (facing_direction + 1) % 4
+	else:
+		attack_from_right_sprite.hide()
+		attack_from_left_sprite.show()
+		attack_direction = (facing_direction - 1) % 4
+
 
 func attack() -> void:
 # Activate the attack area
+	attack_from_left_sprite.hide()
+	attack_from_right_sprite.hide()
+	if attack_on_cooldown:
+		print("Attack on cooldown")
+
+		return
 	print("Attacking!")
+	if swing_from_right:
+		character_sprite.play("attack_from_right")
+	else:
+		character_sprite.play("attack_from_left")
 	strike_shape.disabled = false
-
-
-
-
-
-	# Disable the ray after the attack
-	#strike_shape.disabled = true
-
+	get_tree().create_timer(1.0).timeout.connect(_on_attack_timeout)
 	# Start weapon cooldown
-	weapon_on_cooldown = true
-	get_tree().create_timer(2.0).timeout.connect(_on_attack_timeout)
+	attack_on_cooldown = true
+	get_tree().create_timer(current_attack_cooldown).timeout.connect(_on_attack_cooldown_timeout)
 
-func _on_attack_timeout() -> void:
-	weapon_on_cooldown = false
+func block() -> void:
+	if block_on_cooldown:
+		print("Block on cooldown")
+		return
+	block_direction = get_block_direction()
+	print("Blocking!")
+	character_sprite.play("block")
+	block_on_cooldown = true
+	get_tree().create_timer(current_block_duration).timeout.connect(_on_block_timeout)
+	get_tree().create_timer(current_block_cooldown).timeout.connect(_on_block_cooldown_timeout)
+
+func kick() -> void:
+	if kick_on_cooldown:
+		print("Kick on cooldown")
+		return
+	kick_on_cooldown = true
+	is_kicking = true
+	print("Kicking!")
+	character_sprite.play("kick")
+	get_tree().create_timer(current_kick_cooldown).timeout.connect(_on_kick_cooldown_timeout)
+	get_tree().create_timer(current_kick_stun_duration).timeout.connect(_on_kick_timeout)
+	
+func move(direction: int) -> void:
+	if ray_cast_2d.is_colliding():
+		print("Collision detected, cannot move")
+		return
+	if move_on_cooldown:
+		print("Move on cooldown")
+		return
+	character_sprite.play("walk")
+	var previous_position = global_position
+	match direction:
+		DIR.NORTH:
+			global_position += Vector2(0, -128)
+		DIR.EAST:
+			global_position += Vector2(128, 0)
+		DIR.SOUTH:
+			global_position += Vector2(0, 128)
+		DIR.WEST:
+			global_position += Vector2(-128, 0)	
+	character_sprite.global_position = previous_position
+	var move_sprite = create_tween()
+	move_sprite.tween_property(character_sprite, "global_position", global_position, 1.0)
+	print("Moving!")
+
+
+	move_on_cooldown = true
+	get_tree().create_timer(current_move_cooldown).timeout.connect(_on_move_cooldown_timeout)
+
+func turn(direction : int) -> void:
+	match direction:
+		DIR.NORTH:
+			if rotation_degrees == 0:
+				move(DIR.NORTH)
+			else:
+				rotation_degrees = 0
+				facing_direction = 0
+		DIR.EAST:
+			if rotation_degrees == 90:
+				move(DIR.EAST)
+			else:
+				rotation_degrees = 90
+				facing_direction = 1
+		DIR.SOUTH:
+			if rotation_degrees == 180:
+				move(DIR.SOUTH)
+			else:
+				rotation_degrees = 180
+				facing_direction = 2
+		DIR.WEST:
+			if rotation_degrees == 270:
+				move(DIR.WEST)
+			else:
+				rotation_degrees = 270
+				facing_direction = 3
+	print("direction: ", direction)
+	#move_on_cooldown = true
+	#get_tree().create_timer(0.1).timeout.connect(_on_move_cooldown_timeout)
+
+func _on_target_timeout() -> void:
+	print("Target cooldown ended")
+	has_target = false
+
+func _on_attack_cooldown_timeout() -> void:
+	attack_on_cooldown = false
 	print("Attack cooldown ended")
 
-func update_animations() -> void:
-	# Update character movement animation
-	if velocity.x > 0:
-		character_animation_player.play("character/idle_e")
-		attack_area.position = Vector2i(52, 0)
-	elif velocity.x < 0:
-		character_animation_player.play("character/idle_w")
-		attack_area.position = Vector2i(-52, 0)
-	elif velocity.y > 0:
-		character_animation_player.play("character/idle_s")
-		attack_area.position = Vector2i(0, 52)
-	elif velocity.y < 0:
-		character_animation_player.play("character/idle_n")
-		attack_area.position = Vector2i(0, -52)
-	#else:
-		#character_animation_player.play("character/idle_s")  # Default idle animation
+func _on_attack_timeout() -> void:
+	strike_shape.disabled = true
+	attack_direction = -1
+	character_sprite.play("idle")
+	print("Attack area disabled")
 
-	# Update weapon animation based on parry direction
-	match parry_direction:
-		DIR.NORTH:
-			weapon_animation_player.play("weapon/idle_n")
-			parry_label.text = "Parry North"
-			strike_label.text = "Attack from North"
-		DIR.EAST:
-			weapon_animation_player.play("weapon/idle_e")
-			parry_label.text = "Parry East"
-			strike_label.text = "Attack from East"
-		DIR.SOUTH:
-			weapon_animation_player.play("weapon/idle_s")
-			parry_label.text = "Parry South"
-			strike_label.text = "Attack from South"
-		DIR.WEST:
-			weapon_animation_player.play("weapon/idle_w")
-			parry_label.text = "Parry West"
-			strike_label.text = "Attack from West"
+func _on_block_timeout() -> void:
+	block_direction = -1
+	character_sprite.play("idle")
+	block_right_sprite.hide()
+	block_left_sprite.hide()
+	print("Block disabled")
 
-	# Update shield animation based on block direction
-	match block_direction:
-		DIR.NORTH:
-			shield_animation_player.play("shield/idle_n")
-			block_label.text = "Block North"
-		DIR.EAST:
-			shield_animation_player.play("shield/idle_e")
-			block_label.text = "Block East"
-		DIR.SOUTH:
-			shield_animation_player.play("shield/idle_s")
-			block_label.text = "Block South"
-		DIR.WEST:
-			shield_animation_player.play("shield/idle_w")
-			block_label.text = "Block West"
+func _on_block_cooldown_timeout() -> void:
+	block_on_cooldown = false
+	print("Block cooldown ended")
+
+func _on_move_cooldown_timeout() -> void:
+	move_on_cooldown = false
+	character_sprite.play("idle")
+	print("Move cooldown ended")
+
+func _on_kick_timeout() -> void:
+	print("Kick ended")
+	is_kicking = false
+	character_sprite.play("idle")
+
+func _on_kick_cooldown_timeout() -> void:
+	kick_on_cooldown = false
+	print("Kick cooldown ended")
 
 func get_block_direction() -> int:
-	return (stance - block_offset + 4) % 4
+	if block_to_right:
+		block_right_sprite.show()
+		block_left_sprite.hide()
+		return (facing_direction + 1) % 4
+	else:
+		block_right_sprite.hide()
+		block_left_sprite.show()
+		return (facing_direction - 1) % 4
+
+func kicked(stun_duration : float) -> void:
+	#apply duration to all actions
+	print("Kicked! Stunned for ", stun_duration, " seconds")
+	character_sprite.play("hit")
+	attack_on_cooldown = true
+	block_on_cooldown = true
+	move_on_cooldown = true
+	kick_on_cooldown = true
+	get_tree().create_timer(stun_duration).timeout.connect(_on_kick_cooldown_timeout)
+	get_tree().create_timer(stun_duration).timeout.connect(_on_attack_cooldown_timeout)
+	get_tree().create_timer(stun_duration).timeout.connect(_on_block_cooldown_timeout)
+	get_tree().create_timer(stun_duration).timeout.connect(_on_move_cooldown_timeout)
 
 func hit() -> void:
-	health -= 1
-	if health <= 0:
+	current_health -= 1
+	if current_health <= 0:
+		character_sprite.play("die")
 		add_to_group("dead")
 		self.hide()
 		get_tree().create_timer(5.0).timeout.connect(_on_death_timeout)
 	else:
-		print("Hit! Health: ", health)
+		print("Hit! Health: ", current_health)
+		character_sprite.play("hit")
 
 func _on_death_timeout() -> void:
 	print("Character died")
 	queue_free()
 
-func update_ai_combat_stance() -> void:
-	if not stance_cooldown:
-		stance_cooldown = true
-		get_tree().create_timer(0.5).timeout.connect(_on_stance_cooldown_timeout)
-		stance = randi_range(0, 3)
-		block_offset = randi_range(0, 1)
-		update_animations()
-
-func _on_stance_cooldown_timeout() -> void:
-	stance_cooldown = false
-
-
-func start_target_cooldown() -> void:
-	if not target_cooldown:
-		target_cooldown = true
-		get_tree().create_timer(1.0).timeout.connect(_on_target_cooldown_timeout)  # 1-second cooldown
-
-func _on_target_cooldown_timeout() -> void:
-	target_cooldown = false
-
-func start_direction_cooldown() -> void:
-	if not direction_cooldown:
-		direction_cooldown = true
-		get_tree().create_timer(0.5).timeout.connect(_on_direction_cooldown_timeout)  # 0.5-second cooldown
-
-func _on_direction_cooldown_timeout() -> void:
-	direction_cooldown = false
-
-func trigger_block_effect(target: CharacterManager) -> void:
-	print("Triggering block effect on:", target.name)
-	# Add block effect logic here (e.g., particles, sound, etc.)
-
-func trigger_parry_effect(target: CharacterManager) -> void:
-	print("Triggering parry effect on:", target.name)
-	# Add parry effect logic here (e.g., particles, sound, etc.)
-
-func trigger_hit_effect(target: CharacterManager) -> void:
-	print("Triggering hit effect on:", target.name)
-	# Add hit effect logic here (e.g., particles, sound, etc.)
-
-func get_direction_vector(direction: int) -> Vector2:
-	match direction:
-		DIR.NORTH:
-			return Vector2(0, -1)
-		DIR.EAST:
-			return Vector2(1, 0)
-		DIR.SOUTH:
-			return Vector2(0, 1)
-		DIR.WEST:
-			return Vector2(-1, 0)
-		_:
-			return Vector2.ZERO
-
-func angle_to_direction(angle: float) -> int:
-	angle = wrapf(angle, -PI, PI)  # Normalize angle to [-PI, PI]
-	if angle >= -PI / 4 and angle < PI / 4:
-		return DIR.EAST
-	elif angle >= PI / 4 and angle < 3 * PI / 4:
-		return DIR.SOUTH
-	elif angle >= -3 * PI / 4 and angle < -PI / 4:
-		return DIR.NORTH
-	else:
-		return DIR.WEST
-
-func update_directions() -> void:
-	# Calculate the facing direction (stance) based on velocity
-	if velocity.x > 0:
-		stance = DIR.EAST
-	elif velocity.x < 0:
-		stance = DIR.WEST
-	elif velocity.y > 0:
-		stance = DIR.SOUTH
-	elif velocity.y < 0:
-		stance = DIR.NORTH
-
-	# Calculate the mouse position relative to the player
-	var mouse_position = get_global_mouse_position() - global_position
-	var mouse_angle = mouse_position.angle()
-
-	# Determine the parry direction based on the mouse angle
-	if Input.is_action_pressed("attack"):
-		parry_direction = angle_to_direction(mouse_angle)
-	else:
-		parry_direction = stance  # Default to stance when not attacking
-
-	# Determine the block direction based on the mouse angle
-	if Input.is_action_pressed("block"):
-		block_direction = angle_to_direction(mouse_angle)
-	else:
-		block_direction = stance  # Default to stance when not blocking
-
 func _on_attack_area_entered(area: Area2D) -> void:
-	target = area.get_parent()
-	if target is CharacterBody2D:
-		if target.parry_direction == parry_direction:
+	var _target = area.get_parent()
+	if _target is CharacterBody2D:
+		if is_kicking:
+			print("Kicked!")
+			_target.kicked(current_kick_stun_duration)
+			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
+			audio_stream_player_2d.play()
+			return
+		elif _target.attack_direction == attack_direction:
 			print("Parried!")
-			trigger_parry_effect(target)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Metal Armour"
 			audio_stream_player_2d.play()
-		elif target.block_direction == parry_direction:
+		elif _target.block_direction == attack_direction:
 			print("Blocked!")
-			trigger_block_effect(target)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Wooden"
 			audio_stream_player_2d.play()
 		else:
 			print("Hit!")
-			trigger_hit_effect(target)
 			target.hit()
-			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
+			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
 			audio_stream_player_2d.play()
 	else:
 		print("Attack missed!")
-		audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
-		audio_stream_player_2d.play()
-	strike_shape.disabled = true

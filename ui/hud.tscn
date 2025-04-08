@@ -1,0 +1,124 @@
+[gd_scene load_steps=6 format=3 uid="uid://bfu3esac8trv1"]
+
+[ext_resource type="Texture2D" uid="uid://o1ir26vc6gwh" path="res://ui/knight_icon.png" id="1_en2x2"]
+[ext_resource type="Texture2D" uid="uid://cujqpoykki85h" path="res://ui/sword_icon.png" id="2_1v5rv"]
+[ext_resource type="Texture2D" uid="uid://d28qhgrrd3nni" path="res://ui/shield_icon.png" id="3_q43x7"]
+[ext_resource type="Texture2D" uid="uid://cwy0hhwfq467f" path="res://ui/walk_icon.png" id="4_srpbi"]
+[ext_resource type="Texture2D" uid="uid://k108pdtpbf01" path="res://ui/kick_icon.png" id="5_spcu4"]
+
+[node name="HUD" type="CanvasLayer"]
+
+[node name="StatusAnchor" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Status" type="HBoxContainer" parent="StatusAnchor"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="Health" type="TextureProgressBar" parent="StatusAnchor/Status"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+value = 100.0
+fill_mode = 3
+texture_under = ExtResource("1_en2x2")
+texture_progress = ExtResource("1_en2x2")
+tint_progress = Color(3, 1, 1, 1)
+
+[node name="Attack" type="TextureProgressBar" parent="StatusAnchor/Status"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+value = 100.0
+fill_mode = 3
+texture_under = ExtResource("2_1v5rv")
+texture_progress = ExtResource("2_1v5rv")
+tint_progress = Color(1, 1, 3, 1)
+
+[node name="Block" type="TextureProgressBar" parent="StatusAnchor/Status"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+value = 100.0
+fill_mode = 3
+texture_under = ExtResource("3_q43x7")
+texture_progress = ExtResource("3_q43x7")
+tint_progress = Color(1, 1, 3, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="StatusAnchor/Status"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="Move" type="TextureProgressBar" parent="StatusAnchor/Status/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+value = 100.0
+texture_under = ExtResource("4_srpbi")
+texture_progress = ExtResource("4_srpbi")
+tint_progress = Color(1, 1, 3, 1)
+
+[node name="Kick" type="TextureProgressBar" parent="StatusAnchor/Status/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+value = 100.0
+texture_under = ExtResource("5_spcu4")
+texture_progress = ExtResource("5_spcu4")
+tint_progress = Color(1, 1, 3, 1)
+
+[node name="Progress" type="VBoxContainer" parent="."]
+offset_right = 144.0
+offset_bottom = 185.0
+
+[node name="StageLabel" type="Label" parent="Progress"]
+layout_mode = 2
+text = "Layer : 1"
+
+[node name="Enemies" type="Label" parent="Progress"]
+layout_mode = 2
+text = "Current Orcs : 0"
+
+[node name="Kills" type="Label" parent="Progress"]
+layout_mode = 2
+text = "Your Kills : 0"
+
+[node name="Deaths" type="Label" parent="Progress"]
+layout_mode = 2
+text = "Your Deaths : 0"
+
+[node name="Allies" type="Label" parent="Progress"]
+layout_mode = 2
+text = "Current Knights : 0"
+
+[node name="Allied Kills" type="Label" parent="Progress"]
+layout_mode = 2
+text = "Knight Kills : 0"
+
+[node name="Allies Killed" type="Label" parent="Progress"]
+layout_mode = 2
+text = "Knight Deaths : 0"

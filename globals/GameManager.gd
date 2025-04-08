@@ -25,14 +25,15 @@ func _ready() -> void:
 
 func start_game() -> void:
 	if map:
-		menu.hide()
-	else:
-		map = map_scene.instantiate()
-		add_child(map)
-		match_manager = MATCH_MGR.new()
-		add_child(match_manager)
+		map.queue_free()
+	if match_manager:
+		match_manager.queue_free()
+	map = map_scene.instantiate()
+	add_child(map)
+	match_manager = MATCH_MGR.new()
+	add_child(match_manager)
 		#TODO TILEMAP : FastNoiseLite generate chunks, wall on left, drop on right, darker as move top, lighter as move bottom
-		menu.hide()
+	menu.hide()
 	#spawn ai manager
 	#TODO AI : Move, Attack, Retreat
 	#spawn input manager

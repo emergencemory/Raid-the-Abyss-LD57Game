@@ -2,61 +2,56 @@ extends Node
 class_name MatchManager
 
 const INPUT_PARSER : Script = preload("res://character/input_parser.gd")
-
+const GAME_DATA : Script = preload("res://data/GameData.gd")
 
 
 @onready var character_scene : PackedScene = preload("res://character/character_model.tscn")
 #var astar : AStarGrid2D
 #var map : TileMapLayer = null
 #var map_rect : Rect2i = Rect2i(Vector2i.ZERO, Vector2i.ZERO)
+var player : CharacterBody2D
+var character_data : Dictionary
 
 func _ready() -> void:
-	var player = character_scene.instantiate()
+	character_data = GAME_DATA.character_data.duplicate()
+	player = character_scene.instantiate()
+	player.base_health = character_data["base_health"]
+	player.base_attack_cooldown = character_data["attack_cooldown"]
+	player.base_attack_damage = character_data["attack_damage"]
+	player.base_block_duration = character_data["block_duration"]
+	player.base_block_cooldown = character_data["block_cooldown"]
+	player.base_speed = character_data["speed"]
+	player.base_move_cooldown = character_data["move_cooldown"]
+	player.base_kick_stun_duration = character_data["kick_stun"]
+	player.base_kick_cooldown = character_data["kick_cooldown"]
 	add_child(player)
 	player.add_to_group("knight")
-	player.position = Vector2(500, 500)
+	player.position = Vector2(54, 128)
 	var player_controller = INPUT_PARSER.new()
 	player_controller.player = player
-	player.shield_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
-	player.weapon_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
 	player.add_child(player_controller)
 	var player_camera = Camera2D.new()
 	player.add_child(player_camera)
 	player_camera.make_current()
 	player.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
-	player.weapon_sprite.sprite_frames = ResourceLoader.load("res://equipment/sword/sword_spriteframes.tres")
-	player.shield_sprite.sprite_frames = ResourceLoader.load("res://equipment/kite_shield/kite_shield_spriteframes.tres")
-	spawn_ai()
-	#get_tree().create_timer(5.0).timeout.connect(spawn_ai)
+	#spawn_ai()
+	set_physics_process(false)
+
 
 
 func spawn_ai() -> void:
 	var orc_ai = character_scene.instantiate()
 	add_child(orc_ai)
-	#orc_ai.position = Vector2(randi_range(0, 500), randi_range(0, 500))
-	orc_ai.global_position = Vector2(500, 250)
+	orc_ai.global_position = player.global_position + Vector2(512, 0)
 	orc_ai.add_to_group("orc")
 	orc_ai.add_to_group("ai")
-	#!orc_ai.hitbox.collision_layer = 3
-	#!orc_ai.attack_area.collision_mask =2
 	orc_ai.character_sprite.sprite_frames = ResourceLoader.load("res://character/orc/orc_spriteframes.tres")
-	orc_ai.weapon_sprite.sprite_frames = ResourceLoader.load("res://equipment/axe/axe_spriteframes.tres")
-	orc_ai.shield_sprite.sprite_frames = ResourceLoader.load("res://equipment/round_shield/round_shield_spriteframes.tres")
-	orc_ai.shield_sprite.self_modulate = Color(3.0, 1.0, 1.0, 1.0)
-	orc_ai.weapon_sprite.self_modulate = Color(3.0, 1.0, 1.0, 1.0)
 	var knight_ai = character_scene.instantiate()
 	add_child(knight_ai)
-	#knight_ai.position = Vector2(randi_range(0, 500), randi_range(0, 500))
-	knight_ai.global_position = Vector2(250, 500)
+	knight_ai.global_position = player.global_position - Vector2(512, 0)
 	knight_ai.add_to_group("knight")
 	knight_ai.add_to_group("ai")
-	#!knight_ai.hitbox.collision_layer = 2
-	#!knight_ai.attack_area.collision_mask = 3
 	knight_ai.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
-	knight_ai.weapon_sprite.sprite_frames = ResourceLoader.load("res://equipment/sword/sword_spriteframes.tres")
-	knight_ai.shield_sprite.sprite_frames = ResourceLoader.load("res://equipment/kite_shield/kite_shield_spriteframes.tres")
-	knight_ai.shield_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
-	knight_ai.weapon_sprite.self_modulate = Color(1.0, 1.0, 3.0, 1.0)
 	#get_tree().create_timer(5.0).timeout.connect(spawn_ai)
 	
 func _physics_process(delta: float) -> void:
@@ -69,7 +64,7 @@ func _physics_process(delta: float) -> void:
 			var target = get_target(character)
 			if target != null:
 				character.has_target = true
-				character.start_target_cooldown()
+				get_tree().create_timer(1.0).timeout.connect(character._on_target_timeout)
 				character.target = target
 				if character.stance_cooldown == false:
 					character.update_ai_combat_stance()

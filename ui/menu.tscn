@@ -31,10 +31,15 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 1
 
+[node name="Resume" type="Button" parent="TitleScreen/MainOptions"]
+visible = false
+layout_mode = 2
+text = "Resume"
+
 [node name="Start" type="Button" parent="TitleScreen/MainOptions"]
 layout_mode = 2
 size_flags_vertical = 4
-text = "Start"
+text = "New Game"
 
 [node name="Label" type="Label" parent="TitleScreen/MainOptions"]
 layout_mode = 2
