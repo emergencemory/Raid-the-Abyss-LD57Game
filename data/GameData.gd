@@ -5,6 +5,7 @@ const character_data: Dictionary = {
     "base_health": 2,
     "attack_damage": 1,
     "attack_cooldown": 1.0,
+	"attack_speed": 1.0,
     "block_duration": 1.5,
     "block_cooldown": 1.0,
     "speed": 30.0,

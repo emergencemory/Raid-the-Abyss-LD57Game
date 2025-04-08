@@ -47,7 +47,9 @@ var is_kicking: bool = false
 var current_kick_stun_duration: float = base_kick_stun_duration
 var current_kick_cooldown: float = base_kick_cooldown
 var kick_on_cooldown: bool = false
-
+var base_attack_speed
+var current_attack_speed
+var moving: bool = false
 
 func _ready() -> void:
 	current_attack_damage = base_attack_damage
@@ -59,6 +61,7 @@ func _ready() -> void:
 	current_move_cooldown = base_move_cooldown
 	current_kick_stun_duration = base_kick_stun_duration
 	current_kick_cooldown = base_kick_cooldown
+	current_attack_speed = base_attack_speed
 
 func prepare_attack() -> void:
 	if swing_from_right:
@@ -77,7 +80,12 @@ func attack() -> void:
 	attack_from_right_sprite.hide()
 	if attack_on_cooldown:
 		print("Attack on cooldown")
-
+		return
+	if not strike_shape.disabled:
+		print("attacking, cannot attack")
+		return
+	if moving:
+		print("Moving, cannot attack")
 		return
 	print("Attacking!")
 	if swing_from_right:
@@ -85,7 +93,7 @@ func attack() -> void:
 	else:
 		character_sprite.play("attack_from_left")
 	strike_shape.disabled = false
-	get_tree().create_timer(1.0).timeout.connect(_on_attack_timeout)
+	get_tree().create_timer(current_attack_speed).timeout.connect(_on_attack_timeout)
 	# Start weapon cooldown
 	attack_on_cooldown = true
 	get_tree().create_timer(current_attack_cooldown).timeout.connect(_on_attack_cooldown_timeout)
@@ -93,6 +101,12 @@ func attack() -> void:
 func block() -> void:
 	if block_on_cooldown:
 		print("Block on cooldown")
+		return
+	if not strike_shape.disabled:
+		print("attacking, cannot block")
+		return
+	if moving:
+		print("Moving, cannot block")
 		return
 	block_direction = get_block_direction()
 	print("Blocking!")
@@ -102,6 +116,12 @@ func block() -> void:
 	get_tree().create_timer(current_block_cooldown).timeout.connect(_on_block_cooldown_timeout)
 
 func kick() -> void:
+	if moving:
+		print("Moving, cannot kick")
+		return
+	if not strike_shape.disabled:
+		print("attacking, cannot kick")
+		return
 	if kick_on_cooldown:
 		print("Kick on cooldown")
 		return
@@ -132,14 +152,21 @@ func move(direction: int) -> void:
 			global_position += Vector2(-128, 0)	
 	character_sprite.global_position = previous_position
 	var move_sprite = create_tween()
-	move_sprite.tween_property(character_sprite, "global_position", global_position, 1.0)
+	move_sprite.tween_property(character_sprite, "global_position", global_position, (30/current_speed))
+	moving = true
 	print("Moving!")
 
-
+	get_tree().create_timer((30/current_speed)).timeout.connect(_on_move_timeout)
 	move_on_cooldown = true
 	get_tree().create_timer(current_move_cooldown).timeout.connect(_on_move_cooldown_timeout)
 
 func turn(direction : int) -> void:
+	if not strike_shape.disabled:
+		print("attacking, cannot turn")
+		return
+	if moving:
+		print("moving, cannot turn")
+		return
 	match direction:
 		DIR.NORTH:
 			if rotation_degrees == 0:
@@ -169,6 +196,10 @@ func turn(direction : int) -> void:
 	#move_on_cooldown = true
 	#get_tree().create_timer(0.1).timeout.connect(_on_move_cooldown_timeout)
 
+func _on_move_timeout() -> void:
+	moving = false
+	character_sprite.play("idle")
+
 func _on_target_timeout() -> void:
 	print("Target cooldown ended")
 	has_target = false
@@ -185,7 +216,7 @@ func _on_attack_timeout() -> void:
 
 func _on_block_timeout() -> void:
 	block_direction = -1
-	character_sprite.play("idle")
+	#character_sprite.play("idle")
 	block_right_sprite.hide()
 	block_left_sprite.hide()
 	print("Block disabled")
@@ -196,7 +227,7 @@ func _on_block_cooldown_timeout() -> void:
 
 func _on_move_cooldown_timeout() -> void:
 	move_on_cooldown = false
-	character_sprite.play("idle")
+	#character_sprite.play("idle")
 	print("Move cooldown ended")
 
 func _on_kick_timeout() -> void:

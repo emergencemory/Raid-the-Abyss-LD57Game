@@ -18,6 +18,7 @@ func _ready() -> void:
 	player.base_health = character_data["base_health"]
 	player.base_attack_cooldown = character_data["attack_cooldown"]
 	player.base_attack_damage = character_data["attack_damage"]
+	player.base_attack_speed = character_data["attack_speed"]
 	player.base_block_duration = character_data["block_duration"]
 	player.base_block_cooldown = character_data["block_cooldown"]
 	player.base_speed = character_data["speed"]
