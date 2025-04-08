@@ -11,13 +11,7 @@ var marker : Marker2D
 
 func _ready() -> void:
 	# Initialize the input parser
-	hud = hud_scene.instantiate()
-	player.attack_signal.connect(hud._on_attack_cooldown_started)
-	player.block_signal.connect(hud._on_block_cooldown_started)
-	player.move_signal.connect(hud._on_move_cooldown_started)
-	player.kick_signal.connect(hud._on_kick_cooldown_started)
-	player.health_signal.connect(hud._on_health_changed)
-	add_child(hud)
+	
 	marker = Marker2D.new()
 	add_child(marker)
 	# Connect signals or set up any necessary state here

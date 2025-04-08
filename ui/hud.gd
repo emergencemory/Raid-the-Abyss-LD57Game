@@ -7,6 +7,14 @@ class_name Hud
 @onready var block: TextureProgressBar = $StatusAnchor/Status/Block
 @onready var move: TextureProgressBar = $StatusAnchor/Status/VBoxContainer/Move
 @onready var kick: TextureProgressBar = $StatusAnchor/Status/VBoxContainer/Kick
+@onready var stage_label: Label = $Progress/StageLabel
+@onready var enemies: Label = $Progress/Enemies
+@onready var kills: Label = $Progress/Kills
+@onready var deaths: Label = $Progress/Deaths
+@onready var allies: Label = $Progress/Allies
+@onready var allied_kills: Label = $Progress/AlliedKills
+@onready var allies_killed: Label = $Progress/AlliesKilled
+
 var attack_cooldown: float = 0.0
 var block_cooldown: float = 0.0
 var move_cooldown: float = 0.0
@@ -53,3 +61,11 @@ func _physics_process(delta: float) -> void:
 		print("Cooldowns complete")
 		set_physics_process(false)
 		
+func _on_update_player_hud(_layer:int, current_orcs:int, your_kills:int, your_deaths:int, current_knights:int, knight_kills:int, knight_deaths:int) -> void:
+	stage_label.text = "Layer : " + str(_layer)
+	enemies.text = "Current Orcs : " + str(current_orcs)
+	kills.text = "Your Kills : " + str(your_kills)
+	deaths.text = "Your Deaths : " + str(your_deaths)
+	allies.text = "Current Knights : " + str(current_knights)
+	allied_kills.text = "Knight Kills : " + str(knight_kills)
+	allies_killed.text = "Knight Deaths : " + str(knight_deaths)

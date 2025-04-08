@@ -59,7 +59,9 @@ signal block_signal(value: float)
 signal move_signal(value: float)
 signal kick_signal(value: float)
 signal health_signal(value: int, base_value: int)
-
+signal killed_by_player(team: String)
+signal killed_by_knight(team: String)
+signal killed_by_orc(team: String)
 
 func _ready() -> void:
 	current_attack_damage = base_attack_damage
@@ -286,10 +288,16 @@ func kicked(stun_duration : float) -> void:
 	get_tree().create_timer(stun_duration).timeout.connect(_on_move_cooldown_timeout)
 	emit_signal("move_signal", stun_duration)
 
-func hit() -> void:
+func hit(attacker:CharacterBody2D) -> void:
 	current_health -= 1
 	emit_signal("health_signal", current_health, base_health)
 	if current_health <= 0:
+		if attacker.is_player and not is_player:
+			emit_signal("killed_by_player", team)
+		if attacker.team == "knight" and not is_player:
+			emit_signal("killed_by_knight", team)
+		elif attacker.team == "orc" and not is_player:
+			emit_signal("killed_by_orc", team)
 		die()
 		
 	else:
@@ -331,7 +339,7 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			audio_stream_player_2d.play()
 		else:
 			print("Hit!")
-			_target.hit()
+			_target.hit(self)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
 			audio_stream_player_2d.play()
 	else:

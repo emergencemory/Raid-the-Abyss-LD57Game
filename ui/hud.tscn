@@ -123,10 +123,10 @@ text = "Your Deaths : 0"
 layout_mode = 2
 text = "Current Knights : 0"
 
-[node name="Allied Kills" type="Label" parent="Progress"]
+[node name="AlliedKills" type="Label" parent="Progress"]
 layout_mode = 2
 text = "Knight Kills : 0"
 
-[node name="Allies Killed" type="Label" parent="Progress"]
+[node name="AlliesKilled" type="Label" parent="Progress"]
 layout_mode = 2
 text = "Knight Deaths : 0"

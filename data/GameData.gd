@@ -9,7 +9,7 @@ const character_data: Dictionary = {
     "block_duration": 1.5,
     "block_cooldown": 1.0,
     "speed": 30.0,
-    "move_cooldown": 2.0,
+    "move_cooldown": 1.0,
     "kick_stun": 0.7,
     "kick_cooldown": 10.0,
 }
