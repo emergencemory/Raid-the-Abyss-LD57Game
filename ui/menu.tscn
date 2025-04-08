@@ -78,6 +78,7 @@ layout_mode = 2
 size_flags_vertical = 4
 text = "Reset"
 
+[connection signal="pressed" from="TitleScreen/MainOptions/Resume" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="TitleScreen/MainOptions/Start" to="." method="_on_start_pressed"]
 [connection signal="value_changed" from="TitleScreen/MainOptions/Volume" to="." method="_on_volume_value_changed"]
 [connection signal="pressed" from="TitleScreen/MainOptions/Quit" to="." method="_on_quit_pressed"]

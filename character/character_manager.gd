@@ -28,29 +28,31 @@ var base_speed: float
 var base_move_cooldown: float 
 var base_kick_stun_duration: float 
 var base_kick_cooldown: float
-var current_health: int = base_health
+var current_health: int
 var facing_direction: int = 0
 var attack_direction: int = -1
 var swing_from_right: bool = false
 var current_attack_damage: int
-var current_attack_cooldown: float = base_attack_cooldown
+var current_attack_cooldown: float
 var attack_on_cooldown: bool = false
 var block_direction: int = -1
 var block_to_right: bool = false
-var current_block_duration: float = base_block_duration
-var current_block_cooldown: float = base_block_cooldown
+var current_block_duration: float
+var current_block_cooldown: float 
 var block_on_cooldown: bool = false
-var current_speed: float = base_speed
-var current_move_cooldown: float = base_move_cooldown
+var current_speed: float 
+var current_move_cooldown: float 
 var move_on_cooldown: bool = false
 var is_kicking: bool = false
-var current_kick_stun_duration: float = base_kick_stun_duration
-var current_kick_cooldown: float = base_kick_cooldown
+var current_kick_stun_duration: float
+var current_kick_cooldown: float
 var kick_on_cooldown: bool = false
 var base_attack_speed
 var current_attack_speed
 var moving: bool = false
 var is_player: bool = false
+var team: String
+var is_attacking: bool = false
 
 signal attack_signal(value: float)
 signal block_signal(value: float)
@@ -89,7 +91,7 @@ func attack() -> void:
 	if attack_on_cooldown:
 		print("Attack on cooldown")
 		return
-	if not strike_shape.disabled:
+	if is_attacking:
 		print("attacking, cannot attack")
 		return
 	if moving:
@@ -100,7 +102,8 @@ func attack() -> void:
 		character_sprite.play("attack_from_right")
 	else:
 		character_sprite.play("attack_from_left")
-	strike_shape.disabled = false
+	is_attacking = true
+	get_tree().create_timer(current_attack_speed/2).timeout.connect(_on_attack_begin)
 	get_tree().create_timer(current_attack_speed).timeout.connect(_on_attack_timeout)
 	# Start weapon cooldown
 	attack_on_cooldown = true
@@ -111,7 +114,7 @@ func block() -> void:
 	if block_on_cooldown:
 		print("Block on cooldown")
 		return
-	if not strike_shape.disabled:
+	if is_attacking:
 		print("attacking, cannot block")
 		return
 	if moving:
@@ -129,7 +132,7 @@ func kick() -> void:
 	if moving:
 		print("Moving, cannot kick")
 		return
-	if not strike_shape.disabled:
+	if is_attacking:
 		print("attacking, cannot kick")
 		return
 	if kick_on_cooldown:
@@ -173,7 +176,7 @@ func move(direction: int) -> void:
 	emit_signal("move_signal", current_move_cooldown)
 
 func turn(direction : int) -> void:
-	if not strike_shape.disabled:
+	if is_attacking:
 		print("attacking, cannot turn")
 		return
 	if moving:
@@ -222,9 +225,14 @@ func _on_attack_cooldown_timeout() -> void:
 
 func _on_attack_timeout() -> void:
 	strike_shape.disabled = true
+	is_attacking = false
 	attack_direction = -1
 	character_sprite.play("idle")
 	print("Attack area disabled")
+
+func _on_attack_begin() -> void:
+	strike_shape.disabled = false
+	print("Attack area enabled")
 
 func _on_block_timeout() -> void:
 	block_direction = -1
@@ -282,17 +290,27 @@ func hit() -> void:
 	current_health -= 1
 	emit_signal("health_signal", current_health, base_health)
 	if current_health <= 0:
-		character_sprite.play("die")
-		add_to_group("dead")
-		self.hide()
-		get_tree().create_timer(5.0).timeout.connect(_on_death_timeout)
+		die()
+		
 	else:
 		print("Hit! Health: ", current_health)
 		character_sprite.play("hit")
 
-func _on_death_timeout() -> void:
-	print("Character died")
-	queue_free()
+func die() -> void:
+	add_to_group("dead")
+	z_index = 0
+	for child in get_children():
+		child.queue_free()
+	character_sprite = AnimatedSprite2D.new()
+	character_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
+	add_child(character_sprite)
+	character_sprite.play("die")
+	remove_from_group(team)
+	if is_player:
+		is_player = false
+		get_tree().create_timer(2.0).timeout.connect(get_parent().spawn_player)
+	
+
 
 func _on_attack_area_entered(area: Area2D) -> void:
 	var _target = area.get_parent()
@@ -313,7 +331,7 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			audio_stream_player_2d.play()
 		else:
 			print("Hit!")
-			target.hit()
+			_target.hit()
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
 			audio_stream_player_2d.play()
 	else:

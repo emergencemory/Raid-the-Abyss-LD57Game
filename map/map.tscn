@@ -41,6 +41,7 @@ shader = ExtResource("5_e8e5r")
 [node name="Map" type="Node2D"]
 y_sort_enabled = true
 texture_filter = 1
+position = Vector2(-54, 0)
 script = ExtResource("1_hgrid")
 
 [node name="GroundLayer" type="TileMapLayer" parent="."]

@@ -6,29 +6,23 @@ const GAME_DATA : Script = preload("res://data/GameData.gd")
 
 
 @onready var character_scene : PackedScene = preload("res://character/character_model.tscn")
-#var astar : AStarGrid2D
-#var map : TileMapLayer = null
-#var map_rect : Rect2i = Rect2i(Vector2i.ZERO, Vector2i.ZERO)
 var player : CharacterBody2D
 var character_data : Dictionary
 
 func _ready() -> void:
 	character_data = GAME_DATA.character_data.duplicate()
+	get_tree().create_timer(1.0).timeout.connect(spawn_player)
+	#spawn_ai("knight")
+	set_physics_process(false)
+
+
+func spawn_player() -> void:
 	player = character_scene.instantiate()
-	player.base_health = character_data["base_health"]
-	player.base_attack_cooldown = character_data["attack_cooldown"]
-	player.base_attack_damage = character_data["attack_damage"]
-	player.base_attack_speed = character_data["attack_speed"]
-	player.base_block_duration = character_data["block_duration"]
-	player.base_block_cooldown = character_data["block_cooldown"]
-	player.base_speed = character_data["speed"]
-	player.base_move_cooldown = character_data["move_cooldown"]
-	player.base_kick_stun_duration = character_data["kick_stun"]
-	player.base_kick_cooldown = character_data["kick_cooldown"]
+	set_data(player)
 	player.is_player = true
 	add_child(player)
 	player.add_to_group("knight")
-	player.position = Vector2(54, 128)
+	player.global_position = get_valid_spawn()
 	var player_controller = INPUT_PARSER.new()
 	player_controller.player = player
 	player.add_child(player_controller)
@@ -36,31 +30,66 @@ func _ready() -> void:
 	player.add_child(player_camera)
 	player_camera.make_current()
 	player.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
-	#spawn_ai()
-	set_physics_process(false)
+	spawn_ai("orc")
 
+func set_data(character:CharacterBody2D) -> void:
+	character.base_attack_cooldown = character_data["attack_cooldown"]
+	character.base_attack_damage = character_data["attack_damage"]
+	character.base_attack_speed = character_data["attack_speed"]
+	character.base_block_duration = character_data["block_duration"]
+	character.base_block_cooldown = character_data["block_cooldown"]
+	character.base_health = character_data["base_health"]
+	character.base_speed = character_data["speed"]
+	character.base_move_cooldown = character_data["move_cooldown"]
+	character.base_kick_stun_duration = character_data["kick_stun"]
+	character.base_kick_cooldown = character_data["kick_cooldown"]
 
+func spawn_ai(team:String) -> void:
+	var character = character_scene.instantiate()
+	set_data(character)
+	character.team = team
+	add_child(character)
+	character.global_position = get_valid_spawn()
+	character.add_to_group(team)
+	character.add_to_group("ai")
+	character.character_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
 
-func spawn_ai() -> void:
-	var orc_ai = character_scene.instantiate()
-	add_child(orc_ai)
-	orc_ai.global_position = player.global_position + Vector2(512, 0)
-	orc_ai.add_to_group("orc")
-	orc_ai.add_to_group("ai")
-	orc_ai.character_sprite.sprite_frames = ResourceLoader.load("res://character/orc/orc_spriteframes.tres")
-	var knight_ai = character_scene.instantiate()
-	add_child(knight_ai)
-	knight_ai.global_position = player.global_position - Vector2(512, 0)
-	knight_ai.add_to_group("knight")
-	knight_ai.add_to_group("ai")
-	knight_ai.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
-	#get_tree().create_timer(5.0).timeout.connect(spawn_ai)
-	
+func get_valid_spawn() -> Vector2:
+	var spawn_pos : Vector2
+	var spawn_area : Rect2 = get_viewport().get_visible_rect()
+	var valid_spawn : bool = false
+	while not valid_spawn:
+		var _spawn_pos : Vector2
+		_spawn_pos.x = randf_range(spawn_area.position.x - 500, spawn_area.end.x + 500)
+		if _spawn_pos.x > spawn_area.position.x and _spawn_pos.x < spawn_area.end.x:
+			continue
+			#trying to spawn just outside the screen
+		_spawn_pos.y = randf_range(spawn_area.position.y, spawn_area.end.y)
+		spawn_pos = _spawn_pos.snapped(Vector2(128, 128))
+		var collision_checker : RayCast2D = RayCast2D.new()
+		collision_checker.global_position = spawn_pos
+		collision_checker.target_position = Vector2(64,64)
+		collision_checker.collide_with_areas = true
+		collision_checker.collision_mask = 1
+		collision_checker.hit_from_inside = true
+		add_child(collision_checker)
+		collision_checker.force_raycast_update()
+		if collision_checker.is_colliding():
+			collision_checker.queue_free()
+			print("Collision detected at: ", spawn_pos)
+			continue
+		
+		else:
+			collision_checker.queue_free()
+			print("No collision at: ", spawn_pos)
+			valid_spawn = true
+	return spawn_pos
+
+#TODO AI turn, move, attack, block, kick	
 func _physics_process(delta: float) -> void:
 	for character in get_tree().get_nodes_in_group("ai"):
 		if not is_instance_valid(character) or character.is_queued_for_deletion() or character.is_in_group("dead"):
 			continue
-
 		# Update facing direction based on target
 		if character.has_target == false or not is_instance_valid(character.target) or character.target.is_in_group("dead"):
 			var target = get_target(character)
@@ -68,8 +97,8 @@ func _physics_process(delta: float) -> void:
 				character.has_target = true
 				get_tree().create_timer(1.0).timeout.connect(character._on_target_timeout)
 				character.target = target
-				if character.stance_cooldown == false:
-					character.update_ai_combat_stance()
+				#if character.stance_cooldown == false:
+				#	character.update_ai_combat_stance()
 
 		var distance_to_target = character.global_position.distance_to(character.target.global_position)
 		var direction_to_target = (character.target.global_position - character.global_position)
@@ -95,10 +124,6 @@ func _physics_process(delta: float) -> void:
 
 func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	var nearest_target = null
-	#if astar == null:
-	#	print("Astar is null")
-	#	SignalBus.emit_signal("request_astar")
-	#	return nearest_target
 	if character.is_in_group("orc"):
 		var potential_targets = get_tree().get_nodes_in_group("knight")
 		for target in potential_targets:
@@ -112,31 +137,3 @@ func get_target(character: CharacterBody2D) -> CharacterBody2D:
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
 					nearest_target = target
 	return nearest_target
-
-#func _on_pathfinding_update(_astar: AStarGrid2D, _ground_layer : TileMapLayer, _map_rect : Rect2i) -> void:
-#	astar = _astar
-#	update_diagonal_mode()
-#	map = _ground_layer
-#	map_rect = _map_rect
-#	print(astar.diagonal_mode, "Astar updated", _astar.diagonal_mode)
-
-#func _get_path(character: CharacterBody2D, target: CharacterBody2D) -> Array[Vector2i]:
-#	if astar == null:
-#		print("Astar is null")
-#		return []
-#	var path = astar.get_id_path(map.local_to_map(character.global_position), map.local_to_map(target.global_position)).slice(1)
-#	return path
-
-#func is_valid_path(pos) -> bool:
-#	var map_position = map.local_to_map(pos)
-#	if map_rect.has_point(map_position) and not astar.is_point_solid(map_position):
-#		return true
-#	return false
-
-#func update_diagonal_mode() -> void:
-#	if astar.diagonal_mode == AStarGrid2D.DIAGONAL_MODE_NEVER:
-#		print("Diagonal mode is set to NEVER")
-#		return
-#	elif astar.diagonal_mode == AStarGrid2D.DIAGONAL_MODE_ALWAYS:
-#		astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
-#		print("Diagonal mode is changed to NEVER")
