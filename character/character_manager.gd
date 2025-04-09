@@ -261,12 +261,20 @@ func turn(direction : int) -> void:
 		return
 	match direction:
 		DIR.NORTH:
-			if rotation_degrees == 0:
+			if rotation_degrees == 0 or rotation_degrees == 360 or facing_direction == 0:
 				move(DIR.NORTH)
 			else:
-				is_turning = true
 				var turn_tween = create_tween()
-				turn_tween.tween_property(self, "rotation_degrees", 0, 0.15)
+				if rotation_degrees == 90 or facing_direction == 1:
+					turn_tween.tween_property(self, "rotation_degrees", 0, 0.15)
+				if rotation_degrees == 270 or facing_direction == 3:
+					turn_tween.tween_property(self, "rotation_degrees", 360, 0.15)
+				else:
+					if team == "knight":
+						turn_tween.tween_property(self, "rotation_degrees", 0, 0.15)
+					else:
+						turn_tween.tween_property(self, "rotation_degrees", 360, 0.15)
+				is_turning = true
 				facing_direction = 0
 				cooldown_time_turn = 0.15
 				set_physics_process(true)
@@ -357,7 +365,7 @@ func get_block_direction() -> int:
 		return (facing_direction - 1) % 4
 
 
-func kicked(stun_duration : float) -> void:
+func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 	#apply duration to all actions
 	stun_particle.emitting = true
 	print("Kicked! Stunned for ", stun_duration, " seconds")
@@ -367,6 +375,8 @@ func kicked(stun_duration : float) -> void:
 	add_child(kicked_label)
 	get_tree().create_timer(1.0).timeout.connect(kicked_label.queue_free)
 	character_sprite.play("hit")
+	_on_block_timeout()
+	attack_windup = false
 	stun_on_cooldown = true
 	cooldown_time_stun = stun_duration
 	attack_on_cooldown = true
@@ -377,11 +387,36 @@ func kicked(stun_duration : float) -> void:
 	cooldown_time_move += stun_duration
 	kick_on_cooldown = true
 	cooldown_time_kick += stun_duration
-	cooldown_time_block_area = 0.0
 	emit_signal("kick_signal", stun_duration)
 	emit_signal("attack_signal", stun_duration)
 	emit_signal("block_signal", stun_duration)
 	emit_signal("move_signal", stun_duration)
+	var _old_rotation = rotation_degrees
+	match enemy_facing_dir:
+		DIR.NORTH:
+			rotation_degrees = 0
+			ray_cast_2d.force_raycast_update()
+			if not ray_cast_2d.is_colliding():
+				global_position += Vector2(0, -128)
+			rotation_degrees = _old_rotation
+		DIR.EAST:
+			rotation_degrees = 90
+			ray_cast_2d.force_raycast_update()
+			if not ray_cast_2d.is_colliding():
+				global_position += Vector2(128, 0)
+			rotation_degrees = _old_rotation
+		DIR.SOUTH:
+			rotation_degrees = 180
+			ray_cast_2d.force_raycast_update()
+			if not ray_cast_2d.is_colliding():
+				global_position += Vector2(0, 128)
+			rotation_degrees = _old_rotation
+		DIR.WEST:
+			rotation_degrees = 270
+			ray_cast_2d.force_raycast_update()
+			if not ray_cast_2d.is_colliding():
+				global_position += Vector2(-128, 0)
+			rotation_degrees = _old_rotation
 	set_physics_process(true)
 
 func hit(attacker:CharacterBody2D) -> void:
@@ -448,7 +483,7 @@ func _on_attack_area_entered(area: Area2D) -> void:
 	if _target is CharacterBody2D:
 		if is_kicking:
 			print("Kicked!")
-			_target.kicked(current_kick_stun_duration)
+			_target.kicked(current_kick_stun_duration, facing_direction)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
 			audio_stream_player_2d.play()
 			strike_shape.set_deferred("disabled" , true)

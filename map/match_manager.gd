@@ -174,19 +174,12 @@ func ai_action(character: CharacterBody2D) -> void:
 					character.prepare_attack()
 				else:
 					character.attack()
-				#character.attack_charge += 0.1
-				#if character.attack_charge >= character.current_attack_speed:
-				#	character.attack()
-				#	character.attack_charge = 0.0
 			elif coin_flip == 1:
 				if character.is_preparing_attack == false:
 					character.swing_from_right = false
 					character.prepare_attack()
-				#character.attack_charge += 0.1
-				#if character.attack_charge >= character.current_attack_speed:
 				else:
 					character.attack()
-					#character.attack_charge = 0.0
 			elif coin_flip == 2:
 				character.block_to_right = true
 				character.block()
@@ -197,41 +190,90 @@ func ai_action(character: CharacterBody2D) -> void:
 				character.kick()
 	elif character.target.global_position.x < character.global_position.x:
 		if coin_flip == 0 or coin_flip == 1:
-			character.turn(character.DIR.WEST)
+			if character.facing_direction == character.DIR.WEST and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.WEST)
 		elif coin_flip == 2:
-			character.turn(character.DIR.NORTH)
+			if character.facing_direction == character.DIR.NORTH and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.NORTH)
 		elif coin_flip == 3:
-			character.turn(character.DIR.SOUTH)
+			if character.facing_direction == character.DIR.SOUTH and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.SOUTH)
 		else:
-			character.turn(character.DIR.EAST)
+			if character.facing_direction == character.DIR.EAST and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.EAST)
 	elif character.target.global_position.x > character.global_position.x:
 		if coin_flip == 0 or coin_flip == 1:
-			character.turn(character.DIR.EAST)
+			if character.facing_direction == character.DIR.EAST and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.EAST)
 		elif coin_flip == 2:
-			character.turn(character.DIR.NORTH)
+			if character.facing_direction == character.DIR.NORTH and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.NORTH)
 		elif coin_flip == 3:
-			character.turn(character.DIR.SOUTH)
+			if character.facing_direction == character.DIR.SOUTH and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.SOUTH)
 		else:
-			character.turn(character.DIR.WEST)
+			if character.facing_direction == character.DIR.WEST and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.WEST)
 	elif character.target.global_position.y < character.global_position.y:
 		if coin_flip == 0 or coin_flip == 1:
-			character.turn(character.DIR.NORTH)
+			if character.facing_direction == character.DIR.NORTH and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.NORTH)
 		elif coin_flip == 2:
-			character.turn(character.DIR.EAST)
+			if character.facing_direction == character.DIR.EAST and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.EAST)
 		elif coin_flip == 3:
-			character.turn(character.DIR.WEST)
+			if character.facing_direction == character.DIR.WEST and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.WEST)
 		else:
-			character.turn(character.DIR.SOUTH)
+			if character.facing_direction == character.DIR.SOUTH and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.SOUTH)
 	elif character.target.global_position.y > character.global_position.y:
 		if coin_flip == 0 or coin_flip == 1:
 			character.turn(character.DIR.SOUTH)
+			if character.facing_direction == character.DIR.SOUTH and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.SOUTH)
 		elif coin_flip == 2:
-			character.turn(character.DIR.EAST)
+			if character.facing_direction == character.DIR.EAST and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.EAST)
 		elif coin_flip == 3:
-			character.turn(character.DIR.WEST)
+			if character.facing_direction == character.DIR.WEST and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.WEST)
 		else:
-			character.turn(character.DIR.NORTH)
-		
+			if character.facing_direction == character.DIR.NORTH and character.ray_cast_2d.is_colliding():
+				pass
+			else:
+				character.turn(character.DIR.NORTH)
+
 
 		
 

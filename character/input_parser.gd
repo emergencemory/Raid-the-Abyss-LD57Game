@@ -20,14 +20,30 @@ func _input(event: InputEvent) -> void:
 	# Handle movement inputs
 	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
 		return
-	elif event.is_action_pressed("move up"):
+	if event.is_action_pressed("move up"):
 		player.turn(player.DIR.NORTH)
-	elif event.is_action_pressed("move down"):
+		held_directions["up"] = true
+		#set_physics_process(true)
+	if event.is_action_pressed("move down"):
 		player.turn(player.DIR.SOUTH)
-	elif event.is_action_pressed("move left"):
+		held_directions["down"] = true
+		#set_physics_process(true)
+	if event.is_action_pressed("move left"):
 		player.turn(player.DIR.WEST)
-	elif event.is_action_pressed("move right"):
+		held_directions["left"] = true
+		#set_physics_process(true)
+	if event.is_action_pressed("move right"):
 		player.turn(player.DIR.EAST)
+		held_directions["right"] = true
+		#set_physics_process(true)
+	if event.is_action_released("move up"):
+		held_directions["up"] = false
+	if event.is_action_released("move down"):
+		held_directions["down"] = false
+	if event.is_action_released("move left"):
+		held_directions["left"] = false
+	if event.is_action_released("move right"):
+		held_directions["right"] = false
 	if event.is_action_pressed("kick"):
 		player.kick()
 	if event.is_action_pressed("block"):
@@ -56,4 +72,19 @@ func calc_relative_mouse_pos() -> bool:
 		return false  # Mouse is to the left
 	else:
 		#print("Mouse is to the right")
-		return true  # Mouse is to the right
+		return true  # Mouse is to the rig
+
+func _physics_process(_delta: float) -> void:
+	# Handle movement logic
+	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
+		return
+	if held_directions["up"]:
+		player.move(player.DIR.NORTH)
+	if held_directions["down"]:
+		player.move(player.DIR.SOUTH)
+	if held_directions["left"]:
+		player.move(player.DIR.WEST)
+	if held_directions["right"]:
+		player.move(player.DIR.EAST)
+	#elif held_directions["up"] == false and held_directions["down"] == false and held_directions["left"] == false and held_directions["right"] == false:
+	#	set_physics_process(false)
