@@ -377,6 +377,8 @@ func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 	character_sprite.play("hit")
 	_on_block_timeout()
 	attack_windup = false
+	is_turning = true
+	cooldown_time_turn += stun_duration
 	stun_on_cooldown = true
 	cooldown_time_stun = stun_duration
 	attack_on_cooldown = true

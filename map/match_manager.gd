@@ -85,6 +85,10 @@ func spawn_ai(team:String) -> void:
 	character.add_to_group("ai")
 	character.character_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
 	if team == "orc":
+		character.block_right_sprite.texture = ResourceLoader.load("res://ui/round_shield_icon.png")
+		character.block_left_sprite.texture = ResourceLoader.load("res://ui/round_shield_icon.png")
+		character.attack_from_right_sprite.texture = ResourceLoader.load("res://ui/axe_icon.png")
+		character.attack_from_left_sprite.texture = ResourceLoader.load("res://ui/axe_icon.png")
 		current_orcs += 1
 	if team == "knight":
 		current_knights += 1
