@@ -1,6 +1,7 @@
 extends CanvasLayer
 class_name Menu
-@onready var resume: Button = $TitleScreen/MainOptions/Resume
+
+@onready var resume: Button = $MenuDivider/TitleScreen/MainOptions/Resume
 
 func _on_start_pressed() -> void:
 	SignalBus.start_game.emit()

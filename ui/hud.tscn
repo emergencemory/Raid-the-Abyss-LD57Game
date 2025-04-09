@@ -130,3 +130,43 @@ text = "Knight Kills : 0"
 [node name="AlliesKilled" type="Label" parent="Progress"]
 layout_mode = 2
 text = "Knight Deaths : 0"
+
+[node name="CombatLog" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(256, 128)
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 40.0
+grow_vertical = 0
+
+[node name="LogLabel" type="Label" parent="CombatLog"]
+layout_mode = 2
+text = "Combat Log"
+
+[node name="Log" type="TextEdit" parent="CombatLog"]
+layout_mode = 2
+size_flags_vertical = 3
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+shortcut_keys_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+empty_selection_clipboard_enabled = false
+scroll_fit_content_width = true
+
+[node name="MinimapContainer" type="SubViewportContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="SubViewport" type="SubViewport" parent="MinimapContainer"]
+transparent_bg = true
+snap_2d_transforms_to_pixel = true
+snap_2d_vertices_to_pixel = true
+size = Vector2i(256, 256)

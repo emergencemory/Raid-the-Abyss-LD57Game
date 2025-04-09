@@ -18,7 +18,9 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	# Handle movement inputs
-	if event.is_action_pressed("move up"):
+	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
+		return
+	elif event.is_action_pressed("move up"):
 		player.turn(player.DIR.NORTH)
 	elif event.is_action_pressed("move down"):
 		player.turn(player.DIR.SOUTH)

@@ -14,15 +14,25 @@ class_name Hud
 @onready var allies: Label = $Progress/Allies
 @onready var allied_kills: Label = $Progress/AlliedKills
 @onready var allies_killed: Label = $Progress/AlliesKilled
+@onready var _log: TextEdit = $CombatLog/Log
+@onready var sub_viewport: SubViewport = $MinimapContainer/SubViewport
 
 var attack_cooldown: float = 0.0
 var block_cooldown: float = 0.0
 var move_cooldown: float = 0.0
 var kick_cooldown: float = 0.0
 
-func _on_health_changed(value: int, base_value: int) -> void:
-	health.max_value = base_value
-	health.value = value
+func _ready() -> void:
+	SignalBus.combat_log_entry.connect(_on_combat_log_entry)
+
+func _on_combat_log_entry(log_entry: String) -> void:
+	_log.text += log_entry + "\n"
+	#TODO auto scroll
+
+func _on_health_changed(value: int, base_value: int, character : CharacterBody2D) -> void:
+	if character.is_player:
+		health.max_value = base_value
+		health.value = value
 
 func _on_attack_cooldown_started(value: float) -> void:
 	attack.value = 0

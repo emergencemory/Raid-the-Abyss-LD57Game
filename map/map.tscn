@@ -45,6 +45,7 @@ position = Vector2(-60, 0)
 script = ExtResource("1_hgrid")
 
 [node name="GroundLayer" type="TileMapLayer" parent="."]
+z_index = -1
 y_sort_enabled = true
 texture_filter = 1
 material = SubResource("ShaderMaterial_i5grx")

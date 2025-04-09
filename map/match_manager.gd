@@ -18,11 +18,19 @@ var your_deaths : int = -1
 var knight_kills : int = 0
 var your_kills : int = 0
 var hud : CanvasLayer
+var player_controller : INPUT_PARSER
 
 signal update_player_hud(layer, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
 
 func _ready() -> void:
 	character_data = GAME_DATA.character_data.duplicate()
+	player_controller = INPUT_PARSER.new()
+	player_controller.name = "InputParser"
+	add_child(player_controller)
+	hud = hud_scene.instantiate()
+	update_player_hud.connect(hud._on_update_player_hud)
+	player_controller.add_child(hud)
+	SignalBus.health_signal.connect(hud._on_health_changed)
 	get_tree().create_timer(1.0).timeout.connect(spawn_player)
 
 func spawn_player() -> void:
@@ -31,21 +39,16 @@ func spawn_player() -> void:
 	player.is_player = true
 	add_child(player)
 	player.add_to_group("knight")
+	player.team = "knight"
 	player.global_position = get_valid_spawn(player)
-	var player_controller = INPUT_PARSER.new()
 	player_controller.player = player
-	player.add_child(player_controller)
-	hud = hud_scene.instantiate()
 	player.attack_signal.connect(hud._on_attack_cooldown_started)
 	player.block_signal.connect(hud._on_block_cooldown_started)
 	player.move_signal.connect(hud._on_move_cooldown_started)
 	player.kick_signal.connect(hud._on_kick_cooldown_started)
-	player.health_signal.connect(hud._on_health_changed)
 	player.killed_by_knight.connect(_on_knight_kill)
 	player.killed_by_orc.connect(_on_orc_kill)
 	player.killed_by_player.connect(_on_player_kill)
-	update_player_hud.connect(hud._on_update_player_hud)
-	player_controller.add_child(hud)
 	var player_camera = Camera2D.new()
 	player_camera.position_smoothing_enabled = true
 	player.add_child(player_camera)
@@ -131,8 +134,18 @@ func get_valid_spawn(character : CharacterBody2D) -> Vector2:
 			valid_spawn = true
 	return spawn_pos
 
-#TODO AI turn, move, attack, block, kick	
-func _physics_process(_delta: float) -> void:
+
+func _physics_process(delta: float) -> void:
+	if current_orcs <= 1 and player != null:
+		layer += 1
+		for i in layer:
+			spawn_ai("orc")
+		update_hud()
+	if current_knights <= 1 and player != null:	
+		for i in layer:
+			spawn_ai("knight")
+		update_hud()
+
 	for character in get_tree().get_nodes_in_group("ai"):
 		if not is_instance_valid(character) or character.is_queued_for_deletion() or character.is_in_group("dead"):
 			continue
@@ -140,31 +153,40 @@ func _physics_process(_delta: float) -> void:
 			var target = get_target(character) # this spawns new waves too
 			if target != null:
 				character.has_target = true
-				get_tree().create_timer(1.0).timeout.connect(character._on_target_timeout)
+				character.cooldown_time_target = 1.0
+				character.set_physics_process(true)
 				character.target = target
 		else:
-			ai_action(character)
+			character.order_ticks -= delta
+			if character.order_ticks > 0:
+				continue
+			else:
+				ai_action(character)
 
 func ai_action(character: CharacterBody2D) -> void:
+	character.order_ticks = 0.5
 	var coin_flip = randi_range(0, 4)
 	character.ray_cast_2d.force_raycast_update()
 	if character.ray_cast_2d.is_colliding() and character.ray_cast_2d.get_collider() == character.target:
 			if coin_flip == 0: 
 				if character.is_preparing_attack == false:
 					character.swing_from_right = true
-				character.prepare_attack()
-				character.attack_charge += 0.1
-				if character.attack_charge >= character.current_attack_speed:
+					character.prepare_attack()
+				else:
 					character.attack()
-					character.attack_charge = 0.0
+				#character.attack_charge += 0.1
+				#if character.attack_charge >= character.current_attack_speed:
+				#	character.attack()
+				#	character.attack_charge = 0.0
 			elif coin_flip == 1:
 				if character.is_preparing_attack == false:
 					character.swing_from_right = false
-				character.prepare_attack()
-				character.attack_charge += 0.1
-				if character.attack_charge >= character.current_attack_speed:
+					character.prepare_attack()
+				#character.attack_charge += 0.1
+				#if character.attack_charge >= character.current_attack_speed:
+				else:
 					character.attack()
-					character.attack_charge = 0.0
+					#character.attack_charge = 0.0
 			elif coin_flip == 2:
 				character.block_to_right = true
 				character.block()
@@ -219,22 +241,12 @@ func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	var nearest_target = null
 	if character.is_in_group("orc"):
 		var potential_targets = get_tree().get_nodes_in_group("knight")
-		if potential_targets.size() == 0:
-			for i in layer:
-				spawn_ai("knight")
-			return nearest_target
 		for target in potential_targets:
 			if not target.is_queued_for_deletion():
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
 					nearest_target = target
 	elif character.is_in_group("knight"):
 		var potential_targets = get_tree().get_nodes_in_group("orc")
-		if potential_targets.size() == 0:
-			layer += 1
-			update_hud()
-			for i in layer:
-				spawn_ai("orc")
-			return nearest_target
 		for target in potential_targets:
 			if not target.is_queued_for_deletion():
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
