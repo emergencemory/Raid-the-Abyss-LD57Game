@@ -107,6 +107,7 @@ func spawn_ai(team:String) -> void:
 	update_hud()
 
 #TODO refine spawning logic
+
 func get_valid_spawn(character : CharacterBody2D) -> Vector2:
 	var spawn_pos : Vector2
 	var spawn_area : Rect2 = player.get_viewport().get_visible_rect()

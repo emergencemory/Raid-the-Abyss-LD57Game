@@ -187,17 +187,17 @@ func _physics_process(delta) -> void:
 	#if cooldown_time_attack <= 0 and cooldown_time_block <= 0 and cooldown_time_turn <= 0 and cooldown_time_move <= 0 and cooldown_time_kick <= 0 and cooldown_time_health_regen <= 0 and cooldown_time_attack_area <= 0 and cooldown_time_block_area <= 0:
 		#print("Cooldowns complete")
 		#set_physics_process(false)
-#TODO visually display level?
+
 func level_up():
 	current_level += 1
 	SignalBus.emit_signal("leveled_up", self, current_level)
 	character_sprite.self_modulate = Color(3, 3, 1, 1)
 	var level_tween = create_tween()
-	level_tween.tween_property(character_sprite, "self_modulate", Color(1, 1, 1, 1), 0.5)
+	level_tween.tween_property(character_sprite, "self_modulate", Color((1 + float(current_level)/10), (1 + float(current_level)/10), 1, 1), 0.5)
 	current_xp_to_next_level = base_xp_to_next_level_multiplier * current_xp_to_next_level
 	base_health += level_up_addition
 	current_health = base_health
-	current_attack_damage += level_up_addition
+	current_attack_damage = (level_up_addition*current_level)/2
 	current_attack_cooldown = current_attack_cooldown / level_up_multiplier
 	current_block_duration = current_block_duration * level_up_multiplier
 	current_block_cooldown = current_block_cooldown / level_up_multiplier
