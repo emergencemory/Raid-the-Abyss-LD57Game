@@ -17,6 +17,8 @@ var input_actions : Dictionary = {
 	"block": "mouse_2",
 	"kick": "E",
 	"menu": "Escape",
+	"zoom in": "mouse_5",
+	"zoom out": "mouse_4",
 	"console": "QuoteLeft"
 }
 

@@ -77,6 +77,7 @@ var is_blocking: bool = false
 var stun_on_cooldown: bool = false
 var cooldown_time_stun: float = 0.0
 var order_ticks : float = 0.0
+var player_camera: Camera2D
 
 signal attack_signal(value: float)
 signal block_signal(value: float)
@@ -226,7 +227,7 @@ func kick() -> void:
 	kick_on_cooldown = true
 	cooldown_time_attack_area = current_attack_speed/2
 	is_kicking = true
-	strike_shape.disabled = false
+	strike_shape.set_deferred("disabled", false)
 	character_sprite.play("kick")
 	emit_signal("kick_signal", current_kick_cooldown)
 	set_physics_process(true)
@@ -325,13 +326,13 @@ func _on_attack_cooldown_timeout() -> void:
 	attack_on_cooldown = false
 
 func _on_attack_timeout() -> void:
-	strike_shape.disabled = true
+	strike_shape.set_deferred("disabled", true)
 	is_attacking = false
 	attack_direction = -1
 	character_sprite.play("idle")
 
 func _on_attack_begin() -> void:
-	strike_shape.disabled = false
+	strike_shape.set_deferred("disabled", false)
 	attack_windup = false
 	cooldown_time_attack_area = current_attack_speed/2
 	is_attacking = true
@@ -353,7 +354,7 @@ func _on_move_cooldown_timeout() -> void:
 
 func _on_kick_timeout() -> void:
 	is_kicking = false
-	strike_shape.disabled = true
+	strike_shape.set_deferred("disabled", true)
 	character_sprite.play("idle")
 
 func _on_kick_cooldown_timeout() -> void:
@@ -467,7 +468,7 @@ func die() -> void:
 	add_to_group("dead")
 	z_index = 0
 	for child in get_children():
-		if not child.name == "BloodParticle":
+		if not child.name == "BloodParticle" or child == player_camera:
 			child.queue_free()
 		else:
 			get_tree().create_timer(10.0).timeout.connect(child.queue_free)

@@ -52,6 +52,7 @@ func spawn_player() -> void:
 	var player_camera = Camera2D.new()
 	#!player_camera.zoom = Vector2(0.3, 0.3)
 	player_camera.position_smoothing_enabled = true
+	player.player_camera = player_camera
 	player.add_child(player_camera)
 	your_deaths += 1
 	update_hud()

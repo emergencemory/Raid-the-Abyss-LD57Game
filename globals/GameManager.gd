@@ -32,16 +32,11 @@ func start_game() -> void:
 	add_child(map)
 	match_manager = MATCH_MGR.new()
 	add_child(match_manager)
-		#TODO TILEMAP : FastNoiseLite generate chunks, wall on left, drop on right, darker as move top, lighter as move bottom
+	#TODO TILEMAP : FastNoiseLite generate chunks, wall on left, drop on right, darker as move top, lighter as move bottom
 	menu.hide()
-	#spawn ai manager
-	#TODO AI : Move, Attack, Retreat
-	#spawn input manager
-	#TODO CHARACTER : Move, Attack, Damaged, Die
-	#spawn match manager
+	
 	#spawn minimap
-	#spawn player
-	#TODO ANIMATION : Bones for weapon, small sprite for the rest in 4 directions
+
 
 func set_volume(value:float) -> void:
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), value)

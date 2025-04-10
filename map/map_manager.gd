@@ -12,10 +12,10 @@ class_name MapManager
 #TODO spawn shadows
 #TODO spawn chunks
 
-var chunk_size: int = 16  # Number of tiles per chunk (e.g., 16x16 tiles)
+var chunk_height: int = 16  # Number of tiles per chunk (e.g., 16x16 tiles)
+var chunk_width: int = 32
 var tile_size: int = 128  # Size of each tile in pixels
-var render_distance: int = 3  # Number of chunks to load around the player
-var loaded_chunks: Dictionary = {}  # Dictionary to track loaded chunks
+var texture_library: Dictionary = {}  # Dictionary to track loaded textures
 var noise : FastNoiseLite   # FastNoiseLite instance
 var player : CharacterBody2D
 
@@ -25,7 +25,7 @@ func _ready() -> void:
 	# Configure FastNoiseLite
 	noise = FastNoiseLite.new()
 	noise.seed = randi()
-	noise.frequency = .3
+	noise.frequency = .2
 
 func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> void:
 	# Spawn blood effect at the player's position
@@ -50,54 +50,76 @@ func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> vo
 		blood_effect.texture = blood_pool
 	var tween = create_tween()
 	tween.tween_property(blood_effect, "scale", Vector2(9,9), 20.0)
-
-#TODO this doesnt work
-func unload_chunks(player_position: Vector2) -> void:
-	var cliff_tiles = cliff_layer.get_used_cells()
-	var wall_tiles = wall_layer.get_used_cells()
-	var ground_tiles = ground_layer.get_used_cells()
-	for tile in cliff_tiles:
-		if abs(tile.x - player_position.x) >= 1000 or abs(tile.y - player_position.y) >= 1000:
-			# Unload the chunk if it's outside the render distance
-			cliff_layer.erase_cell(tile)
-	for tile in wall_tiles:
-		if abs(tile.x - player_position.x) >= 1000 or abs(tile.y - player_position.y) >= 1000:
-			# Unload the chunk if it's outside the render distance
-			wall_layer.erase_cell(tile)
-	for tile in ground_tiles:
-		if abs(tile.x - player_position.x) >= 1000 or abs(tile.y - player_position.y) >= 1000:
-			# Unload the chunk if it's outside the render distance
-			ground_layer.erase_cell(tile)
-
+	texture_library[blood_effect] = ground_layer.local_to_map(blood_effect.position)
 
 func generate_chunk(chunk_position: Vector2) -> void:
 	# Generate terrain for the chunk
 	var tile_pos = wall_layer.local_to_map(chunk_position)
-	for y in range(chunk_size):
-		for x in range(chunk_size):
-			var world_x = tile_pos.x - (chunk_size / 2) + x
-			print("world_x: ", world_x)
-			var world_y = tile_pos.y - (chunk_size / 2) + y
-			print("world_y: ", world_y)
+	for y in range(chunk_height):
+		for x in range(chunk_width):
+			var world_x = tile_pos.x - (chunk_width / 2) + x
+			#print("world_x: ", world_x)
+			var world_y = tile_pos.y - (chunk_height / 2) + y
+			#print("world_y: ", world_y)
 			if wall_layer.get_cell_source_id(Vector2i(world_x, world_y)) != -1:
 				continue
 			if cliff_layer.get_cell_source_id(Vector2i(world_x, world_y)) != -1:
 				continue
 			if ground_layer.get_cell_source_id(Vector2i(world_x, world_y)) != -1:
 				continue
-			if y >= 6 and y <= 10:
-				ground_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
+			#if y >= 6 and y <= 10:
+				#ground_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
+				#continue
+			if y >= 15:
+				cliff_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
+				continue
+			if y <= 2:
+				wall_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
 				continue
 			var value = noise.get_noise_2d(world_x, world_y)*10
-			print(value)
-			if value > 1.5:
-				wall_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
-	#tile_pos = cliff_layer.local_to_map(chunk_position)
-	
-			if value < -1.5:
+			#print(value)
+			if value > 1.5 and y > 10 or value > 5:
 				cliff_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
-	#tile_pos = ground_layer.local_to_map(chunk_position)
-
+			if value < -1.5 and y < 6 or value < -5:
+				wall_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
 			else:
 				ground_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
-	#!unload_chunks(chunk_position)
+	unload_chunks(tile_pos)
+	unload_corpses(tile_pos)
+	unload_textures(tile_pos)
+
+#TODO this doesnt work
+func unload_chunks(player_position: Vector2i) -> void:
+	var cliff_tiles = cliff_layer.get_used_cells()
+	var wall_tiles = wall_layer.get_used_cells()
+	var ground_tiles = ground_layer.get_used_cells()
+	for tile in cliff_tiles:
+		if abs(tile.x - player_position.x) >= 30 or abs(tile.y - player_position.y) >= 30:
+			# Unload the chunk if it's outside the render distance
+			cliff_layer.erase_cell(tile)
+	for tile in wall_tiles:
+		if abs(tile.x - player_position.x) >= 30 or abs(tile.y - player_position.y) >= 30:
+			# Unload the chunk if it's outside the render distance
+			wall_layer.erase_cell(tile)
+	for tile in ground_tiles:
+		if abs(tile.x - player_position.x) >= 30 or abs(tile.y - player_position.y) >= 30:
+			# Unload the chunk if it's outside the render distance
+			ground_layer.erase_cell(tile)
+
+func unload_corpses(player_position: Vector2i) -> void:
+	for corpse in get_tree().get_nodes_in_group("dead"):
+		var corpse_position: Vector2i = ground_layer.local_to_map(corpse.position)
+		var distance: Vector2i = abs(corpse_position - player_position)
+		if distance.x >= 30 or distance.y >= 30:
+			# Unload the corpse if it's outside the render distance
+			corpse.remove_from_group("dead")
+			corpse.queue_free()
+
+func unload_textures(player_position: Vector2i) -> void:
+	for texture in texture_library.keys():
+		var distance: Vector2i = abs(texture_library[texture] - player_position)
+		if distance.x >= 30 or distance.y >= 30:
+			# Unload the texture if it's outside the render distance
+			print("Unloading " ,texture," at: ", texture_library[texture])
+			texture.queue_free()
+			texture_library.erase(texture)

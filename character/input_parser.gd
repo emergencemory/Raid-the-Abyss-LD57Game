@@ -54,6 +54,18 @@ func _input(event: InputEvent) -> void:
 		player.prepare_attack()
 	if event.is_action_released("attack"):
 		player.attack()
+	if event.is_action_pressed("zoom in"):
+		if player.is_queued_for_deletion() or player.is_in_group("dead") or player.player_camera == null:
+			return
+		else:
+			player.player_camera.zoom -= Vector2(0.05, 0.05)
+		#SignalBus.zoom_in.emit()
+	if event.is_action_pressed("zoom out"):
+		if player.is_queued_for_deletion() or player.is_in_group("dead") or player.player_camera == null:
+			return
+		else:
+			player.player_camera.zoom += Vector2(0.05, 0.05)
+		#SignalBus.zoom_out.emit()
 
 func calc_relative_mouse_pos() -> bool:
 	# Calculate the mouse position relative to the player
