@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=4 uid="uid://1e231ub6i8rj"]
+[gd_scene load_steps=16 format=4 uid="uid://1e231ub6i8rj"]
 
 [ext_resource type="Script" uid="uid://twvrtpgkny2o" path="res://map/map_manager.gd" id="1_hgrid"]
 [ext_resource type="Shader" uid="uid://dqijjwnp6q830" path="res://map/ground_shader.tres" id="2_7lyie"]
@@ -6,6 +6,7 @@
 [ext_resource type="Shader" uid="uid://b8q065078roce" path="res://map/wall_shader.tres" id="4_kxmgb"]
 [ext_resource type="Shader" uid="uid://dmal7yf7fwg07" path="res://map/cliff_shader.tres" id="5_e8e5r"]
 [ext_resource type="TileSet" uid="uid://dcfb4o11pmbvl" path="res://map/tileset/cliff_tileset.tres" id="6_112ik"]
+[ext_resource type="AudioStream" uid="uid://cahxteyvxp4l8" path="res://audio/Music/Into the Depths.mp3" id="7_5jdw0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i5grx"]
 shader = ExtResource("2_7lyie")
@@ -38,6 +39,10 @@ sources/0 = SubResource("TileSetAtlasSource_o2xrn")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wnugf"]
 shader = ExtResource("5_e8e5r")
 
+[sub_resource type="AudioStreamPlaylist" id="AudioStreamPlaylist_kxmgb"]
+stream_count = 1
+stream_0 = ExtResource("7_5jdw0")
+
 [node name="Map" type="Node2D"]
 y_sort_enabled = true
 texture_filter = 1
@@ -67,3 +72,7 @@ texture_filter = 1
 material = SubResource("ShaderMaterial_wnugf")
 tile_map_data = PackedByteArray("AAD+/wUAAAAAAAAAAAD+/wYAAAAAAAAAAAD+/wcAAAAAAAAAAAD+/wgAAAAAAAAAAAD//wUAAAAAAAAAAAD//wYAAAAAAAAAAAD//wcAAAAAAAAAAAD//wgAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAABAAUAAAAAAAAAAAABAAYAAAAAAAAAAAABAAcAAAAAAAAAAAABAAgAAAAAAAAAAAACAAUAAAAAAAAAAAACAAYAAAAAAAAAAAACAAcAAAAAAAAAAAACAAgAAAAAAAAAAAADAAUAAAAAAAAAAAADAAYAAAAAAAAAAAADAAcAAAAAAAAAAAADAAgAAAAAAAAAAAAEAAUAAAAAAAAAAAAEAAYAAAAAAAAAAAAEAAcAAAAAAAAAAAAEAAgAAAAAAAAAAAAFAAUAAAAAAAAAAAAFAAYAAAAAAAAAAAAFAAcAAAAAAAAAAAAFAAgAAAAAAAAAAAAGAAUAAAAAAAAAAAAGAAYAAAAAAAAAAAAGAAcAAAAAAAAAAAAGAAgAAAAAAAAAAAAHAAUAAAAAAAAAAAAHAAYAAAAAAAAAAAAHAAcAAAAAAAAAAAAHAAgAAAAAAAAAAAAIAAUAAAAAAAAAAAAIAAYAAAAAAAAAAAAIAAcAAAAAAAAAAAAIAAgAAAAAAAAAAAA=")
 tile_set = ExtResource("6_112ik")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = SubResource("AudioStreamPlaylist_kxmgb")
+autoplay = true

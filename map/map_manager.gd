@@ -8,6 +8,7 @@ class_name MapManager
 @onready var splat_2: Texture = preload("res://map/effects/blood_2.png")
 @onready var splat_3: Texture = preload("res://map/effects/blood_3.png")
 @onready var blood_pool: Texture = preload("res://character/effects/blood.png")
+@onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 
 #TODO spawn shadows
 #TODO spawn chunks
@@ -55,6 +56,7 @@ func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> vo
 func generate_chunk(chunk_position: Vector2) -> void:
 	# Generate terrain for the chunk
 	var tile_pos = wall_layer.local_to_map(chunk_position)
+	audio_stream_player_2d.position = chunk_position
 	for y in range(chunk_height):
 		for x in range(chunk_width):
 			var world_x = tile_pos.x - (chunk_width / 2) + x
