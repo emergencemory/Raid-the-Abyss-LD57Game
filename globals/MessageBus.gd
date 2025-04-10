@@ -8,5 +8,5 @@ signal quit_game
 signal combat_log_entry(log_entry: String)
 signal health_signal(value: int, base_value: int, character : CharacterBody2D)
 signal player_move(player_pos)
-#signal zoom_in
-#signal zoom_out
+signal leveled_up(character : CharacterBody2D, level: int)
+signal request_reinforcements(team: String)

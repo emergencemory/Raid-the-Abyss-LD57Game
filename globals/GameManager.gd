@@ -1,14 +1,10 @@
 extends Node2D
 class_name GameManager
 
-#TODO TRES : GameData
-#TODO MINIMAP : Blip moves around circular abyss
-
 const MATCH_MGR : Script = preload("res://map/match_manager.gd")
 
 @onready var menu_scene : PackedScene = preload("res://ui/menu.tscn")
 @onready var map_scene : PackedScene = preload("res://map/map.tscn")
-
 
 var menu
 var map
@@ -22,7 +18,6 @@ func _ready() -> void:
 	SignalBus.volume_slider_changed.connect(set_volume)
 	SignalBus.quit_game.connect(quit)
 
-
 func start_game() -> void:
 	if map:
 		map.queue_free()
@@ -32,16 +27,12 @@ func start_game() -> void:
 	add_child(map)
 	match_manager = MATCH_MGR.new()
 	add_child(match_manager)
-	#TODO TILEMAP : FastNoiseLite generate chunks, wall on left, drop on right, darker as move top, lighter as move bottom
 	menu.hide()
-	
-	#spawn minimap
 
 
 func set_volume(value:float) -> void:
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), value)
 	print(str(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master"))))
-	#volume_slider
 
 func _on_reset_keybindings() -> void:
 	if menu:
@@ -58,7 +49,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			menu.hide()
 		else:
 			menu.show()
-
 
 func quit() -> void:
 	get_tree().quit()

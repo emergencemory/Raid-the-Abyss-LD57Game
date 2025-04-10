@@ -18,6 +18,7 @@ enum DIR {
 @onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 @onready var strike_shape: CollisionShape2D = $CharacterSprite/HitBox/StrikeShape
 @onready var character_sprite: AnimatedSprite2D = $CharacterSprite
+@onready var shadow_sprite: AnimatedSprite2D = $CharacterSprite/ShadowSprite
 @onready var ray_cast_2d: RayCast2D = $CharacterCollider/RayCast2D
 
 var has_target: bool = false
@@ -78,6 +79,13 @@ var stun_on_cooldown: bool = false
 var cooldown_time_stun: float = 0.0
 var order_ticks : float = 0.0
 var player_camera: Camera2D
+var current_xp: float
+var current_level: int
+var current_xp_to_next_level: float
+var base_xp_to_next_level_multiplier: float
+var level_up_multiplier: float
+var level_up_addition: int
+
 
 signal attack_signal(value: float)
 signal block_signal(value: float)
@@ -86,6 +94,7 @@ signal kick_signal(value: float)
 signal killed_by_player(team: String)
 signal killed_by_knight(team: String)
 signal killed_by_orc(team: String)
+
 
 #TODO team shader
 func _ready() -> void:
@@ -173,9 +182,33 @@ func _physics_process(delta) -> void:
 			cooldown_time_target -= delta
 		else:
 			_on_target_timeout()
+	if current_xp >= current_xp_to_next_level:
+		level_up()
 	#if cooldown_time_attack <= 0 and cooldown_time_block <= 0 and cooldown_time_turn <= 0 and cooldown_time_move <= 0 and cooldown_time_kick <= 0 and cooldown_time_health_regen <= 0 and cooldown_time_attack_area <= 0 and cooldown_time_block_area <= 0:
 		#print("Cooldowns complete")
 		#set_physics_process(false)
+#TODO visually display level?
+func level_up():
+	current_level += 1
+	SignalBus.emit_signal("leveled_up", self, current_level)
+	character_sprite.self_modulate = Color(3, 3, 1, 1)
+	var level_tween = create_tween()
+	level_tween.tween_property(character_sprite, "self_modulate", Color(1, 1, 1, 1), 0.5)
+	current_xp_to_next_level = base_xp_to_next_level_multiplier * current_xp_to_next_level
+	base_health += level_up_addition
+	current_health = base_health
+	current_attack_damage += level_up_addition
+	current_attack_cooldown = current_attack_cooldown / level_up_multiplier
+	current_block_duration = current_block_duration * level_up_multiplier
+	current_block_cooldown = current_block_cooldown / level_up_multiplier
+	#current_speed = current_speed * level_up_multiplier
+	current_move_cooldown = current_move_cooldown / level_up_multiplier
+	current_kick_stun_duration = current_kick_stun_duration * level_up_multiplier
+	current_kick_cooldown = current_kick_cooldown / level_up_multiplier
+	#current_attack_speed = current_attack_speed * level_up_multiplier
+	current_health_regen = current_health_regen / level_up_multiplier
+	if is_player:
+		SignalBus.emit_signal("request_reinforcements", team)
 
 func prepare_attack() -> void:
 	if is_attacking or attack_windup or is_kicking or attack_on_cooldown:# or is_blocking:
@@ -199,8 +232,10 @@ func attack() -> void:
 		return
 	if swing_from_right:
 		character_sprite.play("attack_from_right")
+		shadow_sprite.play("attack_from_right")
 	else:
 		character_sprite.play("attack_from_left")
+		shadow_sprite.play("attack_from_left")
 	cooldown_time_attack_windup = current_attack_speed/2
 	attack_windup = true
 	cooldown_time_attack = current_attack_cooldown
@@ -213,6 +248,7 @@ func block() -> void:
 		return
 	block_direction = get_block_direction()
 	character_sprite.play("block")
+	shadow_sprite.play("block")
 	cooldown_time_block = current_block_cooldown
 	block_on_cooldown = true
 	cooldown_time_block_area = current_block_duration
@@ -229,6 +265,7 @@ func kick() -> void:
 	is_kicking = true
 	strike_shape.set_deferred("disabled", false)
 	character_sprite.play("kick")
+	shadow_sprite.play("kick")
 	emit_signal("kick_signal", current_kick_cooldown)
 	set_physics_process(true)
 	
@@ -240,6 +277,7 @@ func move(direction: int) -> void:
 	if ray_cast_2d.is_colliding() or move_on_cooldown or is_attacking or attack_windup or is_kicking or is_blocking or is_turning or moving:
 		return
 	character_sprite.play("walk")
+	shadow_sprite.play("walk")
 	var previous_position = global_position
 	match direction:
 		DIR.NORTH:
@@ -251,6 +289,7 @@ func move(direction: int) -> void:
 		DIR.WEST:
 			global_position += Vector2(-128, 0)	
 	character_sprite.global_position = previous_position
+	
 	var move_sprite = create_tween()
 	move_sprite.tween_property(character_sprite, "global_position", global_position, (30/current_speed))
 	cooldown_time_moving = 30/current_speed
@@ -318,6 +357,7 @@ func turn(direction : int) -> void:
 func _on_move_timeout() -> void:
 	moving = false
 	character_sprite.play("idle")
+	shadow_sprite.play("idle")
 
 func _on_target_timeout() -> void:
 	has_target = false
@@ -330,6 +370,7 @@ func _on_attack_timeout() -> void:
 	is_attacking = false
 	attack_direction = -1
 	character_sprite.play("idle")
+	shadow_sprite.play("idle")
 
 func _on_attack_begin() -> void:
 	strike_shape.set_deferred("disabled", false)
@@ -356,6 +397,7 @@ func _on_kick_timeout() -> void:
 	is_kicking = false
 	strike_shape.set_deferred("disabled", true)
 	character_sprite.play("idle")
+	shadow_sprite.play("idle")
 
 func _on_kick_cooldown_timeout() -> void:
 	kick_on_cooldown = false
@@ -374,13 +416,10 @@ func get_block_direction() -> int:
 func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 	#apply duration to all actions
 	stun_particle.emitting = true
-	print("Kicked! Stunned for ", stun_duration, " seconds")
-	var kicked_label := Label.new()
-	kicked_label.text = "Kicked! Stunned for " + str(stun_duration) + " seconds"
-	SignalBus.combat_log_entry.emit(kicked_label.text)
-	add_child(kicked_label)
-	get_tree().create_timer(1.0).timeout.connect(kicked_label.queue_free)
+	var log_string : String = "Kicked! Stunned for " + str(stun_duration) + " seconds"
+	SignalBus.combat_log_entry.emit(log_string)
 	character_sprite.play("hit")
+	shadow_sprite.play("hit")
 	_on_block_timeout()
 	_on_attack_timeout()
 	attack_windup = false
@@ -401,35 +440,40 @@ func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 	emit_signal("block_signal", stun_duration)
 	emit_signal("move_signal", stun_duration)
 	var _old_rotation = rotation_degrees
-	match enemy_facing_dir:
-		DIR.NORTH:
-			rotation_degrees = 0
-			ray_cast_2d.force_raycast_update()
-			if not ray_cast_2d.is_colliding():
-				global_position += Vector2(0, -128)
-			rotation_degrees = _old_rotation
-		DIR.EAST:
-			rotation_degrees = 90
-			ray_cast_2d.force_raycast_update()
-			if not ray_cast_2d.is_colliding():
-				global_position += Vector2(128, 0)
-			rotation_degrees = _old_rotation
-		DIR.SOUTH:
-			rotation_degrees = 180
-			ray_cast_2d.force_raycast_update()
-			if not ray_cast_2d.is_colliding():
-				global_position += Vector2(0, 128)
-			rotation_degrees = _old_rotation
-		DIR.WEST:
-			rotation_degrees = 270
-			ray_cast_2d.force_raycast_update()
-			if not ray_cast_2d.is_colliding():
-				global_position += Vector2(-128, 0)
-			rotation_degrees = _old_rotation
+	if not moving:
+		match enemy_facing_dir:
+			DIR.NORTH:
+				rotation_degrees = 0
+				ray_cast_2d.force_raycast_update()
+				if not ray_cast_2d.is_colliding():
+					global_position += Vector2(0, -128)
+				rotation_degrees = _old_rotation
+				character_sprite.global_position = global_position
+			DIR.EAST:
+				rotation_degrees = 90
+				ray_cast_2d.force_raycast_update()
+				if not ray_cast_2d.is_colliding():
+					global_position += Vector2(128, 0)
+				rotation_degrees = _old_rotation
+				character_sprite.global_position = global_position
+			DIR.SOUTH:
+				rotation_degrees = 180
+				ray_cast_2d.force_raycast_update()
+				if not ray_cast_2d.is_colliding():
+					global_position += Vector2(0, 128)
+				rotation_degrees = _old_rotation
+				character_sprite.global_position = global_position
+			DIR.WEST:
+				rotation_degrees = 270
+				ray_cast_2d.force_raycast_update()
+				if not ray_cast_2d.is_colliding():
+					global_position += Vector2(-128, 0)
+				rotation_degrees = _old_rotation
+				character_sprite.global_position = global_position
 	set_physics_process(true)
 
-func hit(attacker:CharacterBody2D) -> void:
-	current_health -= 1
+func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
+	current_health -= attacker.current_attack_damage
 	blood_particle.restart()
 	blood_particle.emitting = true
 	var flash_tween = create_tween()
@@ -437,10 +481,12 @@ func hit(attacker:CharacterBody2D) -> void:
 	flash_tween.tween_property(character_sprite, "self_modulate", Color(1, 1, 1, 1), 0.1)
 	SignalBus.emit_signal("health_signal", current_health, base_health, self)
 	if current_health <= 0:
+		if attacker != null:
+			attacker.current_xp += current_level*100
 		if attacker.is_player and not is_player:
 			emit_signal("killed_by_player", team)
 			SignalBus.combat_log_entry.emit("Player killed " + str(self.team))		
-		if attacker.team == "knight" and not is_player:
+		if attacker.team == "knight" and not attacker.is_player:
 			emit_signal("killed_by_knight", team)
 			SignalBus.combat_log_entry.emit(str(attacker.team) + " killed " + str(self.team))
 		elif attacker.team == "orc" and not is_player:
@@ -451,24 +497,22 @@ func hit(attacker:CharacterBody2D) -> void:
 		die()
 		
 	else:
-		print("Hit! Health: ", current_health)
-		var hit_label := Label.new()
+		var log_string : String
 		if not is_player:
-			hit_label.text = str(self.team) + " hit by " + str(attacker.team) + " for " + str(attacker.current_attack_damage) + " damage!"
+			log_string = str(self.team) + " hit by " + str(attacker.team) + " for " + str(attacker.current_attack_damage) + " damage!"
 		else:
-			hit_label.text = "Player hit by " + str(attacker.team) + " for " + str(attacker.current_attack_damage) + " damage!"
-		SignalBus.combat_log_entry.emit(hit_label.text)
-		add_child(hit_label)
-		get_tree().create_timer(1.0).timeout.connect(hit_label.queue_free)
+			log_string = "Player hit by " + str(attacker.team) + " for " + str(attacker.current_attack_damage) + " damage!"
+		SignalBus.combat_log_entry.emit(log_string)
 		cooldown_time_health_regen = current_health_regen
 		set_physics_process(true)
 		character_sprite.play("hit")
+		shadow_sprite.play("hit")
 
 func die() -> void:
 	add_to_group("dead")
 	z_index = 0
 	for child in get_children():
-		if not child.name == "BloodParticle" or child == player_camera:
+		if not child.name == "BloodParticle" and not child == player_camera:
 			child.queue_free()
 		else:
 			get_tree().create_timer(10.0).timeout.connect(child.queue_free)
@@ -492,43 +536,31 @@ func _on_health_regen_timeout() -> void:
 
 func _on_attack_area_entered(area: Area2D) -> void:
 	var _target = area.get_parent()
+	var log_string : String
 	if _target is CharacterBody2D:
 		if is_kicking:
-			print("Kicked!")
 			_target.kicked(current_kick_stun_duration, facing_direction)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
 			audio_stream_player_2d.play()
 			strike_shape.set_deferred("disabled" , true)
 			return
 		elif _target.attack_direction == attack_direction:
-			print("Parried!" + str(_target.attack_direction) + " " + str(attack_direction))
-			var parry_label := Label.new()
-			parry_label.text = "Player: " + str(_target.is_player) + " " + str(_target.team) + " parried Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
-			SignalBus.combat_log_entry.emit(parry_label.text)
-			add_child(parry_label)
-			get_tree().create_timer(1.0).timeout.connect(parry_label.queue_free)
+			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " parried Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
+			SignalBus.combat_log_entry.emit(log_string)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Metal Armour"
 			audio_stream_player_2d.play()
 			spark_particle.emitting = true
+			_target.hit(self, true)
 		elif _target.block_direction == attack_direction:
-			print("Blocked!" + str(_target.block_direction) + " " + str(attack_direction))
-			var block_label := Label.new()
-			block_label.text = "Player: " + str(_target.is_player) + " " + str(_target.team) + " blocked Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
-			SignalBus.combat_log_entry.emit(block_label.text)
-			add_child(block_label)
-			get_tree().create_timer(1.0).timeout.connect(block_label.queue_free)
+			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " blocked Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
+			SignalBus.combat_log_entry.emit(log_string)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Wooden"
 			audio_stream_player_2d.play()
 			spark_particle.emitting = true
 		else:
-			print("Hit!")
-			_target.hit(self)
+			_target.hit(self, false)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
 			audio_stream_player_2d.play()
 	else:
-		var missed_label := Label.new()
-		missed_label.text = str(self) + "Missed!"
-		SignalBus.combat_log_entry.emit(missed_label.text)
-		add_child(missed_label)
-		get_tree().create_timer(1.0).timeout.connect(missed_label.queue_free)
-		print("Attack missed!")
+		log_string = str(self) + "Missed!"
+		SignalBus.combat_log_entry.emit(log_string)

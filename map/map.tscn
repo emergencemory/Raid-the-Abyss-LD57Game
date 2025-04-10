@@ -1,8 +1,9 @@
-[gd_scene load_steps=16 format=4 uid="uid://1e231ub6i8rj"]
+[gd_scene load_steps=19 format=4 uid="uid://1e231ub6i8rj"]
 
 [ext_resource type="Script" uid="uid://twvrtpgkny2o" path="res://map/map_manager.gd" id="1_hgrid"]
 [ext_resource type="Shader" uid="uid://dqijjwnp6q830" path="res://map/ground_shader.tres" id="2_7lyie"]
 [ext_resource type="Texture2D" uid="uid://b52tpq3b6cays" path="res://map/tileset/0000.png" id="3_5jdw0"]
+[ext_resource type="Texture2D" uid="uid://d4ht32cdwy48h" path="res://map/tileset/shadow.png" id="4_e8e5r"]
 [ext_resource type="Shader" uid="uid://b8q065078roce" path="res://map/wall_shader.tres" id="4_kxmgb"]
 [ext_resource type="Shader" uid="uid://dmal7yf7fwg07" path="res://map/cliff_shader.tres" id="5_e8e5r"]
 [ext_resource type="TileSet" uid="uid://dcfb4o11pmbvl" path="res://map/tileset/cliff_tileset.tres" id="6_112ik"]
@@ -20,6 +21,15 @@ texture_region_size = Vector2i(144, 256)
 tile_size = Vector2i(128, 128)
 navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_t8ndx")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_112ik"]
+texture = ExtResource("4_e8e5r")
+texture_region_size = Vector2i(512, 512)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_i5grx"]
+tile_size = Vector2i(128, 128)
+sources/0 = SubResource("TileSetAtlasSource_112ik")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_k8tny"]
 shader = ExtResource("4_kxmgb")
@@ -56,6 +66,11 @@ texture_filter = 1
 material = SubResource("ShaderMaterial_i5grx")
 tile_map_data = PackedByteArray("AAAAAAEAAAAAAAAAAAABAAEAAAAAAAAAAAACAAEAAAAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAAAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAAAAAAAAAAAGAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAADAAAAAAAAAAAAAAACAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAIAAAAAAAAAAAAFAAIAAAAAAAAAAAAEAAIAAAAAAAAAAAADAAIAAAAAAAAAAAACAAIAAAAAAAAAAAABAAIAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAGAAQAAAAAAAAAAAAFAAQAAAAAAAAAAAAEAAQAAAAAAAAAAAADAAQAAAAAAAAAAAACAAQAAAAAAAAAAAABAAQAAAAAAAAAAAAAAAQAAAAAAAAAAAD+/wAAAAAAAAAAAAD+/wEAAAAAAAAAAAD+/wIAAAAAAAAAAAD+/wMAAAAAAAAAAAD+/wQAAAAAAAAAAAD//wAAAAAAAAAAAAD//wEAAAAAAAAAAAD//wIAAAAAAAAAAAD//wMAAAAAAAAAAAD//wQAAAAAAAAAAAAHAAAAAAAAAAAAAAAHAAEAAAAAAAAAAAAHAAIAAAAAAAAAAAAHAAMAAAAAAAAAAAAHAAQAAAAAAAAAAAAIAAAAAAAAAAAAAAAIAAEAAAAAAAAAAAAIAAIAAAAAAAAAAAAIAAMAAAAAAAAAAAAIAAQAAAAAAAAAAAA=")
 tile_set = SubResource("TileSet_lct0g")
+
+[node name="ShadowLayer" type="TileMapLayer" parent="."]
+self_modulate = Color(0.3, 0.3, 0.3, 0.4)
+tile_map_data = PackedByteArray("AAD+//7/AAAAAAAAAAD///7/AAAAAAAAAAAAAP7/AAAAAAAAAAA=")
+tile_set = SubResource("TileSet_i5grx")
 
 [node name="WallLayer" type="TileMapLayer" parent="."]
 z_index = 1

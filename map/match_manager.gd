@@ -31,6 +31,7 @@ func _ready() -> void:
 	update_player_hud.connect(hud._on_update_player_hud)
 	player_controller.add_child(hud)
 	SignalBus.health_signal.connect(hud._on_health_changed)
+	SignalBus.request_reinforcements.connect(spawn_ai)
 	get_tree().create_timer(1.0).timeout.connect(spawn_player)
 
 func spawn_player() -> void:
@@ -50,7 +51,6 @@ func spawn_player() -> void:
 	player.killed_by_orc.connect(_on_orc_kill)
 	player.killed_by_player.connect(_on_player_kill)
 	var player_camera = Camera2D.new()
-	#!player_camera.zoom = Vector2(0.3, 0.3)
 	player_camera.position_smoothing_enabled = true
 	player.player_camera = player_camera
 	player.add_child(player_camera)
@@ -58,6 +58,7 @@ func spawn_player() -> void:
 	update_hud()
 	player_camera.make_current()
 	player.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
+	player.shadow_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
 	spawn_ai("orc")
 	spawn_ai("knight")
 
@@ -73,6 +74,12 @@ func set_data(character:CharacterBody2D) -> void:
 	character.base_kick_stun_duration = character_data["kick_stun"]
 	character.base_kick_cooldown = character_data["kick_cooldown"]
 	character.base_health_regen = character_data["health_regen"]
+	character.current_xp = character_data["base_xp"]
+	character.current_xp_to_next_level = character_data["base_xp_to_next_level"]
+	character.base_xp_to_next_level_multiplier = character_data["base_xp_to_next_level_multiplier"]
+	character.current_level = character_data["base_level"]
+	character.level_up_multiplier = character_data["level_up_multiplier"]
+	character.level_up_addition = character_data["level_up_addition"]
 
 func spawn_ai(team:String) -> void:
 	var character = character_scene.instantiate()
@@ -86,6 +93,7 @@ func spawn_ai(team:String) -> void:
 	character.global_position = get_valid_spawn(character)
 	character.add_to_group("ai")
 	character.character_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
+	character.shadow_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
 	if team == "orc":
 		character.block_right_sprite.texture = ResourceLoader.load("res://ui/round_shield_icon.png")
 		character.block_left_sprite.texture = ResourceLoader.load("res://ui/round_shield_icon.png")
@@ -94,8 +102,11 @@ func spawn_ai(team:String) -> void:
 		current_orcs += 1
 	if team == "knight":
 		current_knights += 1
+	for i in (randi_range(0, layer/2)):
+		character.level_up()
 	update_hud()
 
+#TODO refine spawning logic
 func get_valid_spawn(character : CharacterBody2D) -> Vector2:
 	var spawn_pos : Vector2
 	var spawn_area : Rect2 = player.get_viewport().get_visible_rect()
@@ -288,15 +299,19 @@ func ai_action(character: CharacterBody2D) -> void:
 func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	var nearest_target = null
 	if character.is_in_group("orc"):
+		#current_knights = 0
 		var potential_targets = get_tree().get_nodes_in_group("knight")
 		for target in potential_targets:
 			if not target.is_queued_for_deletion():
+				#current_knights += 1
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
 					nearest_target = target
 	elif character.is_in_group("knight"):
+		#current_orcs = 0
 		var potential_targets = get_tree().get_nodes_in_group("orc")
 		for target in potential_targets:
 			if not target.is_queued_for_deletion():
+				#current_orcs += 1
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
 					nearest_target = target
 	return nearest_target

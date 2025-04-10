@@ -16,6 +16,7 @@ class_name Hud
 @onready var allies_killed: Label = $Progress/AlliesKilled
 @onready var _log: TextEdit = $CombatLog/Log
 @onready var sub_viewport: SubViewport = $MinimapContainer/SubViewport
+@onready var level: Label = $Progress/Level
 
 var attack_cooldown: float = 0.0
 var block_cooldown: float = 0.0
@@ -24,6 +25,15 @@ var kick_cooldown: float = 0.0
 
 func _ready() -> void:
 	SignalBus.combat_log_entry.connect(_on_combat_log_entry)
+	SignalBus.leveled_up.connect(_on_level_up)
+
+func _on_level_up(character: CharacterBody2D, _level: int) -> void:
+	_log.text += character.name + " leveled up to level " + str(_level) + "\n"
+	if character.is_player:
+		_on_health_changed(character.current_health, character.base_health, character)
+		level.text = "Character Level : " + str(_level)
+
+
 
 func _on_combat_log_entry(log_entry: String) -> void:
 	_log.text += log_entry + "\n"

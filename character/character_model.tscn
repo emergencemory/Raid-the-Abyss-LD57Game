@@ -107,6 +107,7 @@ randomness = 0.1
 process_material = SubResource("ParticleProcessMaterial_k67b1")
 
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
+show_behind_parent = true
 texture_filter = 1
 sprite_frames = ExtResource("2_chf46")
 animation = &"attack_from_right"
@@ -120,6 +121,13 @@ collision_mask = 2
 position = Vector2(-1, -11)
 shape = SubResource("CircleShape2D_chf46")
 disabled = true
+
+[node name="ShadowSprite" type="AnimatedSprite2D" parent="CharacterSprite"]
+self_modulate = Color(0.2, 0.2, 0.2, 0.4)
+show_behind_parent = true
+sprite_frames = ExtResource("2_chf46")
+animation = &"attack_from_right"
+offset = Vector2(-7, 7)
 
 [node name="CharacterCollider" type="CollisionShape2D" parent="."]
 light_mask = 0

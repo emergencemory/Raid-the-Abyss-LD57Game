@@ -107,6 +107,10 @@ offset_bottom = 185.0
 layout_mode = 2
 text = "Layer : 1"
 
+[node name="Level" type="Label" parent="Progress"]
+layout_mode = 2
+text = "Character Level : 1"
+
 [node name="Enemies" type="Label" parent="Progress"]
 layout_mode = 2
 text = "Current Orcs : 0"
