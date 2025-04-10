@@ -10,6 +10,7 @@ var menu
 var map
 var match_manager
 
+
 #TODO console commands to kill all and nuke tilemap
 
 func _ready() -> void:
@@ -51,6 +52,13 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			menu.hide()
 		else:
 			menu.show()
+	elif event.is_action_pressed("console"):
+		if menu.dev_console.visible:
+			menu.dev_console.hide()
+		else:
+			menu.show()
+			menu.dev_console.show()
 
 func quit() -> void:
 	get_tree().quit()
+

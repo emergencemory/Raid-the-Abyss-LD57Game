@@ -32,7 +32,22 @@ func _ready() -> void:
 	player_controller.add_child(hud)
 	SignalBus.health_signal.connect(hud._on_health_changed)
 	SignalBus.request_reinforcements.connect(spawn_ai)
+	SignalBus.console_kill_ai.connect(_on_console_kill_ai)
 	get_tree().create_timer(1.0).timeout.connect(spawn_player)
+
+func _on_console_kill_ai() -> void:
+	for character in get_tree().get_nodes_in_group("ai"):
+		if character != null and not character.is_queued_for_deletion():
+			print("Killing AI: ", character.name)
+			if character.is_in_group("orc"):
+				current_orcs -= 1
+			elif character.is_in_group("knight"):
+				current_knights -= 1
+			character.queue_free()
+		else:
+			print("Invalid character for deletion")
+	
+	update_hud()
 
 func spawn_player() -> void:
 	player = character_scene.instantiate()

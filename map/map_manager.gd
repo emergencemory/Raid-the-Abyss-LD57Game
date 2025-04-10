@@ -22,11 +22,26 @@ var player : CharacterBody2D
 func _ready() -> void:
 	SignalBus.health_signal.connect(spawn_blood)
 	SignalBus.player_move.connect(generate_chunk)
+	SignalBus.console_flush_map.connect(_on_flush_map)
 	# Configure FastNoiseLite
 	noise = FastNoiseLite.new()
 	noise.seed = randi()
 	noise.frequency = .2
 	spawn_shadows()
+
+func _on_flush_map() -> void:
+	var cliff_tiles = cliff_layer.get_used_cells()
+	var wall_tiles = wall_layer.get_used_cells()
+	var ground_tiles = ground_layer.get_used_cells()
+	var shadow_tiles = shadow_layer.get_used_cells()
+	for tile in shadow_tiles:
+		shadow_layer.erase_cell(tile)
+	for tile in cliff_tiles:
+		cliff_layer.erase_cell(tile)
+	for tile in wall_tiles:
+		wall_layer.erase_cell(tile)
+	for tile in ground_tiles:
+		ground_layer.erase_cell(tile)
 
 func spawn_shadows() -> void:
 	var wall_tiles = wall_layer.get_used_cells()

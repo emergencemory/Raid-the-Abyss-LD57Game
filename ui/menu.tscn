@@ -200,6 +200,28 @@ texture = ExtResource("6_oumb1")
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="DevConsole" type="VBoxContainer" parent="MenuDivider/Controls"]
+layout_mode = 2
+
+[node name="ConsoleLabel" type="Label" parent="MenuDivider/Controls/DevConsole"]
+layout_mode = 2
+text = "Dev Console Commands : kill_ai(), flush_map()"
+
+[node name="ConsoleHistory" type="TextEdit" parent="MenuDivider/Controls/DevConsole"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Dev Console History"
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+shortcut_keys_enabled = false
+wrap_mode = 1
+
+[node name="ConsoleInput" type="LineEdit" parent="MenuDivider/Controls/DevConsole"]
+layout_mode = 2
+placeholder_text = "Command Input"
+
 [node name="ControlsLabel" type="Label" parent="MenuDivider/Controls"]
 layout_mode = 2
 size_flags_horizontal = 4

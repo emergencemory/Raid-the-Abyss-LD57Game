@@ -144,9 +144,17 @@ offset_top = -40.0
 offset_right = 40.0
 grow_vertical = 0
 
-[node name="LogLabel" type="Label" parent="CombatLog"]
+[node name="LabelContainer" type="HBoxContainer" parent="CombatLog"]
+layout_mode = 2
+
+[node name="LogLabel" type="Label" parent="CombatLog/LabelContainer"]
 layout_mode = 2
 text = "Combat Log"
+
+[node name="CheckBox" type="CheckBox" parent="CombatLog/LabelContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Auto Scroll"
 
 [node name="Log" type="TextEdit" parent="CombatLog"]
 layout_mode = 2

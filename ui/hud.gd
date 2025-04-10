@@ -17,15 +17,18 @@ class_name Hud
 @onready var _log: TextEdit = $CombatLog/Log
 @onready var sub_viewport: SubViewport = $MinimapContainer/SubViewport
 @onready var level: Label = $Progress/Level
+@onready var check_box: CheckBox = $CombatLog/LabelContainer/CheckBox
 
 var attack_cooldown: float = 0.0
 var block_cooldown: float = 0.0
 var move_cooldown: float = 0.0
 var kick_cooldown: float = 0.0
+var auto_scroll: bool = true
 
 func _ready() -> void:
 	SignalBus.combat_log_entry.connect(_on_combat_log_entry)
 	SignalBus.leveled_up.connect(_on_level_up)
+	check_box.toggled.connect(_on_check_box_toggled)
 
 func _on_level_up(character: CharacterBody2D, _level: int) -> void:
 	_log.text += character.name + " leveled up to level " + str(_level) + "\n"
@@ -33,11 +36,19 @@ func _on_level_up(character: CharacterBody2D, _level: int) -> void:
 		_on_health_changed(character.current_health, character.base_health, character)
 		level.text = "Character Level : " + str(_level)
 
-
+func _on_check_box_toggled() -> void:
+	if check_box.toggled_on:
+		auto_scroll = true
+		_log.scroll_vertical = _log.get_line_count()
+	else:
+		auto_scroll = false
 
 func _on_combat_log_entry(log_entry: String) -> void:
 	_log.text += log_entry + "\n"
-	#TODO auto scroll
+	if auto_scroll:
+		_log.scroll_vertical = _log.get_line_count()
+		#print(str(_log.get_first_visible_line()), " : ", str(_log.get_line_count()), " : ", str(_log.get_visible_line_count()))
+	
 
 func _on_health_changed(value: int, base_value: int, character : CharacterBody2D) -> void:
 	if character.is_player:
