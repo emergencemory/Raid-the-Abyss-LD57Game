@@ -50,6 +50,7 @@ func spawn_player() -> void:
 	player.killed_by_orc.connect(_on_orc_kill)
 	player.killed_by_player.connect(_on_player_kill)
 	var player_camera = Camera2D.new()
+	#!player_camera.zoom = Vector2(0.3, 0.3)
 	player_camera.position_smoothing_enabled = true
 	player.add_child(player_camera)
 	your_deaths += 1

@@ -35,7 +35,7 @@ void fragment() {
 
 }
 "
-graph_offset = Vector2(350.111, 71.7994)
+graph_offset = Vector2(96.3164, 133.657)
 mode = 1
 flags/light_only = false
 nodes/fragment/2/node = SubResource("VisualShaderNodeColorFunc_suslc")

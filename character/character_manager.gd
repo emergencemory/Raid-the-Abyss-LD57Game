@@ -172,8 +172,8 @@ func _physics_process(delta) -> void:
 			cooldown_time_target -= delta
 		else:
 			_on_target_timeout()
-	if cooldown_time_attack <= 0 and cooldown_time_block <= 0 and cooldown_time_turn <= 0 and cooldown_time_move <= 0 and cooldown_time_kick <= 0 and cooldown_time_health_regen <= 0 and cooldown_time_attack_area <= 0 and cooldown_time_block_area <= 0:
-		print("Cooldowns complete")
+	#if cooldown_time_attack <= 0 and cooldown_time_block <= 0 and cooldown_time_turn <= 0 and cooldown_time_move <= 0 and cooldown_time_kick <= 0 and cooldown_time_health_regen <= 0 and cooldown_time_attack_area <= 0 and cooldown_time_block_area <= 0:
+		#print("Cooldowns complete")
 		#set_physics_process(false)
 
 func prepare_attack() -> void:
@@ -232,6 +232,9 @@ func kick() -> void:
 	set_physics_process(true)
 	
 func move(direction: int) -> void:
+	if direction != facing_direction:
+		turn(direction)
+		return
 	ray_cast_2d.force_raycast_update()
 	if ray_cast_2d.is_colliding() or move_on_cooldown or is_attacking or attack_windup or is_kicking or is_blocking or is_turning or moving:
 		return
@@ -253,7 +256,9 @@ func move(direction: int) -> void:
 	moving = true
 	cooldown_time_move = current_move_cooldown
 	move_on_cooldown = true
-	emit_signal("move_signal", current_move_cooldown)
+	if is_player:
+		emit_signal("move_signal", current_move_cooldown)
+		SignalBus.emit_signal("player_move", position)
 	set_physics_process(true)
 
 func turn(direction : int) -> void:
@@ -376,6 +381,7 @@ func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 	get_tree().create_timer(1.0).timeout.connect(kicked_label.queue_free)
 	character_sprite.play("hit")
 	_on_block_timeout()
+	_on_attack_timeout()
 	attack_windup = false
 	is_turning = true
 	cooldown_time_turn += stun_duration
@@ -425,6 +431,9 @@ func hit(attacker:CharacterBody2D) -> void:
 	current_health -= 1
 	blood_particle.restart()
 	blood_particle.emitting = true
+	var flash_tween = create_tween()
+	character_sprite.self_modulate = Color(3, 3, 3, 1)
+	flash_tween.tween_property(character_sprite, "self_modulate", Color(1, 1, 1, 1), 0.1)
 	SignalBus.emit_signal("health_signal", current_health, base_health, self)
 	if current_health <= 0:
 		if attacker.is_player and not is_player:

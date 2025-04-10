@@ -16,14 +16,16 @@ var chunk_size: int = 16  # Number of tiles per chunk (e.g., 16x16 tiles)
 var tile_size: int = 128  # Size of each tile in pixels
 var render_distance: int = 3  # Number of chunks to load around the player
 var loaded_chunks: Dictionary = {}  # Dictionary to track loaded chunks
-
-var noise = FastNoiseLite.new()  # FastNoiseLite instance
+var noise : FastNoiseLite   # FastNoiseLite instance
+var player : CharacterBody2D
 
 func _ready() -> void:
 	SignalBus.health_signal.connect(spawn_blood)
+	SignalBus.player_move.connect(generate_chunk)
 	# Configure FastNoiseLite
+	noise = FastNoiseLite.new()
 	noise.seed = randi()
-	noise.frequency = 0.01
+	noise.frequency = .3
 
 func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> void:
 	# Spawn blood effect at the player's position
@@ -49,55 +51,53 @@ func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> vo
 	var tween = create_tween()
 	tween.tween_property(blood_effect, "scale", Vector2(9,9), 20.0)
 
-	
+#TODO this doesnt work
+func unload_chunks(player_position: Vector2) -> void:
+	var cliff_tiles = cliff_layer.get_used_cells()
+	var wall_tiles = wall_layer.get_used_cells()
+	var ground_tiles = ground_layer.get_used_cells()
+	for tile in cliff_tiles:
+		if abs(tile.x - player_position.x) >= 1000 or abs(tile.y - player_position.y) >= 1000:
+			# Unload the chunk if it's outside the render distance
+			cliff_layer.erase_cell(tile)
+	for tile in wall_tiles:
+		if abs(tile.x - player_position.x) >= 1000 or abs(tile.y - player_position.y) >= 1000:
+			# Unload the chunk if it's outside the render distance
+			wall_layer.erase_cell(tile)
+	for tile in ground_tiles:
+		if abs(tile.x - player_position.x) >= 1000 or abs(tile.y - player_position.y) >= 1000:
+			# Unload the chunk if it's outside the render distance
+			ground_layer.erase_cell(tile)
 
-func update_chunks(player_position: Vector2) -> void:
-	# Calculate the player's current chunk position
-	var player_chunk = Vector2(
-		floor(player_position.x / (chunk_size * tile_size)),
-		floor(player_position.y / (chunk_size * tile_size))
-	)
-
-	# Load chunks within the render distance
-	for x in range(player_chunk.x - render_distance, player_chunk.x + render_distance + 1):
-		for y in range(player_chunk.y - render_distance, player_chunk.y + render_distance + 1):
-			var chunk_position = Vector2(x, y)
-			if not loaded_chunks.has(chunk_position):
-				generate_chunk(chunk_position)
-
-	# Unload chunks outside the render distance
-	#for chunk_position in loaded_chunks.keys():
-		#if chunk_position.distance_to(player_chunk) > render_distance:
-		#	unload_chunk(chunk_position)
 
 func generate_chunk(chunk_position: Vector2) -> void:
 	# Generate terrain for the chunk
-	var chunk_origin = chunk_position * chunk_size * tile_size
-	for x in range(chunk_size):
-		for y in range(chunk_size):
-			var world_position = chunk_origin + Vector2(x * tile_size, y * tile_size)
-			var noise_value = noise.get_noise_2d(world_position.x, world_position.y)
-			
-			var source_id = 0  # Tile ID for the wall layer
-			var atlas_coords = Vector2i(0, 0)  # Atlas coordinates for the wall layer
-			# Map noise values to layers
-			if noise_value > 0.5:
-				wall_layer.set_cell(world_position, source_id, atlas_coords)  # Wall tile
-			elif noise_value > -0.5:
-				ground_layer.set_cell(world_position, source_id, atlas_coords)  # Ground tile
+	var tile_pos = wall_layer.local_to_map(chunk_position)
+	for y in range(chunk_size):
+		for x in range(chunk_size):
+			var world_x = tile_pos.x - (chunk_size / 2) + x
+			print("world_x: ", world_x)
+			var world_y = tile_pos.y - (chunk_size / 2) + y
+			print("world_y: ", world_y)
+			if wall_layer.get_cell_source_id(Vector2i(world_x, world_y)) != -1:
+				continue
+			if cliff_layer.get_cell_source_id(Vector2i(world_x, world_y)) != -1:
+				continue
+			if ground_layer.get_cell_source_id(Vector2i(world_x, world_y)) != -1:
+				continue
+			if y >= 6 and y <= 10:
+				ground_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
+				continue
+			var value = noise.get_noise_2d(world_x, world_y)*10
+			print(value)
+			if value > 1.5:
+				wall_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
+	#tile_pos = cliff_layer.local_to_map(chunk_position)
+	
+			if value < -1.5:
+				cliff_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
+	#tile_pos = ground_layer.local_to_map(chunk_position)
+
 			else:
-				cliff_layer.set_cell(world_position, source_id, atlas_coords)  # Cliff tile
-
-	# Mark the chunk as loaded
-	loaded_chunks[chunk_position] = true
-
-#func unload_chunk(chunk_position: Vector2) -> void:
-	# Clear tiles in the chunk
-#	for x in range(chunk_size):
-#		for y in range(chunk_size):
-#			wall_layer.set_cell(x + chunk_position.x * chunk_size, y + chunk_position.y * chunk_size, -1)  # Clear wall tile
-#			ground_layer.set_cell(x + chunk_position.x * chunk_size, y + chunk_position.y * chunk_size, -1)  # Clear ground tile
-#			cliff_layer.set_cell(x + chunk_position.x * chunk_size, y + chunk_position.y * chunk_size, -1)  # Clear cliff tile
-#
-#	# Remove the chunk from the loaded chunks dictionary
-#	loaded_chunks.erase(chunk_position)
+				ground_layer.set_cell(Vector2i(world_x, world_y), 0, Vector2i(0,0))
+	#!unload_chunks(chunk_position)
