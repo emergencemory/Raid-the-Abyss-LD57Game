@@ -240,8 +240,9 @@ func attack() -> void:
 	attack_windup = true
 	cooldown_time_attack = current_attack_cooldown
 	attack_on_cooldown = true
-	set_physics_process(true)
-	emit_signal("attack_signal", current_attack_cooldown)
+	#set_physics_process(true)
+	if is_player:
+		emit_signal("attack_signal", current_attack_cooldown)
 
 func block() -> void:
 	if block_on_cooldown or is_attacking or moving or is_turning or attack_windup or is_kicking or is_blocking:
@@ -253,8 +254,9 @@ func block() -> void:
 	block_on_cooldown = true
 	cooldown_time_block_area = current_block_duration
 	is_blocking = true
-	set_physics_process(true)
-	emit_signal("block_signal", current_block_cooldown)
+	#set_physics_process(true)
+	if is_player:
+		emit_signal("block_signal", current_block_cooldown)
 
 func kick() -> void:
 	if moving or is_attacking or is_turning or is_blocking or attack_windup or is_turning or is_kicking or kick_on_cooldown:
@@ -266,8 +268,9 @@ func kick() -> void:
 	strike_shape.set_deferred("disabled", false)
 	character_sprite.play("kick")
 	shadow_sprite.play("kick")
-	emit_signal("kick_signal", current_kick_cooldown)
-	set_physics_process(true)
+	if is_player:
+		emit_signal("kick_signal", current_kick_cooldown)
+	#set_physics_process(true)
 	
 func move(direction: int) -> void:
 	if direction != facing_direction:
@@ -299,7 +302,7 @@ func move(direction: int) -> void:
 	if is_player:
 		emit_signal("move_signal", current_move_cooldown)
 		SignalBus.emit_signal("player_move", position)
-	set_physics_process(true)
+	#set_physics_process(true)
 
 func turn(direction : int) -> void:
 	if is_attacking or moving or is_blocking or attack_windup or is_kicking:
@@ -322,7 +325,7 @@ func turn(direction : int) -> void:
 				is_turning = true
 				facing_direction = 0
 				cooldown_time_turn = 0.15
-				set_physics_process(true)
+				#set_physics_process(true)
 		DIR.EAST:
 			if rotation_degrees == 90:
 				move(DIR.EAST)
@@ -332,7 +335,7 @@ func turn(direction : int) -> void:
 				turn_tween.tween_property(self, "rotation_degrees", 90, 0.15)
 				facing_direction = 1
 				cooldown_time_turn = 0.15
-				set_physics_process(true)
+				#set_physics_process(true)
 		DIR.SOUTH:
 			if rotation_degrees == 180:
 				move(DIR.SOUTH)
@@ -342,7 +345,7 @@ func turn(direction : int) -> void:
 				turn_tween.tween_property(self, "rotation_degrees", 180, 0.15)
 				facing_direction = 2
 				cooldown_time_turn = 0.15
-				set_physics_process(true)
+				#set_physics_process(true)
 		DIR.WEST:
 			if rotation_degrees == 270:
 				move(DIR.WEST)
@@ -352,7 +355,7 @@ func turn(direction : int) -> void:
 				turn_tween.tween_property(self, "rotation_degrees", 270, 0.15)
 				facing_direction = 3
 				cooldown_time_turn = 0.15
-				set_physics_process(true)
+				#set_physics_process(true)
 
 func _on_move_timeout() -> void:
 	moving = false
@@ -377,7 +380,7 @@ func _on_attack_begin() -> void:
 	attack_windup = false
 	cooldown_time_attack_area = current_attack_speed/2
 	is_attacking = true
-	set_physics_process(true)
+	#set_physics_process(true)
 
 
 func _on_block_timeout() -> void:
@@ -412,7 +415,7 @@ func get_block_direction() -> int:
 		block_left_sprite.show()
 		return (facing_direction - 1) % 4
 
-
+#TODO kick off cliff
 func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 	#apply duration to all actions
 	stun_particle.emitting = true
@@ -435,10 +438,11 @@ func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 	cooldown_time_move += stun_duration
 	kick_on_cooldown = true
 	cooldown_time_kick += stun_duration
-	emit_signal("kick_signal", stun_duration)
-	emit_signal("attack_signal", stun_duration)
-	emit_signal("block_signal", stun_duration)
-	emit_signal("move_signal", stun_duration)
+	if is_player:
+		emit_signal("kick_signal", stun_duration)
+		emit_signal("attack_signal", stun_duration)
+		emit_signal("block_signal", stun_duration)
+		emit_signal("move_signal", stun_duration)
 	var _old_rotation = rotation_degrees
 	if not moving:
 		match enemy_facing_dir:
@@ -470,7 +474,7 @@ func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 					global_position += Vector2(-128, 0)
 				rotation_degrees = _old_rotation
 				character_sprite.global_position = global_position
-	set_physics_process(true)
+	#set_physics_process(true)
 
 func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
 	current_health -= attacker.current_attack_damage
@@ -504,7 +508,7 @@ func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
 			log_string = "Player hit by " + str(attacker.team) + " for " + str(attacker.current_attack_damage) + " damage!"
 		SignalBus.combat_log_entry.emit(log_string)
 		cooldown_time_health_regen = current_health_regen
-		set_physics_process(true)
+		#set_physics_process(true)
 		character_sprite.play("hit")
 		shadow_sprite.play("hit")
 

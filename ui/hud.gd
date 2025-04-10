@@ -1,7 +1,7 @@
 extends CanvasLayer
 class_name Hud
 
-#TODO minim
+#TODO minimap
 @onready var health: TextureProgressBar = $StatusAnchor/Status/Health
 @onready var attack: TextureProgressBar = $StatusAnchor/Status/Attack
 @onready var block: TextureProgressBar = $StatusAnchor/Status/Block

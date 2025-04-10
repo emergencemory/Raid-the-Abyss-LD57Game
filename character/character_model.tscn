@@ -1,13 +1,13 @@
 [gd_scene load_steps=23 format=3 uid="uid://n1koaitsyfef"]
 
 [ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
-[ext_resource type="SpriteFrames" uid="uid://bk3pkrp740tjw" path="res://character/knight/knight_spriteframes.tres" id="2_chf46"]
+[ext_resource type="SpriteFrames" uid="uid://cn2o2v7sl57ow" path="res://character/orc/orc_spriteframes.tres" id="2_waqkf"]
 [ext_resource type="AudioStream" uid="uid://cu1cpquh4inh8" path="res://audio/SFX/Impact Body.wav" id="5_55pft"]
 [ext_resource type="AudioStream" uid="uid://dqmi0udhr2ncg" path="res://audio/SFX/Impact Metal Armour.wav" id="6_uealk"]
 [ext_resource type="AudioStream" uid="uid://ci8u21id8lmbd" path="res://audio/SFX/Impact Sword and Swipe.wav" id="7_y6277"]
 [ext_resource type="AudioStream" uid="uid://c3ne4ep7lnwh5" path="res://audio/SFX/Impact Wooden.wav" id="8_1px7v"]
-[ext_resource type="Texture2D" uid="uid://cffwkg4co7w7g" path="res://ui/kite_shield_icon_2.png" id="8_8vtqr"]
-[ext_resource type="Texture2D" uid="uid://8kg35gvb4y2f" path="res://ui/sword_icon_2.png" id="9_tthh3"]
+[ext_resource type="Texture2D" uid="uid://bdno7pb3g5ijk" path="res://ui/round_shield_icon.png" id="8_8vtqr"]
+[ext_resource type="Texture2D" uid="uid://co1b3nsskubur" path="res://ui/axe_icon.png" id="9_tthh3"]
 [ext_resource type="Texture2D" uid="uid://c6rr4j2p122ua" path="res://character/effects/blood.png" id="9_y6277"]
 [ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="10_1px7v"]
 [ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="11_1px7v"]
@@ -109,7 +109,7 @@ process_material = SubResource("ParticleProcessMaterial_k67b1")
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
 show_behind_parent = true
 texture_filter = 1
-sprite_frames = ExtResource("2_chf46")
+sprite_frames = ExtResource("2_waqkf")
 animation = &"attack_from_right"
 
 [node name="HitBox" type="Area2D" parent="CharacterSprite"]
@@ -125,7 +125,7 @@ disabled = true
 [node name="ShadowSprite" type="AnimatedSprite2D" parent="CharacterSprite"]
 self_modulate = Color(0.2, 0.2, 0.2, 0.4)
 show_behind_parent = true
-sprite_frames = ExtResource("2_chf46")
+sprite_frames = ExtResource("2_waqkf")
 animation = &"attack_from_right"
 offset = Vector2(-7, 7)
 

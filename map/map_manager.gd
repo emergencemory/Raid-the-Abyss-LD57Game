@@ -10,7 +10,7 @@ class_name MapManager
 @onready var blood_pool: Texture = preload("res://character/effects/blood.png")
 @onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 @onready var shadow_layer: TileMapLayer = $ShadowLayer
-#TODO spawn shadows
+
 
 var chunk_height: int = 16  # Number of tiles per chunk (e.g., 16x16 tiles)
 var chunk_width: int = 32
@@ -64,6 +64,7 @@ func spawn_label(label_string: String, _position : Vector2, _color : Color) -> v
 
 func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> void:
 	# Spawn blood effect at the player's position
+
 	var label_string : String = str(value) + " / " + str(_base_value) + " HP"
 	
 	if value == _base_value:
@@ -86,7 +87,8 @@ func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> vo
 			2:
 				blood_effect.texture = splat_3
 	else:
-		spawn_label(label_string, character.global_position, Color(.8,.5,.5,1))
+		label_string =  "0  / " + str(_base_value) + " HP - DEAD"
+		spawn_label(label_string, character.global_position, Color(.5,.5,.5,1))
 		blood_effect.texture = blood_pool
 	var tween = create_tween()
 	tween.tween_property(blood_effect, "scale", Vector2(9,9), 20.0)

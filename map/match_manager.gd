@@ -6,6 +6,12 @@ const GAME_DATA : Script = preload("res://data/GameData.gd")
 
 
 @onready var character_scene : PackedScene = preload("res://character/character_model.tscn")
+#@onready var orc_spriteframes : SpriteFrames = preload("res://character/orc/orc_spriteframes.tres")
+@onready var knight_spriteframes : SpriteFrames = preload("res://character/knight/knight_spriteframes.tres")
+#@onready var round_shield_icon : Texture= preload("res://ui/round_shield_icon.png")
+#@onready var axe_icon : Texture = preload("res://ui/axe_icon.png")
+@onready var kite_shield_icon : Texture = preload("res://ui/kite_shield_icon_2.png")
+@onready var sword_icon : Texture = preload("res://ui/sword_icon_2.png")
 var player : CharacterBody2D
 var hud_scene : PackedScene = preload("res://ui/hud.tscn")
 var character_data : Dictionary
@@ -19,6 +25,7 @@ var knight_kills : int = 0
 var your_kills : int = 0
 var hud : CanvasLayer
 var player_controller : INPUT_PARSER
+var spawn_center : Vector2 = Vector2(0,0)
 
 signal update_player_hud(layer, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
 
@@ -33,6 +40,7 @@ func _ready() -> void:
 	SignalBus.health_signal.connect(hud._on_health_changed)
 	SignalBus.request_reinforcements.connect(spawn_ai)
 	SignalBus.console_kill_ai.connect(_on_console_kill_ai)
+	SignalBus.player_move.connect(update_spawn_area)
 	get_tree().create_timer(1.0).timeout.connect(spawn_player)
 
 func _on_console_kill_ai() -> void:
@@ -49,6 +57,9 @@ func _on_console_kill_ai() -> void:
 	
 	update_hud()
 
+func update_spawn_area(player_pos : Vector2) -> void:
+	spawn_center = player_pos
+
 func spawn_player() -> void:
 	player = character_scene.instantiate()
 	set_data(player)
@@ -56,7 +67,7 @@ func spawn_player() -> void:
 	add_child(player)
 	player.add_to_group("knight")
 	player.team = "knight"
-	player.global_position = get_valid_spawn(player)
+	player.global_position = await(get_valid_spawn(player.team))
 	player_controller.player = player
 	player.attack_signal.connect(hud._on_attack_cooldown_started)
 	player.block_signal.connect(hud._on_block_cooldown_started)
@@ -72,8 +83,8 @@ func spawn_player() -> void:
 	your_deaths += 1
 	update_hud()
 	player_camera.make_current()
-	player.character_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
-	player.shadow_sprite.sprite_frames = ResourceLoader.load("res://character/knight/knight_spriteframes.tres")
+	player.character_sprite.sprite_frames = knight_spriteframes
+	player.shadow_sprite.sprite_frames = knight_spriteframes
 	spawn_ai("orc")
 	spawn_ai("knight")
 
@@ -105,49 +116,51 @@ func spawn_ai(team:String) -> void:
 	character.killed_by_player.connect(_on_player_kill)
 	add_child(character)
 	character.add_to_group(team)
-	character.global_position = get_valid_spawn(character)
+	character.position = await(get_valid_spawn(character.team))
 	character.add_to_group("ai")
-	character.character_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
-	character.shadow_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
 	if team == "orc":
-		character.block_right_sprite.texture = ResourceLoader.load("res://ui/round_shield_icon.png")
-		character.block_left_sprite.texture = ResourceLoader.load("res://ui/round_shield_icon.png")
-		character.attack_from_right_sprite.texture = ResourceLoader.load("res://ui/axe_icon.png")
-		character.attack_from_left_sprite.texture = ResourceLoader.load("res://ui/axe_icon.png")
+	#	character.character_sprite.sprite_frames = orc_spriteframes
+	#	character.shadow_sprite.sprite_frames = orc_spriteframes
+	#	character.block_right_sprite.texture = round_shield_icon
+	#	character.block_left_sprite.texture = round_shield_icon
+	#	character.attack_from_right_sprite.texture = axe_icon
+	#	character.attack_from_left_sprite.texture = axe_icon
 		current_orcs += 1
 	if team == "knight":
+		character.character_sprite.sprite_frames = knight_spriteframes
+		character.shadow_sprite.sprite_frames = knight_spriteframes
+		character.block_right_sprite.texture = kite_shield_icon
+		character.block_left_sprite.texture = kite_shield_icon
+		character.attack_from_right_sprite.texture = sword_icon
+		character.attack_from_left_sprite.texture = sword_icon
 		current_knights += 1
-	for i in (randi_range(0, layer/2)):
+	for i in (randi_range(0, layer)):
 		character.level_up()
 	update_hud()
 
-#TODO refine spawning logic
 
-func get_valid_spawn(character : CharacterBody2D) -> Vector2:
+
+func get_valid_spawn(team:String) -> Vector2:
 	var spawn_pos : Vector2
-	var spawn_area : Rect2 = player.get_viewport().get_visible_rect()
+	#var spawn_area : Rect2 = player.get_viewport().get_visible_rect()
 	var valid_spawn : bool = false
-	var team : String
-	if character.is_in_group("orc"):
-		team = "orc"
-	elif character.is_in_group("knight"):
-		team = "knight"
-	else:
-		printerr("Invalid team for character: ", character.name)
-		return Vector2.ZERO
-	while not valid_spawn:
-		var _spawn_pos : Vector2
-		if character.is_player:
+	#var team : String
+	var attempts : int = 0
+	var max_attempts : int = 50
+	while not valid_spawn and attempts < max_attempts:
+		attempts += 1
+		#var _spawn_pos : Vector2
+		#if character.is_player:
 			# Spawn in the centerish of the screen
-			_spawn_pos.x = randf_range(spawn_area.position.x, (spawn_area.end.x)/2)  + (256*(layer -1))
-		elif team == "knight":
+			#_spawn_pos.x = randf_range(spawn_area.position.x, (spawn_area.end.x)/2)  + (256*(layer -1))
+		if team == "knight":
 			# Spawn on the left side of the screen
-			_spawn_pos.x = randf_range(spawn_area.position.x - 256, spawn_area.position.x) + (256*(layer-1))
+			spawn_pos.x = randf_range(spawn_center.x - 1028, spawn_center.x - 256) #+ (256*(layer-1))
 		else: # orc
 			# Spawn on the right side of the screen
-			_spawn_pos.x = randf_range(spawn_area.end.x, spawn_area.end.x + 256)  + (256*(layer-1))
-		_spawn_pos.y = randf_range(spawn_area.position.y, spawn_area.end.y)
-		spawn_pos = _spawn_pos.snapped(Vector2(128, 128))
+			spawn_pos.x = randf_range(spawn_center.x + 768, spawn_center.x + 1540)  #+ (256*(layer-1))
+		spawn_pos.y = randf_range(spawn_center.y - 256, spawn_center.y + 256)
+		spawn_pos = spawn_pos.snapped(Vector2(128, 128))
 		var collision_checker : RayCast2D = RayCast2D.new()
 		collision_checker.global_position = spawn_pos
 		collision_checker.target_position = Vector2(64,64)
@@ -158,36 +171,36 @@ func get_valid_spawn(character : CharacterBody2D) -> Vector2:
 		collision_checker.force_raycast_update()
 		if collision_checker.is_colliding():
 			collision_checker.queue_free()
-			#print("Collision detected at: ", spawn_pos)
+			await(get_tree().physics_frame)
 			continue
-		
 		else:
 			collision_checker.queue_free()
-			#print("No collision at: ", spawn_pos)
 			valid_spawn = true
+	if not valid_spawn:
+		print("Failed to find a valid spawn position after ", max_attempts, " attempts.")
+		#spawn_pos = spawn_center
+		#return spawn_pos
 	return spawn_pos
 
 
 func _physics_process(delta: float) -> void:
 	if current_orcs <= 1 and player != null:
 		layer += 1
-		for i in layer:
-			spawn_ai("orc")
-		update_hud()
+		spawn_wave("orc")
+
 	if current_knights <= 1 and player != null:	
-		for i in layer:
-			spawn_ai("knight")
-		update_hud()
+		spawn_wave("knight")
+
 
 	for character in get_tree().get_nodes_in_group("ai"):
 		if not is_instance_valid(character) or character.is_queued_for_deletion() or character.is_in_group("dead"):
 			continue
 		elif character.has_target == false or not is_instance_valid(character.target) or character.target.is_in_group("dead"):
-			var target = get_target(character) # this spawns new waves too
+			var target = get_target(character)
 			if target != null:
 				character.has_target = true
 				character.cooldown_time_target = 1.0
-				character.set_physics_process(true)
+				#character.set_physics_process(true)
 				character.target = target
 		else:
 			character.order_ticks -= delta
@@ -195,6 +208,14 @@ func _physics_process(delta: float) -> void:
 				continue
 			else:
 				ai_action(character)
+
+func spawn_wave(team:String) -> void:
+	for i in range(layer):
+		spawn_ai(team)
+		update_hud()
+		await(get_tree().physics_frame)
+	
+
 
 func ai_action(character: CharacterBody2D) -> void:
 	character.order_ticks = 0.5

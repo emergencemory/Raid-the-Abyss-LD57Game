@@ -11,8 +11,6 @@ var map
 var match_manager
 
 
-#TODO console commands to kill all and nuke tilemap
-
 func _ready() -> void:
 	menu = menu_scene.instantiate()
 	add_child(menu)
