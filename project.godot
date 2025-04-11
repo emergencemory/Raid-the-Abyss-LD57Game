@@ -20,6 +20,10 @@ run/physics_ticks_per_second=60
 
 SignalBus="*res://globals/MessageBus.gd"
 
+[global_group]
+
+cliff=""
+
 [input]
 
 "move up"={

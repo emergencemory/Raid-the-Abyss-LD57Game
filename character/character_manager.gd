@@ -85,6 +85,8 @@ var current_xp_to_next_level: float
 var base_xp_to_next_level_multiplier: float
 var level_up_multiplier: float
 var level_up_addition: int
+var falling: bool = false
+var fall_depth: float = 0.0
 
 
 signal attack_signal(value: float)
@@ -113,8 +115,17 @@ func _ready() -> void:
 		SignalBus.emit_signal("health_signal", current_health, base_health, self)
 
 func _physics_process(delta) -> void:
-	if is_in_group("dead"):
+	if is_in_group("dead") and not falling:
 		set_physics_process(false)
+		return
+	elif falling:
+		print("Falling")
+		scale.x -= delta
+		scale.y -= delta
+		fall_depth +=  1
+		if fall_depth >= 30:
+			falling = false
+			queue_free()
 		return
 	if stun_on_cooldown:
 		if cooldown_time_stun > 0:
@@ -184,6 +195,7 @@ func _physics_process(delta) -> void:
 			_on_target_timeout()
 	if current_xp >= current_xp_to_next_level:
 		level_up()
+
 	#if cooldown_time_attack <= 0 and cooldown_time_block <= 0 and cooldown_time_turn <= 0 and cooldown_time_move <= 0 and cooldown_time_kick <= 0 and cooldown_time_health_regen <= 0 and cooldown_time_attack_area <= 0 and cooldown_time_block_area <= 0:
 		#print("Cooldowns complete")
 		#set_physics_process(false)
@@ -437,11 +449,12 @@ func get_block_direction() -> int:
 
 
 #TODO kick off cliff
-func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
+func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 	#apply duration to all actions
+	var stun_duration: float = kicker.current_kick_stun_duration
 	stun_particle.emitting = true
 	var log_string : String = "Kicked! Stunned for " + str(stun_duration) + " seconds"
-	SignalBus.combat_log_entry.emit(log_string)
+	
 	character_sprite.play("hit")
 	shadow_sprite.play("hit")
 	_on_block_timeout()
@@ -470,32 +483,75 @@ func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 			DIR.NORTH:
 				rotation_degrees = 0
 				ray_cast_2d.force_raycast_update()
-				if not ray_cast_2d.is_colliding():
+				if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("cliff"):
+					global_position += Vector2(0, -128)
+					log_string = str(self) + " is falling off cliff!"
+					falling = true
+					killed(kicker)
+					die()
+				elif not ray_cast_2d.is_colliding():
 					global_position += Vector2(0, -128)
 				rotation_degrees = _old_rotation
 				character_sprite.global_position = global_position
 			DIR.EAST:
 				rotation_degrees = 90
 				ray_cast_2d.force_raycast_update()
-				if not ray_cast_2d.is_colliding():
+				if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("cliff"):
+					global_position += Vector2(128, 0)
+					log_string = str(self) + " is falling off cliff!"
+					falling = true
+					killed(kicker)
+					die()
+					
+				elif not ray_cast_2d.is_colliding():
 					global_position += Vector2(128, 0)
 				rotation_degrees = _old_rotation
 				character_sprite.global_position = global_position
 			DIR.SOUTH:
 				rotation_degrees = 180
 				ray_cast_2d.force_raycast_update()
-				if not ray_cast_2d.is_colliding():
+				if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("cliff"):
+					global_position += Vector2(0, 128)
+					log_string = str(self) + " is falling off cliff!"
+					falling = true
+					killed(kicker)
+					die()
+					
+				elif not ray_cast_2d.is_colliding():
 					global_position += Vector2(0, 128)
 				rotation_degrees = _old_rotation
 				character_sprite.global_position = global_position
 			DIR.WEST:
 				rotation_degrees = 270
 				ray_cast_2d.force_raycast_update()
-				if not ray_cast_2d.is_colliding():
+				if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("cliff"):
+					global_position += Vector2(-128, 0)
+					log_string = str(self) + " is falling off cliff!"
+					falling = true
+					killed(kicker)
+					die()
+					
+				elif not ray_cast_2d.is_colliding():
 					global_position += Vector2(-128, 0)
 				rotation_degrees = _old_rotation
 				character_sprite.global_position = global_position
+	SignalBus.combat_log_entry.emit(log_string)
 	#set_physics_process(true)
+
+func killed(attacker : CharacterBody2D) -> void:
+	if attacker != null:
+		attacker.current_xp += current_level*100
+	if attacker.is_player and not is_player:
+		emit_signal("killed_by_player", team)
+		SignalBus.combat_log_entry.emit("Player killed " + str(self.team))		
+	if attacker.team == "knight" and not attacker.is_player:
+		emit_signal("killed_by_knight", team)
+		SignalBus.combat_log_entry.emit(str(attacker.team) + " killed " + str(self.team))
+	elif attacker.team == "orc" and not is_player:
+		emit_signal("killed_by_orc", team)
+		SignalBus.combat_log_entry.emit(str(attacker.team) + " killed " + str(self.team))
+	elif is_player:
+		SignalBus.combat_log_entry.emit("You were killed by " + str(attacker.team))
 
 func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
 	if glancing_blow:
@@ -509,19 +565,7 @@ func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
 	flash_tween.tween_property(character_sprite, "self_modulate", Color(1, 1, 1, 1), 0.1)
 	SignalBus.emit_signal("health_signal", current_health, base_health, self)
 	if current_health <= 0:
-		if attacker != null:
-			attacker.current_xp += current_level*100
-		if attacker.is_player and not is_player:
-			emit_signal("killed_by_player", team)
-			SignalBus.combat_log_entry.emit("Player killed " + str(self.team))		
-		if attacker.team == "knight" and not attacker.is_player:
-			emit_signal("killed_by_knight", team)
-			SignalBus.combat_log_entry.emit(str(attacker.team) + " killed " + str(self.team))
-		elif attacker.team == "orc" and not is_player:
-			emit_signal("killed_by_orc", team)
-			SignalBus.combat_log_entry.emit(str(attacker.team) + " killed " + str(self.team))
-		elif is_player:
-			SignalBus.combat_log_entry.emit("You were killed by " + str(attacker.team))
+		killed(attacker)
 		die()
 		
 	else:
@@ -567,7 +611,7 @@ func _on_attack_area_entered(area: Area2D) -> void:
 	var log_string : String
 	if _target is CharacterBody2D:
 		if is_kicking:
-			_target.kicked(current_kick_stun_duration, facing_direction)
+			_target.kicked(self, facing_direction)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
 			audio_stream_player_2d.play()
 			strike_shape.set_deferred("disabled" , true)
