@@ -26,6 +26,8 @@ var your_kills : int = 0
 var hud : CanvasLayer
 var player_controller : INPUT_PARSER
 var spawn_center : Vector2 = Vector2(0,0)
+var spawning_wave_orc : bool = false
+var spawning_wave_knight : bool = false
 
 signal update_player_hud(layer, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
 
@@ -184,11 +186,13 @@ func get_valid_spawn(team:String) -> Vector2:
 
 
 func _physics_process(delta: float) -> void:
-	if current_orcs <= 1 and player != null:
+	if current_orcs <= 1 and player != null and not spawning_wave_orc:
 		layer += 1
+		spawning_wave_orc = true
 		spawn_wave("orc")
 
-	if current_knights <= 1 and player != null:	
+	if current_knights <= 1 and player != null and not spawning_wave_knight:	
+		spawning_wave_knight = true
 		spawn_wave("knight")
 
 
@@ -213,6 +217,12 @@ func spawn_wave(team:String) -> void:
 	for i in range(layer):
 		spawn_ai(team)
 		update_hud()
+		if i == (layer-1):
+			if team == "orc":
+				spawning_wave_orc = false
+			elif team == "knight":
+				spawning_wave_knight = false
+			
 		await(get_tree().physics_frame)
 	
 

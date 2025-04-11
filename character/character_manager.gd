@@ -216,11 +216,15 @@ func prepare_attack() -> void:
 	if swing_from_right:
 		attack_from_right_sprite.show()
 		attack_from_left_sprite.hide()
-		attack_direction = (facing_direction + 1) % 4
+		attack_direction = ((facing_direction+4) + 1) % 4
+		if is_player:
+			print("Attack direction: ", attack_direction)
 	else:
 		attack_from_right_sprite.hide()
 		attack_from_left_sprite.show()
-		attack_direction = (facing_direction - 1) % 4
+		attack_direction = ((facing_direction+4) - 1) % 4
+		if is_player:
+			print("Attack direction: ", attack_direction)
 	is_preparing_attack = true
 
 
@@ -228,8 +232,10 @@ func attack() -> void:
 	attack_from_left_sprite.hide()
 	attack_from_right_sprite.hide()
 	is_preparing_attack = false
-	if attack_on_cooldown or is_attacking or is_blocking or moving or is_turning or is_kicking or attack_windup:
+	if attack_on_cooldown or is_attacking or moving or is_turning or is_kicking or attack_windup: # or is_blocking
 		return
+	elif is_blocking:
+		_on_block_timeout()
 	if swing_from_right:
 		character_sprite.play("attack_from_right")
 		shadow_sprite.play("attack_from_right")
@@ -245,8 +251,10 @@ func attack() -> void:
 		emit_signal("attack_signal", current_attack_cooldown)
 
 func block() -> void:
-	if block_on_cooldown or is_attacking or moving or is_turning or attack_windup or is_kicking or is_blocking:
+	if block_on_cooldown or is_attacking or moving or is_turning or attack_windup or is_kicking:
 		return
+	elif is_blocking:
+		_on_block_timeout()
 	block_direction = get_block_direction()
 	character_sprite.play("block")
 	shadow_sprite.play("block")
@@ -259,8 +267,10 @@ func block() -> void:
 		emit_signal("block_signal", current_block_cooldown)
 
 func kick() -> void:
-	if moving or is_attacking or is_turning or is_blocking or attack_windup or is_turning or is_kicking or kick_on_cooldown:
+	if moving or is_attacking or is_turning or attack_windup or is_turning or is_kicking or kick_on_cooldown:
 		return
+	elif is_blocking:
+		_on_block_timeout()
 	cooldown_time_kick = current_kick_cooldown
 	kick_on_cooldown = true
 	cooldown_time_attack_area = current_attack_speed/2
@@ -277,8 +287,10 @@ func move(direction: int) -> void:
 		turn(direction)
 		return
 	ray_cast_2d.force_raycast_update()
-	if ray_cast_2d.is_colliding() or move_on_cooldown or is_attacking or attack_windup or is_kicking or is_blocking or is_turning or moving:
+	if ray_cast_2d.is_colliding() or move_on_cooldown or is_attacking or attack_windup or is_kicking or is_turning or moving:
 		return
+	elif is_blocking:
+		_on_block_timeout()
 	character_sprite.play("walk")
 	shadow_sprite.play("walk")
 	var previous_position = global_position
@@ -305,8 +317,10 @@ func move(direction: int) -> void:
 	#set_physics_process(true)
 
 func turn(direction : int) -> void:
-	if is_attacking or moving or is_blocking or attack_windup or is_kicking:
+	if is_attacking or moving or attack_windup or is_kicking:
 		return
+	elif is_blocking:
+		_on_block_timeout()
 	match direction:
 		DIR.NORTH:
 			if rotation_degrees == 0 or rotation_degrees == 360 or facing_direction == 0:
@@ -409,11 +423,18 @@ func get_block_direction() -> int:
 	if block_to_right:
 		block_right_sprite.show()
 		block_left_sprite.hide()
-		return (facing_direction + 1) % 4
+		var block_dir = ((facing_direction + 1) + 4) % 4
+		if is_player:
+			print("Block direction: ", block_dir)
+		return block_dir
 	else:
 		block_right_sprite.hide()
 		block_left_sprite.show()
-		return (facing_direction - 1) % 4
+		var block_dir =((facing_direction - 1)+4) % 4
+		if is_player:
+			print("Block direction: ", block_dir)
+		return block_dir
+
 
 #TODO kick off cliff
 func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
@@ -477,7 +498,10 @@ func kicked(stun_duration : float, enemy_facing_dir : int) -> void:
 	#set_physics_process(true)
 
 func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
-	current_health -= attacker.current_attack_damage
+	if glancing_blow:
+		current_health -= attacker.current_attack_damage/2
+	else:
+		current_health -= attacker.current_attack_damage
 	blood_particle.restart()
 	blood_particle.emitting = true
 	var flash_tween = create_tween()
@@ -548,6 +572,12 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			audio_stream_player_2d.play()
 			strike_shape.set_deferred("disabled" , true)
 			return
+		elif _target.block_direction == attack_direction:
+			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " blocked Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
+			SignalBus.combat_log_entry.emit(log_string)
+			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Wooden"
+			audio_stream_player_2d.play()
+			spark_particle.emitting = true
 		elif _target.attack_direction == attack_direction:
 			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " parried Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
 			SignalBus.combat_log_entry.emit(log_string)
@@ -555,12 +585,6 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			audio_stream_player_2d.play()
 			spark_particle.emitting = true
 			_target.hit(self, true)
-		elif _target.block_direction == attack_direction:
-			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " blocked Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
-			SignalBus.combat_log_entry.emit(log_string)
-			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Wooden"
-			audio_stream_player_2d.play()
-			spark_particle.emitting = true
 		else:
 			_target.hit(self, false)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
