@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://ckn66jaedcjqa"]
+
+[ext_resource type="Shader" uid="uid://c4d6865mecgol" path="res://character/knight_outline.gdshader" id="1_6dwsa"]
+
+[resource]
+shader = ExtResource("1_6dwsa")
+shader_parameter/outline_color = Color(0, 0, 1, 0.4)
+shader_parameter/outline_thickness = 1.0

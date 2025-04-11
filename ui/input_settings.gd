@@ -27,11 +27,6 @@ func _ready() -> void:
 	_load_keybindings()
 	_create_action_list()
 
-#browser-saving
-#func save_keybinding(action: String, event: String) -> void:
-	#pass
-	#JavaScript.eval("localStorage.setItem(action, event);", [action, event])
-
 func _load_keybindings() -> void:
 	for action in input_actions.keys():
 		if InputMap.has_action(action):
@@ -45,7 +40,6 @@ func _load_keybindings() -> void:
 			input_event = InputEventKey.new()
 			input_event.keycode = OS.find_keycode_from_string(key_name)
 		InputMap.action_add_event(action, input_event)
-		print(str(action), " : ", str(input_event))
 
 func _create_action_list() -> void:
 	for item in self.get_children():
@@ -55,16 +49,12 @@ func _create_action_list() -> void:
 		var button : Button = input_button_scene.instantiate()
 		var action_label : Label = button.find_child("LabelAction")
 		var input_label : Label = button.find_child("LabelInput")
-		
 		action_label.text = action
-		
 		var events : Array = InputMap.action_get_events(action)
-		print(str(action), " : " ,str(events))
 		if events.size() > 0:
 			input_label.text = events[0].as_text().trim_suffix(" (Physical)")
 		else: 
-			input_label.text = ""
-			
+			input_label.text = ""	
 		self.add_child(button)
 		button.pressed.connect(_on_input_button_pressed.bind(button, action))
 
@@ -74,7 +64,6 @@ func _on_input_button_pressed(button : Button, action : String) -> void:
 		action_to_remap = action
 		remapping_button = button
 		button.find_child("LabelInput").text = "Press key to bind..."
-	pass
 
 func _input(event) -> void:
 	if is_remapping:

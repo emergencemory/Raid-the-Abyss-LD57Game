@@ -1,7 +1,8 @@
-[gd_scene load_steps=23 format=3 uid="uid://n1koaitsyfef"]
+[gd_scene load_steps=24 format=3 uid="uid://n1koaitsyfef"]
 
 [ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
 [ext_resource type="SpriteFrames" uid="uid://cn2o2v7sl57ow" path="res://character/orc/orc_spriteframes.tres" id="2_waqkf"]
+[ext_resource type="Material" uid="uid://bp4rrh6m1a52b" path="res://character/character_shader_material.tres" id="3_8vtqr"]
 [ext_resource type="AudioStream" uid="uid://cu1cpquh4inh8" path="res://audio/SFX/Impact Body.wav" id="5_55pft"]
 [ext_resource type="AudioStream" uid="uid://dqmi0udhr2ncg" path="res://audio/SFX/Impact Metal Armour.wav" id="6_uealk"]
 [ext_resource type="AudioStream" uid="uid://ci8u21id8lmbd" path="res://audio/SFX/Impact Sword and Swipe.wav" id="7_y6277"]
@@ -109,6 +110,7 @@ process_material = SubResource("ParticleProcessMaterial_k67b1")
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
 show_behind_parent = true
 texture_filter = 1
+material = ExtResource("3_8vtqr")
 sprite_frames = ExtResource("2_waqkf")
 animation = &"attack_from_right"
 
@@ -139,6 +141,7 @@ target_position = Vector2(0, -140)
 collide_with_areas = true
 
 [node name="HurtBox" type="Area2D" parent="."]
+visible = false
 collision_layer = 2
 collision_mask = 0
 

@@ -33,16 +33,14 @@ func start_game() -> void:
 
 func set_volume(value:float) -> void:
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), value)
-	print(str(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master"))))
 
 func _on_reset_keybindings() -> void:
 	if menu:
 		menu.queue_free()
 		menu = menu_scene.instantiate()
 		add_child(menu)
-		print("Keybindings reset to default.")
 	else:
-		print("No menu instance to reset.")
+		printerr("No menu instance to reset.")
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action_pressed("menu"):

@@ -4,7 +4,7 @@ class_name MatchManager
 const INPUT_PARSER : Script = preload("res://character/input_parser.gd")
 const GAME_DATA : Script = preload("res://data/GameData.gd")
 
-
+## orcs spawn with their sprites loaded by default
 @onready var character_scene : PackedScene = preload("res://character/character_model.tscn")
 #@onready var orc_spriteframes : SpriteFrames = preload("res://character/orc/orc_spriteframes.tres")
 @onready var knight_spriteframes : SpriteFrames = preload("res://character/knight/knight_spriteframes.tres")
@@ -12,6 +12,8 @@ const GAME_DATA : Script = preload("res://data/GameData.gd")
 #@onready var axe_icon : Texture = preload("res://ui/axe_icon.png")
 @onready var kite_shield_icon : Texture = preload("res://ui/kite_shield_icon_2.png")
 @onready var sword_icon : Texture = preload("res://ui/sword_icon_2.png")
+@onready var orc_outline_shader : ShaderMaterial = preload("res://character/orc_shader_material.tres")
+@onready var knight_outline_shader : ShaderMaterial = preload("res://character/knight_shader_material.tres")
 var player : CharacterBody2D
 var hud_scene : PackedScene = preload("res://ui/hud.tscn")
 var character_data : Dictionary
@@ -48,15 +50,14 @@ func _ready() -> void:
 func _on_console_kill_ai() -> void:
 	for character in get_tree().get_nodes_in_group("ai"):
 		if character != null and not character.is_queued_for_deletion():
-			print("Killing AI: ", character.name)
+			print_debug("Killing AI: ", character.name)
 			if character.is_in_group("orc"):
 				current_orcs -= 1
 			elif character.is_in_group("knight"):
 				current_knights -= 1
 			character.queue_free()
 		else:
-			print("Invalid character for deletion")
-	
+			print_debug("Invalid character for deletion")
 	update_hud()
 
 func update_spawn_area(player_pos : Vector2) -> void:
@@ -121,6 +122,7 @@ func spawn_ai(team:String) -> void:
 	character.position = await(get_valid_spawn(character.team))
 	character.add_to_group("ai")
 	if team == "orc":
+		character.character_sprite.material = orc_outline_shader
 	#	character.character_sprite.sprite_frames = orc_spriteframes
 	#	character.shadow_sprite.sprite_frames = orc_spriteframes
 	#	character.block_right_sprite.texture = round_shield_icon
@@ -135,32 +137,25 @@ func spawn_ai(team:String) -> void:
 		character.block_left_sprite.texture = kite_shield_icon
 		character.attack_from_right_sprite.texture = sword_icon
 		character.attack_from_left_sprite.texture = sword_icon
+		character.character_sprite.material = knight_outline_shader
 		current_knights += 1
 	for i in (randi_range(0, layer)):
 		character.level_up()
 	update_hud()
 
-
-
 func get_valid_spawn(team:String) -> Vector2:
 	var spawn_pos : Vector2
-	#var spawn_area : Rect2 = player.get_viewport().get_visible_rect()
 	var valid_spawn : bool = false
-	#var team : String
 	var attempts : int = 0
 	var max_attempts : int = 50
 	while not valid_spawn and attempts < max_attempts:
 		attempts += 1
-		#var _spawn_pos : Vector2
-		#if character.is_player:
-			# Spawn in the centerish of the screen
-			#_spawn_pos.x = randf_range(spawn_area.position.x, (spawn_area.end.x)/2)  + (256*(layer -1))
 		if team == "knight":
 			# Spawn on the left side of the screen
-			spawn_pos.x = randf_range(spawn_center.x - 1028, spawn_center.x - 256) #+ (256*(layer-1))
+			spawn_pos.x = randf_range(spawn_center.x - 1028, spawn_center.x - 256)
 		else: # orc
 			# Spawn on the right side of the screen
-			spawn_pos.x = randf_range(spawn_center.x + 768, spawn_center.x + 1540)  #+ (256*(layer-1))
+			spawn_pos.x = randf_range(spawn_center.x + 768, spawn_center.x + 1540)
 		spawn_pos.y = randf_range(spawn_center.y - 256, spawn_center.y + 256)
 		spawn_pos = spawn_pos.snapped(Vector2(128, 128))
 		var collision_checker : RayCast2D = RayCast2D.new()
@@ -179,11 +174,8 @@ func get_valid_spawn(team:String) -> Vector2:
 			collision_checker.queue_free()
 			valid_spawn = true
 	if not valid_spawn:
-		print("Failed to find a valid spawn position after ", max_attempts, " attempts.")
-		#spawn_pos = spawn_center
-		#return spawn_pos
+		print_debug("Failed to find a valid spawn position after ", max_attempts, " attempts.")
 	return spawn_pos
-
 
 func _physics_process(delta: float) -> void:
 	if current_orcs <= 1 and player != null and not spawning_wave_orc:
@@ -204,7 +196,6 @@ func _physics_process(delta: float) -> void:
 			if target != null:
 				character.has_target = true
 				character.cooldown_time_target = 1.0
-				#character.set_physics_process(true)
 				character.target = target
 		else:
 			character.order_ticks -= delta
@@ -221,11 +212,8 @@ func spawn_wave(team:String) -> void:
 			if team == "orc":
 				spawning_wave_orc = false
 			elif team == "knight":
-				spawning_wave_knight = false
-			
+				spawning_wave_knight = false	
 		await(get_tree().physics_frame)
-	
-
 
 func ai_action(character: CharacterBody2D) -> void:
 	character.order_ticks = 0.5
@@ -338,27 +326,18 @@ func ai_action(character: CharacterBody2D) -> void:
 			else:
 				character.turn(character.DIR.NORTH)
 
-
-		
-
-
-
 func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	var nearest_target = null
 	if character.is_in_group("orc"):
-		#current_knights = 0
 		var potential_targets = get_tree().get_nodes_in_group("knight")
 		for target in potential_targets:
 			if not target.is_queued_for_deletion():
-				#current_knights += 1
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
 					nearest_target = target
 	elif character.is_in_group("knight"):
-		#current_orcs = 0
 		var potential_targets = get_tree().get_nodes_in_group("orc")
 		for target in potential_targets:
 			if not target.is_queued_for_deletion():
-				#current_orcs += 1
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
 					nearest_target = target
 	return nearest_target
@@ -386,7 +365,6 @@ func _on_player_kill(team: String) -> void:
 	elif team == "knight":
 		current_knights -= 1
 	update_hud()
-
 
 func update_hud() -> void:
 	emit_signal("update_player_hud", layer, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)

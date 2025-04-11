@@ -12,5 +12,3 @@ signal leveled_up(character : CharacterBody2D, level: int)
 signal request_reinforcements(team: String)
 signal console_kill_ai
 signal console_flush_map
-#signal request_minimap_camera
-#signal set_minimap_camera(camera: Camera2D)

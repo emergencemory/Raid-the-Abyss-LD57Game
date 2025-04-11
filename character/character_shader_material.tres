@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bp4rrh6m1a52b"]
+
+[ext_resource type="Shader" uid="uid://dviylvhesurws" path="res://character/character_shader_code.gdshader" id="1_ps24g"]
+
+[resource]
+shader = ExtResource("1_ps24g")
+shader_parameter/outline_color = Color(1, 1, 1, 0.4)
+shader_parameter/outline_thickness = 1.0

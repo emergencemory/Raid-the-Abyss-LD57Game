@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://k5uyriechjol"]
+
+[ext_resource type="Shader" uid="uid://c6okuc0pi6ss8" path="res://character/orc_outline.gdshader" id="1_1ex5j"]
+
+[resource]
+shader = ExtResource("1_1ex5j")
+shader_parameter/outline_color = Color(1, 0, 0, 0.4)
+shader_parameter/outline_thickness = 1.0

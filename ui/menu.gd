@@ -27,12 +27,11 @@ func _on_quit_pressed() -> void:
 
 ##DevConsole
 
-func _on_text_submitted(command) -> void: #, variable_names = [], variable_values = []) -> void:
+func _on_text_submitted(command) -> void:
 	var was_at_bottom : bool = console_history.scroll_vertical >= console_history.get_line_count() - console_history.get_visible_line_count() - 2
 	var error = expression.parse(command)
 	if error != OK:
 		console_history.text += command + expression.get_error_text() + "\n"
-		print(expression.get_error_text())
 		scroll_to_bottom(was_at_bottom)
 		return
 	var result = expression.execute([], self)
@@ -43,7 +42,6 @@ func _on_text_submitted(command) -> void: #, variable_names = [], variable_value
 func scroll_to_bottom(was_at_bottom: bool) -> void:
 	if was_at_bottom:
 		console_history.scroll_vertical = console_history.get_line_count() -2
-		#print(str(console_history.get_first_visible_line()), " : ", str(console_history.get_line_count()), " : ", str(console_history.get_visible_line_count()))
 
 func kill_ai():
 	SignalBus.emit_signal("console_kill_ai")

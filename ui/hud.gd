@@ -1,9 +1,7 @@
 extends CanvasLayer
 class_name Hud
 
-
 @onready var minimap_camera: Camera2D = $MinimapContainer/SubViewport/Camera2D
-#TODO minimap
 @onready var health: TextureProgressBar = $StatusAnchor/Status/Health
 @onready var attack: TextureProgressBar = $StatusAnchor/Status/Attack
 @onready var block: TextureProgressBar = $StatusAnchor/Status/Block
@@ -30,9 +28,7 @@ var auto_scroll: bool = true
 func _ready() -> void:
 	SignalBus.combat_log_entry.connect(_on_combat_log_entry)
 	SignalBus.leveled_up.connect(_on_level_up)
-	#SignalBus.set_minimap_camera.connect(_on_set_minimap_camera)
 	check_box.toggled.connect(_on_check_box_toggled)
-	#SignalBus.emit_signal("request_minimap_camera")
 	SignalBus.player_move.connect(_move_minimap_camera)
 	sub_viewport.world_2d = get_parent().get_world_2d()
 	
@@ -42,19 +38,8 @@ func _move_minimap_camera(player_pos: Vector2) -> void:
 		minimap_camera.position = player_pos
 		minimap_camera.zoom = Vector2(0.05, 0.05)
 		sub_viewport.size = Vector2(256, 128)
-		#print("Minimap camera position: ", minimap_camera.position)
 	else:
-		print("Minimap camera is null")
-
-#func _on_set_minimap_camera(camera: Camera2D) -> void:
-	#if camera != null:
-	#	minimap_camera = camera
-	#	sub_viewport.world_2d = camera.get_world_2d()
-	#	minimap_camera.current = true
-	#	minimap_camera.zoom = Vector2(0.25, 0.25)
-	#	print("Minimap camera set")
-	#else:
-	#	print("Minimap camera is null")
+		printerr("Minimap camera is null")
 
 func _on_level_up(character: CharacterBody2D, _level: int) -> void:
 	_log.text += character.name + " leveled up to level " + str(_level) + "\n"
@@ -73,8 +58,6 @@ func _on_combat_log_entry(log_entry: String) -> void:
 	_log.text += log_entry + "\n"
 	if auto_scroll:
 		_log.scroll_vertical = _log.get_line_count()
-		#print(str(_log.get_first_visible_line()), " : ", str(_log.get_line_count()), " : ", str(_log.get_visible_line_count()))
-	
 
 func _on_health_changed(value: int, base_value: int, character : CharacterBody2D) -> void:
 	if character.is_player:
@@ -104,18 +87,13 @@ func _on_kick_cooldown_started(value: float) -> void:
 func _physics_process(delta: float) -> void:
 	if attack.value < 100:
 		attack.value += (delta / attack_cooldown) * 100
-		#print("attack cooldown progress: ", attack.value)
 	if block.value < 170:
 		block.value += (delta / block_cooldown) * 100
-		#print("block cooldown progress: ", block.value)
 	if move.value < 100:
 		move.value += (delta / move_cooldown) * 100
-		#print("move cooldown progress: ", move.value)e
 	if kick.value < 100:
 		kick.value += (delta / kick_cooldown) * 100
-		#print("kick cooldown progress: ", kick.value, " / ", kick_cooldown)
 	elif attack.value >= 100 and block.value >= 170 and move.value >= 100 and kick.value >= 100:
-		#print("Cooldowns complete")
 		set_physics_process(false)
 		
 func _on_update_player_hud(_layer:int, current_orcs:int, your_kills:int, your_deaths:int, current_knights:int, knight_kills:int, knight_deaths:int) -> void:
