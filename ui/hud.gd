@@ -1,6 +1,8 @@
 extends CanvasLayer
 class_name Hud
 
+
+@onready var minimap_camera: Camera2D = $MinimapContainer/SubViewport/Camera2D
 #TODO minimap
 @onready var health: TextureProgressBar = $StatusAnchor/Status/Health
 @onready var attack: TextureProgressBar = $StatusAnchor/Status/Attack
@@ -28,7 +30,31 @@ var auto_scroll: bool = true
 func _ready() -> void:
 	SignalBus.combat_log_entry.connect(_on_combat_log_entry)
 	SignalBus.leveled_up.connect(_on_level_up)
+	#SignalBus.set_minimap_camera.connect(_on_set_minimap_camera)
 	check_box.toggled.connect(_on_check_box_toggled)
+	#SignalBus.emit_signal("request_minimap_camera")
+	SignalBus.player_move.connect(_move_minimap_camera)
+	sub_viewport.world_2d = get_parent().get_world_2d()
+	
+
+func _move_minimap_camera(player_pos: Vector2) -> void:
+	if minimap_camera != null:
+		minimap_camera.position = player_pos
+		minimap_camera.zoom = Vector2(0.05, 0.05)
+		sub_viewport.size = Vector2(256, 128)
+		#print("Minimap camera position: ", minimap_camera.position)
+	else:
+		print("Minimap camera is null")
+
+#func _on_set_minimap_camera(camera: Camera2D) -> void:
+	#if camera != null:
+	#	minimap_camera = camera
+	#	sub_viewport.world_2d = camera.get_world_2d()
+	#	minimap_camera.current = true
+	#	minimap_camera.zoom = Vector2(0.25, 0.25)
+	#	print("Minimap camera set")
+	#else:
+	#	print("Minimap camera is null")
 
 func _on_level_up(character: CharacterBody2D, _level: int) -> void:
 	_log.text += character.name + " leveled up to level " + str(_level) + "\n"

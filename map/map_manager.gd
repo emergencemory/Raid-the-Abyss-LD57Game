@@ -10,7 +10,7 @@ class_name MapManager
 @onready var blood_pool: Texture = preload("res://character/effects/blood.png")
 @onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 @onready var shadow_layer: TileMapLayer = $ShadowLayer
-
+#@onready var camera_2d: Camera2D = $Camera2D
 
 var chunk_height: int = 16  # Number of tiles per chunk (e.g., 16x16 tiles)
 var chunk_width: int = 32
@@ -23,11 +23,16 @@ func _ready() -> void:
 	SignalBus.health_signal.connect(spawn_blood)
 	SignalBus.player_move.connect(generate_chunk)
 	SignalBus.console_flush_map.connect(_on_flush_map)
+	#SignalBus.request_minimap_camera.connect(_send_minimap_camera)
 	# Configure FastNoiseLite
 	noise = FastNoiseLite.new()
 	noise.seed = randi()
 	noise.frequency = .2
 	spawn_shadows()
+
+#func _send_minimap_camera() -> void:
+	#SignalBus.set_minimap_camera.emit(camera_2d)
+
 
 func _on_flush_map() -> void:
 	var cliff_tiles = cliff_layer.get_used_cells()
@@ -98,6 +103,7 @@ func generate_chunk(chunk_position: Vector2) -> void:
 	# Generate terrain for the chunk
 	var tile_pos = wall_layer.local_to_map(chunk_position)
 	audio_stream_player_2d.position = chunk_position
+	#camera_2d.position = chunk_position
 	for y in range(chunk_height):
 		for x in range(chunk_width):
 			var world_x = tile_pos.x - (chunk_width / 2) + x
