@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://o6vaduy703ji"
+path="res://.godot/imported/Gong Crash SFX.mp3-b6dcf5134438a367e0449917e94bee5c.mp3str"
+
+[deps]
+
+source_file="res://audio/SFX/Gong Crash SFX.mp3"
+dest_files=["res://.godot/imported/Gong Crash SFX.mp3-b6dcf5134438a367e0449917e94bee5c.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

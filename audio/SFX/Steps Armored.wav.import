@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://d4ncifhfrraun"
+path="res://.godot/imported/Steps Armored.wav-1e533b4f47a0f28801827a0ed0a476ee.sample"
+
+[deps]
+
+source_file="res://audio/SFX/Steps Armored.wav"
+dest_files=["res://.godot/imported/Steps Armored.wav-1e533b4f47a0f28801827a0ed0a476ee.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
