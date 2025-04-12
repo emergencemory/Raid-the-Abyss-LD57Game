@@ -10,7 +10,17 @@ class_name MapManager
 @onready var blood_pool: Texture = preload("res://character/effects/blood.png")
 @onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 @onready var shadow_layer: TileMapLayer = $ShadowLayer
+@onready var rubble_particle_1: GPUParticles2D = $RubbleParticle1
+@onready var rubble_particle_2: GPUParticles2D = $RubbleParticle2
+@onready var rubble_particle_3: GPUParticles2D = $RubbleParticle3
+@onready var rubble_particle_4: GPUParticles2D = $RubbleParticle4
+@onready var rubble_particle_5: GPUParticles2D = $RubbleParticle5
+@onready var rubble_particle_6: GPUParticles2D = $RubbleParticle6
+@onready var rubble_particle_7: GPUParticles2D = $RubbleParticle7
+@onready var rubble_particle_8: GPUParticles2D = $RubbleParticle8
 
+var rubble_emitters: Array = []
+var emitter_index : int = 0
 
 var chunk_height: int = 16  # Number of tiles per chunk (e.g., 16x16 tiles)
 var chunk_width: int = 32
@@ -23,10 +33,47 @@ func _ready() -> void:
 	SignalBus.health_signal.connect(spawn_blood)
 	SignalBus.player_move.connect(generate_chunk)
 	SignalBus.console_flush_map.connect(_on_flush_map)
+	SignalBus.wall_hit.connect(destroy_wall)
 	noise = FastNoiseLite.new()
 	noise.seed = randi()
 	noise.frequency = .2
 	spawn_shadows()
+	rubble_emitters = [
+		rubble_particle_1,
+		rubble_particle_2,
+		rubble_particle_3,
+		rubble_particle_4,
+		rubble_particle_5,
+		rubble_particle_6,
+		rubble_particle_7,
+		rubble_particle_8
+	]
+
+func destroy_wall(char_pos : Vector2) -> void:
+	## Destroys the wall and spawns blood
+	var tile_pos = wall_layer.local_to_map(char_pos)
+	print("Wall hit at: ", tile_pos)
+	for x_range in range(tile_pos.x -1, tile_pos.x +2):
+		for y_range in range(tile_pos.y -2, tile_pos.y +2):
+			var check_tile = Vector2(x_range, y_range)
+			if wall_layer.get_cell_source_id(check_tile) != -1:
+				print("Wall destroyed at: ", check_tile)
+				wall_layer.erase_cell(check_tile)
+				spawn_rubble(check_tile)
+				ground_layer.set_cell(check_tile, 0, Vector2i(0,0))
+				print("Ground set at: ", check_tile)
+			if shadow_layer.get_cell_source_id(check_tile) != -1:
+				shadow_layer.erase_cell(check_tile)
+				print("Shadow destroyed at: ", check_tile)
+
+func spawn_rubble(check_tile : Vector2i):
+	var _rubble_particle : GPUParticles2D = rubble_emitters[emitter_index]
+	emitter_index = (emitter_index + 1) % rubble_emitters.size()
+	_rubble_particle.position = ground_layer.map_to_local(check_tile)
+	_rubble_particle.restart()
+	_rubble_particle.emitting = true
+	print("Rubble spawned at: ", check_tile)
+
 
 func _on_flush_map() -> void:
 	var cliff_tiles = cliff_layer.get_used_cells()

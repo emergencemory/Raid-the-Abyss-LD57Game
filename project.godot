@@ -23,6 +23,7 @@ SignalBus="*res://globals/MessageBus.gd"
 [global_group]
 
 cliff=""
+wall=""
 
 [input]
 

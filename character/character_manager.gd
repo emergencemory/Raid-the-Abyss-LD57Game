@@ -388,6 +388,10 @@ func _on_attack_begin() -> void:
 	attack_windup = false
 	cooldown_time_attack_area = current_attack_speed/2
 	is_attacking = true
+	ray_cast_2d.force_raycast_update()
+	if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("wall"):
+		print( str(self) + " hit wall!" )
+		SignalBus.wall_hit.emit(self.position)
 
 func _on_block_timeout() -> void:
 	is_blocking = false
@@ -598,6 +602,3 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			_target.hit(self, false)
 			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
 			audio_stream_player_2d.play()
-	else:
-		log_string = str(self) + "Missed!"
-		SignalBus.combat_log_entry.emit(log_string)

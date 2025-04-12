@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=4 uid="uid://1e231ub6i8rj"]
+[gd_scene load_steps=30 format=4 uid="uid://1e231ub6i8rj"]
 
 [ext_resource type="Script" uid="uid://twvrtpgkny2o" path="res://map/map_manager.gd" id="1_hgrid"]
 [ext_resource type="Shader" uid="uid://dqijjwnp6q830" path="res://map/ground_shader.tres" id="2_7lyie"]
@@ -8,6 +8,7 @@
 [ext_resource type="Shader" uid="uid://dmal7yf7fwg07" path="res://map/cliff_shader.tres" id="5_e8e5r"]
 [ext_resource type="TileSet" uid="uid://dcfb4o11pmbvl" path="res://map/tileset/cliff_tileset.tres" id="6_112ik"]
 [ext_resource type="AudioStream" uid="uid://cahxteyvxp4l8" path="res://audio/Music/Into the Depths.mp3" id="7_5jdw0"]
+[ext_resource type="Texture2D" uid="uid://b0xcqnrdo2mdi" path="res://map/effects/rubble.png" id="9_e8e5r"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i5grx"]
 shader = ExtResource("2_7lyie")
@@ -43,7 +44,7 @@ texture_region_size = Vector2i(144, 256)
 
 [sub_resource type="TileSet" id="TileSet_ap8vc"]
 tile_size = Vector2i(128, 128)
-physics_layer_0/collision_layer = 1
+physics_layer_0/collision_layer = 3
 physics_layer_0/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_o2xrn")
 
@@ -53,6 +54,126 @@ shader = ExtResource("5_e8e5r")
 [sub_resource type="AudioStreamPlaylist" id="AudioStreamPlaylist_kxmgb"]
 stream_count = 1
 stream_0 = ExtResource("7_5jdw0")
+
+[sub_resource type="Curve" id="Curve_112ik"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, -276.831, 0, 0, Vector2(0.107527, 100), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_tthh3"]
+curve = SubResource("Curve_112ik")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_lct0g"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -358.9
+angle_max = -358.9
+inherit_velocity_ratio = 0.175
+direction = Vector3(0, 1, 0)
+spread = 91.169
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_e8e5r"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -358.9
+angle_max = -358.9
+inherit_velocity_ratio = 0.175
+direction = Vector3(0, 1, 0)
+spread = 91.169
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_112ik"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -358.9
+angle_max = -358.9
+inherit_velocity_ratio = 0.175
+direction = Vector3(0, 1, 0)
+spread = 91.169
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_i5grx"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -358.9
+angle_max = -358.9
+inherit_velocity_ratio = 0.175
+direction = Vector3(0, 1, 0)
+spread = 91.169
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_k8tny"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -358.9
+angle_max = -358.9
+inherit_velocity_ratio = 0.175
+direction = Vector3(0, 1, 0)
+spread = 91.169
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ap8vc"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -358.9
+angle_max = -358.9
+inherit_velocity_ratio = 0.175
+direction = Vector3(0, 1, 0)
+spread = 91.169
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wnugf"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -358.9
+angle_max = -358.9
+inherit_velocity_ratio = 0.175
+direction = Vector3(0, 1, 0)
+spread = 91.169
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_58xwf"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -358.9
+angle_max = -358.9
+inherit_velocity_ratio = 0.175
+direction = Vector3(0, 1, 0)
+spread = 91.169
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_tthh3")
 
 [node name="Map" type="Node2D"]
 y_sort_enabled = true
@@ -73,7 +194,7 @@ self_modulate = Color(0.3, 0.3, 0.3, 0.4)
 tile_map_data = PackedByteArray("AAD+//7/AAAAAAAAAAD///7/AAAAAAAAAAAAAP7/AAAAAAAAAAA=")
 tile_set = SubResource("TileSet_i5grx")
 
-[node name="WallLayer" type="TileMapLayer" parent="."]
+[node name="WallLayer" type="TileMapLayer" parent="." groups=["wall"]]
 z_index = 1
 y_sort_enabled = true
 texture_filter = 1
@@ -92,3 +213,107 @@ tile_set = ExtResource("6_112ik")
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamPlaylist_kxmgb")
 autoplay = true
+
+[node name="RubbleParticle1" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_lct0g")
+
+[node name="RubbleParticle2" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_e8e5r")
+
+[node name="RubbleParticle3" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_112ik")
+
+[node name="RubbleParticle4" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_i5grx")
+
+[node name="RubbleParticle5" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_k8tny")
+
+[node name="RubbleParticle6" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_ap8vc")
+
+[node name="RubbleParticle7" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_wnugf")
+
+[node name="RubbleParticle8" type="GPUParticles2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_58xwf")

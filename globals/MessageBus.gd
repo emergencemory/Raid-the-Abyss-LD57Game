@@ -12,3 +12,4 @@ signal leveled_up(character : CharacterBody2D, level: int)
 signal request_reinforcements(team: String)
 signal console_kill_ai
 signal console_flush_map
+signal wall_hit(char_pos : Vector2)
