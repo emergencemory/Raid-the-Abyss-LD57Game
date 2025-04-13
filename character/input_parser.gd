@@ -5,7 +5,13 @@ class_name InputParser
 
 var player: CharacterManager
 var speed: float = 50.0
-var held_directions: Dictionary = { "up": false, "down": false, "left": false, "right": false }
+var held_directions: Dictionary = { 
+	"up": false, 
+	"down": false, 
+	"left": false, 
+	"right": false,
+	"attack": false
+	 }
 var hud : CanvasLayer
 var marker : Marker2D
 
@@ -46,8 +52,10 @@ func _input(event: InputEvent) -> void:
 		player.block()
 	if event.is_action_pressed("attack"):
 		player.swing_from_right = calc_relative_mouse_pos()
+		held_directions["attack"] = true
 		player.prepare_attack()
 	if event.is_action_released("attack"):
+		held_directions["attack"] = false
 		player.attack()
 	if event.is_action_pressed("zoom in"):
 		if player.is_queued_for_deletion() or player.is_in_group("dead") or player.player_camera == null:
@@ -79,11 +87,24 @@ func _physics_process(_delta: float) -> void:
 	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
 		return
 	if held_directions["up"]:
-		player.move(player.DIR.NORTH)
+		if player.facing_direction == player.DIR.NORTH:
+			player.move(player.DIR.NORTH)
+		else:
+			player.turn(player.DIR.NORTH)
 	if held_directions["down"]:
-		player.move(player.DIR.SOUTH)
+		if player.facing_direction == player.DIR.SOUTH:
+			player.move(player.DIR.SOUTH)
+		else:
+			player.turn(player.DIR.SOUTH)
 	if held_directions["left"]:
-		player.move(player.DIR.WEST)
+		if player.facing_direction == player.DIR.WEST:
+			player.move(player.DIR.WEST)
+		else:
+			player.turn(player.DIR.WEST)
 	if held_directions["right"]:
-		player.move(player.DIR.EAST)
-
+		if player.facing_direction == player.DIR.EAST:
+			player.move(player.DIR.EAST)
+		else:
+			player.turn(player.DIR.EAST)
+	if held_directions["attack"]:
+		player.swing_from_right = calc_relative_mouse_pos()

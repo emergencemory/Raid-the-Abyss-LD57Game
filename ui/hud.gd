@@ -18,7 +18,10 @@ class_name Hud
 @onready var sub_viewport: SubViewport = $MinimapContainer/SubViewport
 @onready var level: Label = $Progress/Level
 @onready var check_box: CheckBox = $CombatLog/LabelContainer/CheckBox
+@onready var cues_audio_level_up: AudioStreamPlayer2D = $CuesAudio1
+@onready var cues_audio_layer_up: AudioStreamPlayer2D = $CuesAudio2
 
+var layer_level: int = 0
 var attack_cooldown: float = 0.0
 var block_cooldown: float = 0.0
 var move_cooldown: float = 0.0
@@ -46,6 +49,7 @@ func _on_level_up(character: CharacterBody2D, _level: int) -> void:
 	if character.is_player:
 		_on_health_changed(character.current_health, character.base_health, character)
 		level.text = "Character Level : " + str(_level)
+		cues_audio_level_up.play()
 
 func _on_check_box_toggled() -> void:
 	if check_box.toggled_on:
@@ -98,6 +102,9 @@ func _physics_process(delta: float) -> void:
 		
 func _on_update_player_hud(_layer:int, current_orcs:int, your_kills:int, your_deaths:int, current_knights:int, knight_kills:int, knight_deaths:int) -> void:
 	stage_label.text = "Layer : " + str(_layer)
+	if _layer != layer_level:
+		layer_level = _layer
+		cues_audio_layer_up.play()
 	enemies.text = "Current Orcs : " + str(current_orcs)
 	kills.text = "Your Kills : " + str(your_kills)
 	deaths.text = "Your Deaths : " + str(your_deaths)

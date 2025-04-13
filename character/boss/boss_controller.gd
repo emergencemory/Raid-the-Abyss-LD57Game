@@ -15,13 +15,11 @@ enum DIR {
 @onready var block_left_sprite: Sprite2D = $BlockLeftSprite
 @onready var attack_from_right_sprite: Sprite2D = $AttackFromRightSprite
 @onready var attack_from_left_sprite: Sprite2D = $AttackFromLeftSprite
-@onready var combat_audio_player: AudioStreamPlayer2D = $CombatAudio
-@onready var movement_audio_player: AudioStreamPlayer2D = $MovementAudio
+@onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 @onready var strike_shape: CollisionShape2D = $CharacterSprite/HitBox/StrikeShape
 @onready var character_sprite: AnimatedSprite2D = $CharacterSprite
 @onready var shadow_sprite: AnimatedSprite2D = $CharacterSprite/ShadowSprite
 @onready var ray_cast_2d: RayCast2D = $CharacterCollider/RayCast2D
-
 
 var has_target: bool = false
 var target: CharacterBody2D
@@ -37,11 +35,7 @@ var base_kick_cooldown: float
 var current_health: int
 var facing_direction: int = 0
 var attack_direction: int = -1
-var swing_from_right: bool = false :
-	set(value):
-		if value != swing_from_right:
-			swing_from_right = value
-			prepare_attack()
+var swing_from_right: bool = false
 var current_attack_damage: int
 var current_attack_cooldown: float
 var attack_on_cooldown: bool = false
@@ -94,7 +88,6 @@ var level_up_addition: int
 var falling: bool = false
 var fall_depth: float = 0.0
 var recursion_index: int = 0
-var steps_timer: float = 0.5
 
 signal attack_signal(value: float)
 signal block_signal(value: float)
@@ -105,6 +98,7 @@ signal killed_by_knight(team: String)
 signal killed_by_orc(team: String)
 
 
+#TODO team shader
 func _ready() -> void:
 	current_attack_damage = base_attack_damage
 	current_health = base_health
@@ -159,12 +153,6 @@ func _physics_process(delta) -> void:
 		else:
 			_on_move_cooldown_timeout()
 	if moving:
-		if steps_timer > 0:
-			steps_timer -= delta
-		else:
-			steps_timer = 0.5
-			movement_audio_player["parameters/switch_to_clip"] = "Steps Armored"
-			movement_audio_player.play()
 		if cooldown_time_moving > 0:
 			cooldown_time_moving -= delta
 		else:
@@ -240,8 +228,6 @@ func prepare_attack() -> void:
 		attack_from_left_sprite.show()
 		attack_direction = ((facing_direction+4) - 1) % 4
 	is_preparing_attack = true
-	combat_audio_player["parameters/switch_to_clip"] = "Leather Buckle"
-	combat_audio_player.play()
 
 
 func attack() -> void:
@@ -305,11 +291,6 @@ func move(direction: int) -> void:
 		return
 	elif is_blocking:
 		_on_block_timeout()
-	movement_audio_player.pitch_scale = 1.0 + randf_range(-0.9, 0.9)
-	movement_audio_player.volume_db = randf_range(9.0, 15.0)
-	movement_audio_player["parameters/switch_to_clip"] = "Steps Armored"
-	movement_audio_player.play()
-	steps_timer = 0.5
 	moving = true
 	character_sprite.play("walk")
 	shadow_sprite.play("walk")
@@ -601,24 +582,24 @@ func _on_attack_area_entered(area: Area2D) -> void:
 	if _target is CharacterBody2D:
 		if is_kicking:
 			_target.kicked(self, facing_direction)
-			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
-			combat_audio_player.play()
+			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
+			audio_stream_player_2d.play()
 			strike_shape.set_deferred("disabled" , true)
 			return
-		elif _target.block_direction == attack_direction and _target.is_blocking:
+		elif _target.block_direction == attack_direction:
 			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " blocked Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
 			SignalBus.combat_log_entry.emit(log_string)
-			combat_audio_player["parameters/switch_to_clip"] = "Impact Wooden"
-			combat_audio_player.play()
+			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Wooden"
+			audio_stream_player_2d.play()
 			spark_particle.emitting = true
-		elif _target.attack_direction == attack_direction and _target.is_preparing_attack:
+		elif _target.attack_direction == attack_direction:
 			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " parried Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
 			SignalBus.combat_log_entry.emit(log_string)
-			combat_audio_player["parameters/switch_to_clip"] = "Impact Metal Armour"
-			combat_audio_player.play()
+			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Metal Armour"
+			audio_stream_player_2d.play()
 			spark_particle.emitting = true
 			_target.hit(self, true)
 		else:
 			_target.hit(self, false)
-			combat_audio_player["parameters/switch_to_clip"] = "Impact Sword And Swipe"
-			combat_audio_player.play()
+			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
+			audio_stream_player_2d.play()

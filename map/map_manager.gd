@@ -8,7 +8,7 @@ class_name MapManager
 @onready var splat_2: Texture = preload("res://map/effects/blood_2.png")
 @onready var splat_3: Texture = preload("res://map/effects/blood_3.png")
 @onready var blood_pool: Texture = preload("res://character/effects/blood.png")
-@onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
+@onready var soundtrack_player: AudioStreamPlayer2D = $SoundtrackPlayer
 @onready var shadow_layer: TileMapLayer = $ShadowLayer
 @onready var rubble_particle_1: GPUParticles2D = $RubbleParticle1
 @onready var rubble_particle_2: GPUParticles2D = $RubbleParticle2
@@ -52,19 +52,15 @@ func _ready() -> void:
 func destroy_wall(char_pos : Vector2) -> void:
 	## Destroys the wall and spawns blood
 	var tile_pos = wall_layer.local_to_map(char_pos)
-	print("Wall hit at: ", tile_pos)
 	for x_range in range(tile_pos.x -1, tile_pos.x +2):
 		for y_range in range(tile_pos.y -2, tile_pos.y +2):
 			var check_tile = Vector2(x_range, y_range)
 			if wall_layer.get_cell_source_id(check_tile) != -1:
-				print("Wall destroyed at: ", check_tile)
 				wall_layer.erase_cell(check_tile)
 				spawn_rubble(check_tile)
 				ground_layer.set_cell(check_tile, 0, Vector2i(0,0))
-				print("Ground set at: ", check_tile)
 			if shadow_layer.get_cell_source_id(check_tile) != -1:
 				shadow_layer.erase_cell(check_tile)
-				print("Shadow destroyed at: ", check_tile)
 
 func spawn_rubble(check_tile : Vector2i):
 	var _rubble_particle : GPUParticles2D = rubble_emitters[emitter_index]
@@ -72,8 +68,6 @@ func spawn_rubble(check_tile : Vector2i):
 	_rubble_particle.position = ground_layer.map_to_local(check_tile)
 	_rubble_particle.restart()
 	_rubble_particle.emitting = true
-	print("Rubble spawned at: ", check_tile)
-
 
 func _on_flush_map() -> void:
 	var cliff_tiles = cliff_layer.get_used_cells()
@@ -139,7 +133,7 @@ func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> vo
 func generate_chunk(chunk_position: Vector2) -> void:
 	## Generate terrain for the chunk and moves the music player
 	var tile_pos = wall_layer.local_to_map(chunk_position)
-	audio_stream_player_2d.position = chunk_position
+	soundtrack_player.position = chunk_position
 	for y in range(chunk_height):
 		for x in range(chunk_width):
 			var world_x = tile_pos.x - (chunk_width / 2) + x

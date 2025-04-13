@@ -88,6 +88,10 @@ func spawn_player() -> void:
 	player_camera.make_current()
 	player.character_sprite.sprite_frames = knight_spriteframes
 	player.shadow_sprite.sprite_frames = knight_spriteframes
+	player.block_right_sprite.texture = kite_shield_icon
+	player.block_left_sprite.texture = kite_shield_icon
+	player.attack_from_right_sprite.texture = sword_icon
+	player.attack_from_left_sprite.texture = sword_icon
 	spawn_ai("orc")
 	spawn_ai("knight")
 
@@ -148,15 +152,17 @@ func get_valid_spawn(team:String) -> Vector2:
 	var valid_spawn : bool = false
 	var attempts : int = 0
 	var max_attempts : int = 50
+	var current_y_range : int = 128
+	var current_x_multiplier : float = 1.0
 	while not valid_spawn and attempts < max_attempts:
 		attempts += 1
 		if team == "knight":
 			# Spawn on the left side of the screen
-			spawn_pos.x = randf_range(spawn_center.x - 1028, spawn_center.x - 256)
+			spawn_pos.x = randf_range(spawn_center.x - 1024*current_x_multiplier, spawn_center.x - 256)
 		else: # orc
 			# Spawn on the right side of the screen
-			spawn_pos.x = randf_range(spawn_center.x + 768, spawn_center.x + 1540)
-		spawn_pos.y = randf_range(spawn_center.y - 256, spawn_center.y + 256)
+			spawn_pos.x = randf_range(spawn_center.x + 768, spawn_center.x + 1540*current_x_multiplier)
+		spawn_pos.y = randf_range(spawn_center.y - current_y_range, spawn_center.y + current_y_range)
 		spawn_pos = spawn_pos.snapped(Vector2(128, 128))
 		var collision_checker : RayCast2D = RayCast2D.new()
 		collision_checker.global_position = spawn_pos
@@ -168,6 +174,8 @@ func get_valid_spawn(team:String) -> Vector2:
 		collision_checker.force_raycast_update()
 		if collision_checker.is_colliding():
 			collision_checker.queue_free()
+			current_y_range += 128
+			current_x_multiplier += 0.1
 			await(get_tree().physics_frame)
 			continue
 		else:

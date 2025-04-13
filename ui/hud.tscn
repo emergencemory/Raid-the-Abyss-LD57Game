@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://bfu3esac8trv1"]
+[gd_scene load_steps=9 format=3 uid="uid://bfu3esac8trv1"]
 
 [ext_resource type="Script" uid="uid://c4s2x55wkc3tv" path="res://ui/hud.gd" id="1_1v5rv"]
 [ext_resource type="Texture2D" uid="uid://o1ir26vc6gwh" path="res://ui/knight_icon.png" id="1_en2x2"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://d28qhgrrd3nni" path="res://ui/shield_icon.png" id="3_q43x7"]
 [ext_resource type="Texture2D" uid="uid://cwy0hhwfq467f" path="res://ui/walk_icon.png" id="4_srpbi"]
 [ext_resource type="Texture2D" uid="uid://k108pdtpbf01" path="res://ui/kick_icon.png" id="5_spcu4"]
+[ext_resource type="AudioStream" uid="uid://c2ypmm4mrjuel" path="res://audio/SFX/Horn SFX.mp3" id="7_srpbi"]
+[ext_resource type="AudioStream" uid="uid://o6vaduy703ji" path="res://audio/SFX/Gong Crash SFX.mp3" id="8_spcu4"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_1v5rv")
@@ -188,3 +190,10 @@ size = Vector2i(256, 256)
 render_target_update_mode = 4
 
 [node name="Camera2D" type="Camera2D" parent="MinimapContainer/SubViewport"]
+
+[node name="CuesAudio1" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_spcu4")
+
+[node name="CuesAudio2" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("7_srpbi")
+volume_db = 1.0
