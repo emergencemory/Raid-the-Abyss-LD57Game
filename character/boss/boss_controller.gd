@@ -1,5 +1,7 @@
 extends CharacterBody2D
-class_name CharacterManager
+class_name BossManager
+
+const GAME_DATA : Script = preload("res://data/GameData.gd")
 
 enum DIR {
 	NORTH,
@@ -11,8 +13,6 @@ enum DIR {
 @onready var stun_particle: GPUParticles2D = $StunParticle
 @onready var blood_particle: GPUParticles2D = $BloodParticle
 @onready var spark_particle: GPUParticles2D = $SparkParticle
-@onready var block_right_sprite: Sprite2D = $BlockRightSprite
-@onready var block_left_sprite: Sprite2D = $BlockLeftSprite
 @onready var attack_from_right_sprite: Sprite2D = $AttackFromRightSprite
 @onready var attack_from_left_sprite: Sprite2D = $AttackFromLeftSprite
 @onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
@@ -21,73 +21,73 @@ enum DIR {
 @onready var shadow_sprite: AnimatedSprite2D = $CharacterSprite/ShadowSprite
 @onready var ray_cast_2d: RayCast2D = $CharacterCollider/RayCast2D
 
+var recursion_index: int = 0
 var has_target: bool = false
-var target: CharacterBody2D
-var base_health: int
-var base_attack_damage: int
-var base_attack_cooldown : float 
-var base_block_duration: float
-var base_block_cooldown: float 
-var base_speed: float 
-var base_move_cooldown: float 
-var base_kick_stun_duration: float 
-var base_kick_cooldown: float
-var current_health: int
-var facing_direction: int = 0
-var attack_direction: int = -1
-var swing_from_right: bool = false
-var current_attack_damage: int
-var current_attack_cooldown: float
-var attack_on_cooldown: bool = false
-var block_direction: int = -1
-var block_to_right: bool = false
-var current_block_duration: float
-var current_block_cooldown: float 
-var block_on_cooldown: bool = false
-var current_speed: float 
-var current_move_cooldown: float 
-var move_on_cooldown: bool = false
-var is_kicking: bool = false
-var current_kick_stun_duration: float
-var current_kick_cooldown: float
-var kick_on_cooldown: bool = false
-var base_attack_speed
-var current_attack_speed
-var moving: bool = false
 var is_player: bool = false
-var team: String
-var is_attacking: bool = false
-var is_preparing_attack: bool = false
-var attack_charge: float = 0.0
-var base_health_regen: float
-var current_health_regen: float
-var is_turning: bool = false
-var attack_windup: bool = false
-var cooldown_time_attack: float = 0.0
-var cooldown_time_block: float = 0.0
-var cooldown_time_turn: float = 0.0
-var cooldown_time_move: float = 0.0
-var cooldown_time_moving: float = 0.0 
-var cooldown_time_kick: float = 0.0
-var cooldown_time_health_regen: float = 0.0
-var cooldown_time_attack_area: float = 0.0
-var cooldown_time_block_area: float = 0.0
-var cooldown_time_attack_windup: float = 0.0
+var target: CharacterBody2D
 var cooldown_time_target: float = 0.0
-var is_blocking: bool = false
-var stun_on_cooldown: bool = false
-var cooldown_time_stun: float = 0.0
+var team: String
 var order_ticks : float = 0.0
-var player_camera: Camera2D
 var current_xp: float
 var current_level: int
 var current_xp_to_next_level: float
 var base_xp_to_next_level_multiplier: float
 var level_up_multiplier: float
 var level_up_addition: int
-var falling: bool = false
-var fall_depth: float = 0.0
-var recursion_index: int = 0
+
+var base_health: int
+var current_health: int
+var stun_on_cooldown: bool = false
+var cooldown_time_stun: float = 0.0
+
+var facing_direction: int = 0
+var is_turning: bool = false
+var moving: bool = false
+var current_speed: float 
+var current_move_cooldown: float 
+var move_on_cooldown: bool = false
+var cooldown_time_turn: float = 0.0
+var cooldown_time_move: float = 0.0
+var movement_time: float = 0.0 
+
+var is_preparing_attack: bool = false
+var attack_direction: int = -1
+var swing_from_right: bool = false
+var attack_windup: bool = false
+var windup_time: float = 0.0
+
+var is_attacking_from_right: bool = false
+var current_attack_from_right_damage: int
+var current_attack_from_right_speed: float
+var current_attack_from_right_cooldown: float
+var attack_from_right_on_cooldown: bool = false
+var cooldown_time_attack_from_right: float = 0.0
+var attack_from_right_area_time: float = 0.0
+
+var is_attacking_from_left: bool = false
+var current_attack_from_left_damage: int
+var current_attack_from_left_speed: float
+var current_attack_from_left_cooldown: float
+var attack_from_left_on_cooldown: bool = false
+var cooldown_time_attack_from_left: float = 0.0
+var attack_from_left_area_time: float = 0.0
+
+var is_stomping: bool = false
+var current_stomp_damage: int
+var current_stomp_speed: float
+var current_stomp_stun_duration: float
+var current_stomp_cooldown: float
+var stomp_on_cooldown: bool = false
+var cooldown_time_stomp: float = 0.0
+var stomp_area_time: float = 0.0
+
+var is_jumping: bool = false
+var current_jump_damage: int
+var current_jump_speed: float
+var current_jump_cooldown: float
+var jump_on_cooldown: bool = false
+var cooldown_time_jump: float = 0.0
+var jump_area_time: float = 0.0
 
 signal attack_signal(value: float)
 signal block_signal(value: float)
@@ -97,34 +97,71 @@ signal killed_by_player(team: String)
 signal killed_by_knight(team: String)
 signal killed_by_orc(team: String)
 
-
-#TODO team shader
 func _ready() -> void:
-	current_attack_damage = base_attack_damage
+	current_level = GAME_DATA.boss_data["base_level"]
+	current_xp = GAME_DATA.boss_data["base_xp"]
+	current_xp_to_next_level = GAME_DATA.boss_data["base_xp_to_next_level"]
+	base_xp_to_next_level_multiplier = GAME_DATA.boss_data["base_xp_to_next_level_multiplier"]
+	level_up_multiplier = GAME_DATA.boss_data["level_up_multiplier"]
+	level_up_addition = GAME_DATA.boss_data["level_up_addition"]
+
+	base_health = GAME_DATA.boss_data["base_health"]
 	current_health = base_health
-	current_attack_cooldown = base_attack_cooldown
-	current_block_duration = base_block_duration
-	current_block_cooldown = base_block_cooldown
-	current_speed = base_speed
-	current_move_cooldown = base_move_cooldown
-	current_kick_stun_duration = base_kick_stun_duration
-	current_kick_cooldown = base_kick_cooldown
-	current_attack_speed = base_attack_speed
-	current_health_regen = base_health_regen
+	current_speed = GAME_DATA.boss_data["base_speed"]
+	current_move_cooldown = GAME_DATA.boss_data["move_cooldown"]
+
+	current_attack_from_left_damage = GAME_DATA.boss_data["attack_from_left_damage"]
+	current_attack_from_left_speed = GAME_DATA.boss_data["attack_from_left_speed"]
+	current_attack_from_left_cooldown = GAME_DATA.boss_data["attack_from_left_cooldown"]
+
+	current_attack_from_right_damage = GAME_DATA.boss_data["attack_from_right_damage"]
+	current_attack_from_right_speed = GAME_DATA.boss_data["attack_from_right_speed"]
+	current_attack_from_right_cooldown = GAME_DATA.boss_data["attack_from_right_cooldown"]
+	
+	current_stomp_stun_duration = GAME_DATA.boss_data["stomp_stun"]
+	current_stomp_speed = GAME_DATA.boss_data["stomp_speed"]
+	current_stomp_cooldown = GAME_DATA.boss_data["stomp_cooldown"]
+	current_stomp_damage = GAME_DATA.boss_data["stomp_damage"]
+
+	current_jump_cooldown = GAME_DATA.boss_data["jump_cooldown"]
+	current_jump_damage = GAME_DATA.boss_data["jump_damage"]
+	current_jump_speed = GAME_DATA.boss_data["jump_speed"]
+	
 	if is_player:
 		SignalBus.emit_signal("health_signal", current_health, base_health, self)
 
+func level_up():
+	current_level += 1
+	SignalBus.emit_signal("leveled_up", self, current_level)
+	character_sprite.self_modulate = Color(3, 3, 1, 1)
+	var level_tween = create_tween()
+	level_tween.tween_property(character_sprite, "self_modulate", Color((1 + float(current_level)/10), (1 + float(current_level)/10), 1, 1), 0.5)
+	
+	current_xp_to_next_level = base_xp_to_next_level_multiplier * current_xp_to_next_level
+	
+	base_health += level_up_addition
+	current_health = base_health
+	current_move_cooldown = current_move_cooldown / level_up_multiplier
+
+	current_attack_from_left_damage = (level_up_addition*current_level)/2
+	current_attack_from_left_cooldown = current_attack_from_left_cooldown / level_up_multiplier
+	
+	current_attack_from_right_damage = (level_up_addition*current_level)/2
+	current_attack_from_right_cooldown = current_attack_from_right_cooldown / level_up_multiplier
+
+	current_stomp_damage = (level_up_addition*current_level)/2
+	current_stomp_cooldown = current_stomp_cooldown / level_up_multiplier
+	current_stomp_stun_duration = current_stomp_stun_duration * level_up_multiplier
+
+	current_jump_damage = (level_up_addition*current_level)/2
+	current_jump_cooldown = current_jump_cooldown / level_up_multiplier
+	
+	if is_player:
+		SignalBus.emit_signal("request_reinforcements", team)
+
 func _physics_process(delta) -> void:
-	if is_in_group("dead") and not falling:
+	if is_in_group("dead"):
 		set_physics_process(false)
-		return
-	elif falling:
-		scale.x -= delta
-		scale.y -= delta
-		fall_depth +=  1
-		if fall_depth >= 30:
-			falling = false
-			queue_free()
 		return
 	if stun_on_cooldown:
 		if cooldown_time_stun > 0:
@@ -132,16 +169,21 @@ func _physics_process(delta) -> void:
 		else:
 			stun_on_cooldown = false
 			stun_particle.emitting = false
-	if attack_on_cooldown:
-		if cooldown_time_attack > 0:
-			cooldown_time_attack -= delta
+	if attack_from_left_on_cooldown:
+		if cooldown_time_attack_from_left > 0:
+			cooldown_time_attack_from_left -= delta
 		else:
-			_on_attack_cooldown_timeout()
-	if block_on_cooldown:
-		if cooldown_time_block > 0:
-			cooldown_time_block -= delta
+			_on_attack_from_left_cooldown_timeout()
+	if attack_from_right_on_cooldown:
+		if cooldown_time_attack_from_right > 0:
+			cooldown_time_attack_from_right -= delta
 		else:
-			_on_block_cooldown_timeout()
+			_on_attack_from_right_cooldown_timeout()
+	if jump_on_cooldown:
+		if cooldown_time_jump > 0:
+			cooldown_time_jump -= delta
+		else:
+			_on_jump_cooldown_timeout()
 	if is_turning:
 		if cooldown_time_turn > 0:
 			cooldown_time_turn -= delta
@@ -153,40 +195,40 @@ func _physics_process(delta) -> void:
 		else:
 			_on_move_cooldown_timeout()
 	if moving:
-		if cooldown_time_moving > 0:
-			cooldown_time_moving -= delta
+		if movement_time > 0:
+			movement_time -= delta
 		else:
 			_on_move_timeout()
-	if kick_on_cooldown:
-		if cooldown_time_kick > 0:
-			cooldown_time_kick -= delta
+	if stomp_on_cooldown:
+		if cooldown_time_stomp > 0:
+			cooldown_time_stomp -= delta
 		else:
 			_on_kick_cooldown_timeout()
-	if current_health < base_health:
-		if cooldown_time_health_regen > 0:
-			cooldown_time_health_regen -= delta
-		else:
-			_on_health_regen_timeout()
 	if attack_windup:
-		if cooldown_time_attack_windup > 0:
-			cooldown_time_attack_windup -= delta
+		if windup_time > 0:
+			windup_time -= delta
 		else:
 			_on_attack_begin()
-	if is_attacking:
-		if cooldown_time_attack_area > 0:
-			cooldown_time_attack_area -= delta
+	if is_attacking_from_left:
+		if attack_from_left_area_time > 0:
+			attack_from_left_area_time -= delta
 		else:
-			_on_attack_timeout()
-	if is_kicking:
-		if cooldown_time_attack_area > 0:
-			cooldown_time_attack_area -= delta
+			_on_attack_from_left_timeout()
+	if is_attacking_from_right:
+		if attack_from_right_area_time > 0:
+			attack_from_right_area_time -= delta
 		else:
-			_on_kick_timeout()
-	if is_blocking:
-		if cooldown_time_block_area > 0:
-			cooldown_time_block_area -= delta
+			_on_attack_from_right_timeout()
+	if is_jumping:
+		if jump_area_time > 0:
+			jump_area_time -= delta
 		else:
-			_on_block_timeout()
+			_on_jump_timeout()
+	if is_stomping:
+		if stomp_area_time > 0:
+			stomp_area_time -= delta
+		else:
+			_on_stomp_timeout()
 	if has_target:
 		if cooldown_time_target > 0:
 			cooldown_time_target -= delta
@@ -196,77 +238,73 @@ func _physics_process(delta) -> void:
 		level_up()
 
 
-func level_up():
-	current_level += 1
-	SignalBus.emit_signal("leveled_up", self, current_level)
-	character_sprite.self_modulate = Color(3, 3, 1, 1)
-	var level_tween = create_tween()
-	level_tween.tween_property(character_sprite, "self_modulate", Color((1 + float(current_level)/10), (1 + float(current_level)/10), 1, 1), 0.5)
-	current_xp_to_next_level = base_xp_to_next_level_multiplier * current_xp_to_next_level
-	base_health += level_up_addition
-	current_health = base_health
-	current_attack_damage = (level_up_addition*current_level)/2
-	current_attack_cooldown = current_attack_cooldown / level_up_multiplier
-	current_block_duration = current_block_duration * level_up_multiplier
-	current_block_cooldown = current_block_cooldown / level_up_multiplier
-	current_move_cooldown = current_move_cooldown / level_up_multiplier
-	current_kick_stun_duration = current_kick_stun_duration * level_up_multiplier
-	current_kick_cooldown = current_kick_cooldown / level_up_multiplier
-	current_health_regen = current_health_regen / level_up_multiplier
-	if is_player:
-		SignalBus.emit_signal("request_reinforcements", team)
-
-func prepare_attack() -> void:
-	if is_attacking or attack_windup or is_kicking or attack_on_cooldown:
+func prepare_attack_from_left() -> void:
+	if is_attacking_from_left or is_attacking_from_right or attack_windup or is_stomping or is_jumping or attack_from_left_on_cooldown:
 		return
-	if swing_from_right:
-		attack_from_right_sprite.show()
-		attack_from_left_sprite.hide()
-		attack_direction = ((facing_direction+4) + 1) % 4
-	else:
+	else:	
 		attack_from_right_sprite.hide()
 		attack_from_left_sprite.show()
 		attack_direction = ((facing_direction+4) - 1) % 4
-	is_preparing_attack = true
+		is_preparing_attack = true
 
+func prepare_attack_from_right() -> void:
+	if is_attacking_from_left or is_attacking_from_right or attack_windup or is_stomping or is_jumping or attack_from_right_on_cooldown:
+		return
+	else:
+		attack_from_left_sprite.hide()
+		attack_from_right_sprite.show()
+		attack_direction = ((facing_direction+4) + 1) % 4
+		is_preparing_attack = true
+		
 
-func attack() -> void:
+func attack_from_left() -> void:
 	attack_from_left_sprite.hide()
 	attack_from_right_sprite.hide()
 	is_preparing_attack = false
-	if attack_on_cooldown or is_attacking or moving or is_turning or is_kicking or attack_windup:
+	if attack_from_left_on_cooldown or is_attacking_from_left or is_attacking_from_right or moving or is_turning or is_stomping or is_jumping or attack_windup:
 		return
-	elif is_blocking:
-		_on_block_timeout()
-	if swing_from_right:
-		character_sprite.play("attack_from_right")
-		shadow_sprite.play("attack_from_right")
 	else:
 		character_sprite.play("attack_from_left")
 		shadow_sprite.play("attack_from_left")
-	cooldown_time_attack_windup = current_attack_speed/2
-	attack_windup = true
-	cooldown_time_attack = current_attack_cooldown
-	attack_on_cooldown = true
-	if is_player:
-		emit_signal("attack_signal", current_attack_cooldown)
+		windup_time = current_attack_from_left_speed/2
+		attack_windup = true
+		cooldown_time_attack_from_left = current_attack_from_left_cooldown
+		attack_from_left_on_cooldown = true
+		if is_player:
+			emit_signal("attack_signal", current_attack_from_left_cooldown)
 
-func block() -> void:
-	if block_on_cooldown or is_attacking or moving or is_turning or attack_windup or is_kicking:
+func attack_from_right() -> void:
+	attack_from_left_sprite.hide()
+	attack_from_right_sprite.hide()
+	is_preparing_attack = false
+	if attack_from_right_on_cooldown or is_attacking_from_left or is_attacking_from_right or moving or is_turning or is_stomping or is_jumping or attack_windup:
 		return
-	elif is_blocking:
-		_on_block_timeout()
-	block_direction = get_block_direction()
-	character_sprite.play("block")
-	shadow_sprite.play("block")
-	cooldown_time_block = current_block_cooldown
-	block_on_cooldown = true
-	cooldown_time_block_area = current_block_duration
-	is_blocking = true
-	if is_player:
-		emit_signal("block_signal", current_block_cooldown)
+	else:
+		character_sprite.play("attack_from_right")
+		shadow_sprite.play("attack_from_right")
+		windup_time = current_attack_from_right_speed/2
+		attack_windup = true
+		cooldown_time_attack_from_right = current_attack_from_right_cooldown
+		attack_from_right_on_cooldown = true
+		if is_player:
+			emit_signal("attack_signal", current_attack_from_right_cooldown)
 
-func kick() -> void:
+
+
+func jump() -> void:
+	if jump_on_cooldown or not has_target or is_attacking_from_left or is_attacking_from_right or moving or is_turning or attack_windup or is_stomping:
+		return
+	var jump_target = target
+	character_sprite.play("jump")
+	shadow_sprite.play("jump")
+	cooldown_time_jump = current_jump_cooldown
+	jump_on_cooldown = true
+	jump_area_time = current_jump_speed
+	is_jumping = true
+	if is_player:
+		emit_signal("block_signal", current_jump_cooldown)
+
+func stomp() -> void:
 	if moving or is_attacking or is_turning or attack_windup or is_turning or is_kicking or kick_on_cooldown:
 		return
 	elif is_blocking:
@@ -276,8 +314,8 @@ func kick() -> void:
 	cooldown_time_attack_area = current_attack_speed/2
 	is_kicking = true
 	strike_shape.set_deferred("disabled", false)
-	character_sprite.play("kick")
-	shadow_sprite.play("kick")
+	character_sprite.play("stomp")
+	shadow_sprite.play("stomp")
 	if is_player:
 		emit_signal("kick_signal", current_kick_cooldown)
 	
@@ -397,8 +435,7 @@ func _on_attack_begin() -> void:
 func _on_block_timeout() -> void:
 	is_blocking = false
 	block_direction = -1
-	block_right_sprite.hide()
-	block_left_sprite.hide()
+
 
 func _on_block_cooldown_timeout() -> void:
 	block_on_cooldown = false
@@ -417,13 +454,9 @@ func _on_kick_cooldown_timeout() -> void:
 
 func get_block_direction() -> int:
 	if block_to_right:
-		block_right_sprite.show()
-		block_left_sprite.hide()
 		var block_dir = ((facing_direction + 1) + 4) % 4
 		return block_dir
 	else:
-		block_right_sprite.hide()
-		block_left_sprite.show()
 		var block_dir =((facing_direction - 1)+4) % 4
 		return block_dir
 

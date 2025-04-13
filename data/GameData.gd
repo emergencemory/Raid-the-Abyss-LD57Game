@@ -20,3 +20,28 @@ const character_data: Dictionary = {
 	"level_up_multiplier": 1.2,
 	"level_up_addition": 1
 }
+
+const boss_data: Dictionary = {
+	"base_health": 20,
+	"base_speed": 25.0,
+	"move_cooldown": 1.0,
+	"attack_from_right_damage": 10,
+	"attack_from_right_cooldown": 10.0,
+	"attack_from_right_speed": 1.0,
+	"attack_from_left_damage": 5,
+	"attack_from_left_cooldown": 1.0,
+	"attack_from_left_speed": 1.0,
+	"stomp_damage": 5,
+	"stomp_cooldown": 10.0,
+	"stomp_speed": 1.0,
+	"stomp_stun": 1.0,
+	"jump_damage": 5,
+	"jump_cooldown": 10.0,
+	"jump_speed": 1.0,
+	"base_level": 1,
+	"base_xp": 0,
+	"base_xp_to_next_level": 5000,
+	"base_xp_to_next_level_multiplier": 1.5,
+	"level_up_multiplier": 1.5,
+	"level_up_addition": 20
+}

@@ -1,49 +1,16 @@
-[gd_scene load_steps=57 format=3 uid="uid://dod1i16ch7ab1"]
+[gd_scene load_steps=23 format=3 uid="uid://dod1i16ch7ab1"]
 
 [ext_resource type="Script" uid="uid://18ryjkbov22f" path="res://character/boss/boss_controller.gd" id="1_pr7xm"]
 [ext_resource type="Texture2D" uid="uid://c6rr4j2p122ua" path="res://character/effects/blood.png" id="2_nonme"]
 [ext_resource type="Material" uid="uid://bp4rrh6m1a52b" path="res://character/character_shader_material.tres" id="3_ybik2"]
-[ext_resource type="Texture2D" uid="uid://h0tq4alyc0hc" path="res://character/boss/stomp/0000.png" id="4_q2os6"]
-[ext_resource type="SpriteFrames" uid="uid://cn2o2v7sl57ow" path="res://character/orc/orc_spriteframes.tres" id="4_twug8"]
-[ext_resource type="Texture2D" uid="uid://crobi0dmqk56l" path="res://character/boss/stomp/0001.png" id="5_avuml"]
+[ext_resource type="SpriteFrames" uid="uid://bn75xs8thdfpi" path="res://character/boss/boss_spriteframes.tres" id="4_fef42"]
 [ext_resource type="AudioStream" uid="uid://cu1cpquh4inh8" path="res://audio/SFX/Impact Body.wav" id="5_qrovx"]
 [ext_resource type="AudioStream" uid="uid://dqmi0udhr2ncg" path="res://audio/SFX/Impact Metal Armour.wav" id="6_atx7f"]
-[ext_resource type="Texture2D" uid="uid://c8r58ns82xxla" path="res://character/boss/stomp/0002.png" id="6_s71qe"]
 [ext_resource type="AudioStream" uid="uid://ci8u21id8lmbd" path="res://audio/SFX/Impact Sword and Swipe.wav" id="7_ge60q"]
-[ext_resource type="Texture2D" uid="uid://dhnm7c1ruwuya" path="res://character/boss/stomp/0003.png" id="7_iya1m"]
-[ext_resource type="Texture2D" uid="uid://n574wnaj0tq" path="res://character/boss/stomp/0004.png" id="8_bv321"]
 [ext_resource type="AudioStream" uid="uid://c3ne4ep7lnwh5" path="res://audio/SFX/Impact Wooden.wav" id="8_lswfc"]
-[ext_resource type="Texture2D" uid="uid://dx765or65v6sg" path="res://character/boss/stomp/0005.png" id="9_3jj36"]
-[ext_resource type="Texture2D" uid="uid://bdno7pb3g5ijk" path="res://ui/round_shield_icon.png" id="9_o2cl7"]
 [ext_resource type="Texture2D" uid="uid://co1b3nsskubur" path="res://ui/axe_icon.png" id="10_3tgui"]
-[ext_resource type="Texture2D" uid="uid://dke4pcjrsntb0" path="res://character/boss/stomp/0006.png" id="10_a12ep"]
 [ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="11_n01wj"]
-[ext_resource type="Texture2D" uid="uid://d2mr8y7cpnule" path="res://character/boss/stomp/0007.png" id="11_vyut4"]
-[ext_resource type="Texture2D" uid="uid://blar0idgdfy6l" path="res://character/boss/stomp/0008.png" id="12_gebs2"]
 [ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="12_tw6fv"]
-[ext_resource type="Texture2D" uid="uid://7k7e6fbvc5el" path="res://character/boss/stomp/0009.png" id="13_tnj6h"]
-[ext_resource type="Texture2D" uid="uid://7mn53xplxbvq" path="res://character/boss/stomp/0010.png" id="14_ri48s"]
-[ext_resource type="Texture2D" uid="uid://b1rwu2dkw8xf" path="res://character/boss/stomp/0011.png" id="15_y3xwb"]
-[ext_resource type="Texture2D" uid="uid://umql5c6fexxw" path="res://character/boss/stomp/0012.png" id="16_mgjsv"]
-[ext_resource type="Texture2D" uid="uid://cuetj6s380wef" path="res://character/boss/stomp/0013.png" id="17_qcq3w"]
-[ext_resource type="Texture2D" uid="uid://b03k5nm31kpj3" path="res://character/boss/stomp/0014.png" id="18_b0ine"]
-[ext_resource type="Texture2D" uid="uid://dflyj61k3t6h5" path="res://character/boss/stomp/0015.png" id="19_nm05c"]
-[ext_resource type="Texture2D" uid="uid://pl221skjurfo" path="res://character/boss/stomp/0016.png" id="20_e1jl3"]
-[ext_resource type="Texture2D" uid="uid://b01neb262st87" path="res://character/boss/stomp/0017.png" id="21_jju72"]
-[ext_resource type="Texture2D" uid="uid://dtvw5l28ddyjh" path="res://character/boss/stomp/0018.png" id="22_vktq2"]
-[ext_resource type="Texture2D" uid="uid://dublpuhj2wcem" path="res://character/boss/stomp/0019.png" id="23_32xbo"]
-[ext_resource type="Texture2D" uid="uid://b0o032gmj5fnt" path="res://character/boss/stomp/0020.png" id="24_5tmlt"]
-[ext_resource type="Texture2D" uid="uid://cw7i2mrbi250h" path="res://character/boss/stomp/0021.png" id="25_1ckio"]
-[ext_resource type="Texture2D" uid="uid://ckv080c13j2y4" path="res://character/boss/stomp/0022.png" id="26_0wyfq"]
-[ext_resource type="Texture2D" uid="uid://boxylose766ux" path="res://character/boss/stomp/0023.png" id="27_jv8v3"]
-[ext_resource type="Texture2D" uid="uid://tlmewoqt7eyy" path="res://character/boss/stomp/0024.png" id="28_uw5qi"]
-[ext_resource type="Texture2D" uid="uid://dc25otc44ukq4" path="res://character/boss/stomp/0025.png" id="29_p8yy5"]
-[ext_resource type="Texture2D" uid="uid://bf2bh1tfjpa8h" path="res://character/boss/stomp/0026.png" id="30_dhjlu"]
-[ext_resource type="Texture2D" uid="uid://ciagtl04hyx3" path="res://character/boss/stomp/0027.png" id="31_3vn2m"]
-[ext_resource type="Texture2D" uid="uid://d2sbmc2awnxie" path="res://character/boss/stomp/0028.png" id="32_ybvur"]
-[ext_resource type="Texture2D" uid="uid://cg4y2dnpl3jaj" path="res://character/boss/stomp/0029.png" id="33_62h15"]
-[ext_resource type="Texture2D" uid="uid://8iug5grnj1nc" path="res://character/boss/stomp/0030.png" id="34_n1ael"]
-[ext_resource type="Texture2D" uid="uid://mjoa8yskb6wq" path="res://character/boss/stomp/0031.png" id="35_vufgy"]
 
 [sub_resource type="Curve" id="Curve_8vtqr"]
 _limits = [0.0, 100.0, 0.0, 1.0]
@@ -71,115 +38,6 @@ gravity = Vector3(0, 0, 0)
 damping_max = 10.094
 damping_curve = SubResource("CurveTexture_8vtqr")
 scale_over_velocity_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_8g567"]
-animations = [{
-"frames": [],
-"loop": true,
-"name": &"default",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("4_q2os6")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5_avuml")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_s71qe")
-}, {
-"duration": 1.0,
-"texture": ExtResource("7_iya1m")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_bv321")
-}, {
-"duration": 1.0,
-"texture": ExtResource("9_3jj36")
-}, {
-"duration": 1.0,
-"texture": ExtResource("10_a12ep")
-}, {
-"duration": 1.0,
-"texture": ExtResource("11_vyut4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("12_gebs2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("13_tnj6h")
-}, {
-"duration": 1.0,
-"texture": ExtResource("14_ri48s")
-}, {
-"duration": 1.0,
-"texture": ExtResource("15_y3xwb")
-}, {
-"duration": 1.0,
-"texture": ExtResource("16_mgjsv")
-}, {
-"duration": 1.0,
-"texture": ExtResource("17_qcq3w")
-}, {
-"duration": 1.0,
-"texture": ExtResource("18_b0ine")
-}, {
-"duration": 1.0,
-"texture": ExtResource("19_nm05c")
-}, {
-"duration": 1.0,
-"texture": ExtResource("20_e1jl3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("21_jju72")
-}, {
-"duration": 1.0,
-"texture": ExtResource("22_vktq2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("23_32xbo")
-}, {
-"duration": 1.0,
-"texture": ExtResource("24_5tmlt")
-}, {
-"duration": 1.0,
-"texture": ExtResource("25_1ckio")
-}, {
-"duration": 1.0,
-"texture": ExtResource("26_0wyfq")
-}, {
-"duration": 1.0,
-"texture": ExtResource("27_jv8v3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("28_uw5qi")
-}, {
-"duration": 1.0,
-"texture": ExtResource("29_p8yy5")
-}, {
-"duration": 1.0,
-"texture": ExtResource("30_dhjlu")
-}, {
-"duration": 1.0,
-"texture": ExtResource("31_3vn2m")
-}, {
-"duration": 1.0,
-"texture": ExtResource("32_ybvur")
-}, {
-"duration": 1.0,
-"texture": ExtResource("33_62h15")
-}, {
-"duration": 1.0,
-"texture": ExtResource("34_n1ael")
-}, {
-"duration": 1.0,
-"texture": ExtResource("35_vufgy")
-}],
-"loop": true,
-"name": &"stomp",
-"speed": 10.0
-}]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chf46"]
 radius = 40.0
@@ -252,12 +110,12 @@ process_material = SubResource("ParticleProcessMaterial_k67b1")
 show_behind_parent = true
 texture_filter = 1
 material = ExtResource("3_ybik2")
-sprite_frames = SubResource("SpriteFrames_8g567")
-animation = &"stomp"
-frame_progress = 0.131963
+sprite_frames = ExtResource("4_fef42")
+animation = &"jump"
+frame = 38
+frame_progress = 1.0
 
 [node name="HitBox" type="Area2D" parent="CharacterSprite"]
-visible = false
 position = Vector2(0, -128)
 collision_layer = 0
 collision_mask = 2
@@ -270,7 +128,7 @@ disabled = true
 [node name="ShadowSprite" type="AnimatedSprite2D" parent="CharacterSprite"]
 self_modulate = Color(0.2, 0.2, 0.2, 0.4)
 show_behind_parent = true
-sprite_frames = ExtResource("4_twug8")
+sprite_frames = ExtResource("4_fef42")
 animation = &"attack_from_right"
 offset = Vector2(-7, 7)
 
@@ -284,7 +142,6 @@ target_position = Vector2(0, -140)
 collide_with_areas = true
 
 [node name="HurtBox" type="Area2D" parent="."]
-visible = false
 collision_layer = 2
 collision_mask = 0
 
@@ -296,37 +153,20 @@ debug_color = Color(0.920729, 0.234891, 0.397624, 0.42)
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamInteractive_8vtqr")
 
-[node name="BlockRightSprite" type="Sprite2D" parent="."]
-visible = false
-self_modulate = Color(1, 1, 3, 0.6)
-rotation = 4.71239
-scale = Vector2(1, 0.5)
-texture = ExtResource("9_o2cl7")
-offset = Vector2(0, 120)
-
-[node name="BlockLeftSprite" type="Sprite2D" parent="."]
-visible = false
-self_modulate = Color(1, 1, 3, 0.6)
-rotation = 1.5708
-scale = Vector2(1, 0.5)
-texture = ExtResource("9_o2cl7")
-offset = Vector2(0, 120)
-
 [node name="AttackFromRightSprite" type="Sprite2D" parent="."]
-visible = false
 self_modulate = Color(3, 1, 1, 0.6)
 rotation = 2.35619
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("10_3tgui")
-offset = Vector2(-60, 0)
+offset = Vector2(-180, -100)
 
 [node name="AttackFromLeftSprite" type="Sprite2D" parent="."]
-visible = false
 self_modulate = Color(3, 1, 1, 0.6)
 rotation = 3.92699
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("10_3tgui")
-offset = Vector2(60, 0)
+offset = Vector2(180, -100)
+flip_h = true
 
 [node name="SparkParticle" type="GPUParticles2D" parent="."]
 position = Vector2(-2, -141)
