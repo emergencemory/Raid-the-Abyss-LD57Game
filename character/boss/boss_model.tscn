@@ -28,7 +28,7 @@ point_count = 2
 [sub_resource type="CurveTexture" id="CurveTexture_tthh3"]
 curve = SubResource("Curve_y6277")
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_k67b1"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ob7ij"]
 particle_flag_disable_z = true
 particle_flag_damping_as_friction = true
 spread = 180.0
@@ -95,16 +95,16 @@ collision_mask = 0
 script = ExtResource("1_pr7xm")
 
 [node name="BloodParticle" type="GPUParticles2D" parent="."]
-self_modulate = Color(1, 1, 1, 0.8)
+self_modulate = Color(0, 0, 0, 0.8)
 show_behind_parent = true
 emitting = false
+amount = 200
 texture = ExtResource("2_nonme")
 lifetime = 30.0
-one_shot = true
 speed_scale = 3.0
-explosiveness = 0.98
+explosiveness = 0.39
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_k67b1")
+process_material = SubResource("ParticleProcessMaterial_ob7ij")
 
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
 show_behind_parent = true
@@ -115,12 +115,42 @@ animation = &"jump"
 frame = 38
 frame_progress = 1.0
 
-[node name="HitBox" type="Area2D" parent="CharacterSprite"]
+[node name="HitBoxFront" type="Area2D" parent="CharacterSprite"]
 position = Vector2(0, -128)
 collision_layer = 0
 collision_mask = 2
 
-[node name="StrikeShape" type="CollisionShape2D" parent="CharacterSprite/HitBox"]
+[node name="StrikeShapeFront" type="CollisionShape2D" parent="CharacterSprite/HitBoxFront"]
+position = Vector2(-1, -11)
+shape = SubResource("CircleShape2D_chf46")
+disabled = true
+
+[node name="HitBoxFront2" type="Area2D" parent="CharacterSprite"]
+position = Vector2(0, -244)
+collision_layer = 0
+collision_mask = 2
+
+[node name="StrikeShapeFront2" type="CollisionShape2D" parent="CharacterSprite/HitBoxFront2"]
+position = Vector2(-1, -11)
+shape = SubResource("CircleShape2D_chf46")
+disabled = true
+
+[node name="HitBoxLeft" type="Area2D" parent="CharacterSprite"]
+position = Vector2(-128, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="StrikeShapeLeft" type="CollisionShape2D" parent="CharacterSprite/HitBoxLeft"]
+position = Vector2(-1, -11)
+shape = SubResource("CircleShape2D_chf46")
+disabled = true
+
+[node name="HitBoxRight" type="Area2D" parent="CharacterSprite"]
+position = Vector2(128, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="StrikeShapeRight" type="CollisionShape2D" parent="CharacterSprite/HitBoxRight"]
 position = Vector2(-1, -11)
 shape = SubResource("CircleShape2D_chf46")
 disabled = true
@@ -137,8 +167,20 @@ light_mask = 0
 visibility_layer = 0
 shape = SubResource("CircleShape2D_cepk8")
 
-[node name="RayCast2D" type="RayCast2D" parent="CharacterCollider"]
+[node name="RayCast2DFront" type="RayCast2D" parent="CharacterCollider"]
 target_position = Vector2(0, -140)
+collide_with_areas = true
+
+[node name="RayCast2DFront2" type="RayCast2D" parent="CharacterCollider"]
+target_position = Vector2(0, -250)
+collide_with_areas = true
+
+[node name="RayCast2DLeft" type="RayCast2D" parent="CharacterCollider"]
+target_position = Vector2(-140, 0)
+collide_with_areas = true
+
+[node name="RayCast2DRight" type="RayCast2D" parent="CharacterCollider"]
+target_position = Vector2(140, 0)
 collide_with_areas = true
 
 [node name="HurtBox" type="Area2D" parent="."]
@@ -184,4 +226,7 @@ emitting = false
 texture = ExtResource("12_tw6fv")
 process_material = SubResource("ParticleProcessMaterial_8vtqr")
 
-[connection signal="area_entered" from="CharacterSprite/HitBox" to="." method="_on_attack_area_entered"]
+[connection signal="area_entered" from="CharacterSprite/HitBoxFront" to="." method="_on_attack_area_entered"]
+[connection signal="area_entered" from="CharacterSprite/HitBoxFront2" to="." method="_on_attack_area_entered"]
+[connection signal="area_entered" from="CharacterSprite/HitBoxLeft" to="." method="_on_attack_area_entered"]
+[connection signal="area_entered" from="CharacterSprite/HitBoxRight" to="." method="_on_attack_area_entered"]

@@ -34,7 +34,7 @@ const boss_data: Dictionary = {
 	"stomp_damage": 5,
 	"stomp_cooldown": 10.0,
 	"stomp_speed": 1.0,
-	"stomp_stun": 1.0,
+	"stomp_stun_duration": 1.0,
 	"jump_damage": 5,
 	"jump_cooldown": 10.0,
 	"jump_speed": 1.0,

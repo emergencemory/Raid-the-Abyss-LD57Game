@@ -242,7 +242,7 @@ func prepare_attack() -> void:
 		attack_from_left_sprite.show()
 		attack_direction = ((facing_direction+4) - 1) % 4
 	is_preparing_attack = true
-	combat_audio_player["parameters/switch_to_clip"] = "Leather Buckle"
+	combat_audio_player["parameters/switch_to_clip"] = "Sword Draw"
 	combat_audio_player.play()
 
 
@@ -272,6 +272,9 @@ func block() -> void:
 		return
 	elif is_blocking:
 		_on_block_timeout()
+	combat_audio_player.stream.initial_clip = -1
+	combat_audio_player["parameters/switch_to_clip"] = "Leather Buckle"
+	combat_audio_player.call_deferred("play")
 	block_direction = get_block_direction()
 	character_sprite.play("block")
 	shadow_sprite.play("block")
