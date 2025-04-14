@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://n1koaitsyfef"]
+[gd_scene load_steps=29 format=3 uid="uid://n1koaitsyfef"]
 
 [ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
 [ext_resource type="SpriteFrames" uid="uid://cn2o2v7sl57ow" path="res://character/orc/orc_spriteframes.tres" id="2_waqkf"]
@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://c6rr4j2p122ua" path="res://character/effects/blood.png" id="9_y6277"]
 [ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="10_1px7v"]
 [ext_resource type="AudioStream" uid="uid://d4ncifhfrraun" path="res://audio/SFX/Steps Armored.wav" id="10_kteb8"]
+[ext_resource type="AudioStream" uid="uid://bbu1mlhgsva8f" path="res://audio/SFX/Player Death.wav" id="10_to0ii"]
+[ext_resource type="AudioStream" uid="uid://cx1r2yvpjocie" path="res://audio/SFX/Sword Draw.wav" id="11_0fqca"]
 [ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="11_1px7v"]
 
 [sub_resource type="Curve" id="Curve_8vtqr"]
@@ -52,7 +54,7 @@ radius = 40.0
 radius = 40.0
 
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_8vtqr"]
-clip_count = 5
+clip_count = 7
 clip_0/name = &"Impact Body"
 clip_0/stream = ExtResource("5_55pft")
 clip_0/auto_advance = 0
@@ -68,6 +70,12 @@ clip_3/auto_advance = 0
 clip_4/name = &"Leather Buckle"
 clip_4/stream = ExtResource("9_k67b1")
 clip_4/auto_advance = 0
+clip_5/name = &"Sword Draw"
+clip_5/stream = ExtResource("11_0fqca")
+clip_5/auto_advance = 0
+clip_6/name = &"Player Death"
+clip_6/stream = ExtResource("10_to0ii")
+clip_6/auto_advance = 0
 
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_k67b1"]
 clip_count = 1
@@ -168,7 +176,6 @@ stream = SubResource("AudioStreamInteractive_8vtqr")
 [node name="MovementAudio" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamInteractive_k67b1")
 volume_db = 15.0
-stream_paused = true
 
 [node name="BlockRightSprite" type="Sprite2D" parent="."]
 visible = false

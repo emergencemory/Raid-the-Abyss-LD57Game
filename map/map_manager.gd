@@ -18,6 +18,7 @@ class_name MapManager
 @onready var rubble_particle_6: GPUParticles2D = $RubbleParticle6
 @onready var rubble_particle_7: GPUParticles2D = $RubbleParticle7
 @onready var rubble_particle_8: GPUParticles2D = $RubbleParticle8
+@onready var environment_audio: AudioStreamPlayer2D = $EnvironmentAudio
 
 var rubble_emitters: Array = []
 var emitter_index : int = 0
@@ -52,6 +53,10 @@ func _ready() -> void:
 func destroy_wall(char_pos : Vector2) -> void:
 	## Destroys the wall and spawns blood
 	var tile_pos = wall_layer.local_to_map(char_pos)
+	environment_audio.position = char_pos
+	environment_audio.volume_db =  17
+	environment_audio.pitch_scale = randf_range(0.3, 1.7)
+	environment_audio.play()
 	for x_range in range(tile_pos.x -1, tile_pos.x +2):
 		for y_range in range(tile_pos.y -2, tile_pos.y +2):
 			var check_tile = Vector2(x_range, y_range)

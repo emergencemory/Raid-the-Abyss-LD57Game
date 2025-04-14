@@ -117,6 +117,8 @@ func _ready() -> void:
 	current_kick_cooldown = base_kick_cooldown
 	current_attack_speed = base_attack_speed
 	current_health_regen = base_health_regen
+	combat_audio_player["parameters/switch_to_clip"] = "Sword Draw"
+	combat_audio_player.play()
 	if is_player:
 		SignalBus.emit_signal("health_signal", current_health, base_health, self)
 
@@ -570,10 +572,14 @@ func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
 		shadow_sprite.play("hit")
 
 func die() -> void:
+	combat_audio_player["parameters/switch_to_clip"] = "Player Death"
+	combat_audio_player.volume_db = 1.0
+	combat_audio_player.pitch_scale = randf_range(0.3, 1.7)
+	combat_audio_player.play()
 	add_to_group("dead")
 	z_index = 0
 	for child in get_children():
-		if not child.name == "BloodParticle" and not child == player_camera:
+		if not child.name == "BloodParticle" and not child == player_camera and not child == combat_audio_player:
 			child.queue_free()
 		else:
 			get_tree().create_timer(10.0).timeout.connect(child.queue_free)

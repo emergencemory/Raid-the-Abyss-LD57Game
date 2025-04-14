@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bxplvglmcrhmu"
+path="res://.godot/imported/Tile Break.wav-8e0acaabe7d3ecacb4dd8a03d5a996ab.sample"
+
+[deps]
+
+source_file="res://audio/SFX/Tile Break.wav"
+dest_files=["res://.godot/imported/Tile Break.wav-8e0acaabe7d3ecacb4dd8a03d5a996ab.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

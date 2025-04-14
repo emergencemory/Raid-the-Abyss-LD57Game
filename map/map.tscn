@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=4 uid="uid://1e231ub6i8rj"]
+[gd_scene load_steps=31 format=4 uid="uid://1e231ub6i8rj"]
 
 [ext_resource type="Script" uid="uid://twvrtpgkny2o" path="res://map/map_manager.gd" id="1_hgrid"]
 [ext_resource type="Shader" uid="uid://dqijjwnp6q830" path="res://map/ground_shader.tres" id="2_7lyie"]
@@ -9,6 +9,7 @@
 [ext_resource type="TileSet" uid="uid://dcfb4o11pmbvl" path="res://map/tileset/cliff_tileset.tres" id="6_112ik"]
 [ext_resource type="AudioStream" uid="uid://cahxteyvxp4l8" path="res://audio/Music/Into the Depths.mp3" id="7_5jdw0"]
 [ext_resource type="Texture2D" uid="uid://b0xcqnrdo2mdi" path="res://map/effects/rubble.png" id="9_e8e5r"]
+[ext_resource type="AudioStream" uid="uid://bxplvglmcrhmu" path="res://audio/SFX/Tile Break.wav" id="10_112ik"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i5grx"]
 shader = ExtResource("2_7lyie")
@@ -317,3 +318,7 @@ speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
 process_material = SubResource("ParticleProcessMaterial_58xwf")
+
+[node name="EnvironmentAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("10_112ik")
+volume_db = 5.0
