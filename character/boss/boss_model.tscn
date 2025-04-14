@@ -1,15 +1,21 @@
-[gd_scene load_steps=23 format=3 uid="uid://dod1i16ch7ab1"]
+[gd_scene load_steps=30 format=3 uid="uid://dod1i16ch7ab1"]
 
 [ext_resource type="Script" uid="uid://18ryjkbov22f" path="res://character/boss/boss_controller.gd" id="1_pr7xm"]
 [ext_resource type="Texture2D" uid="uid://c6rr4j2p122ua" path="res://character/effects/blood.png" id="2_nonme"]
 [ext_resource type="Material" uid="uid://bp4rrh6m1a52b" path="res://character/character_shader_material.tres" id="3_ybik2"]
 [ext_resource type="SpriteFrames" uid="uid://bn75xs8thdfpi" path="res://character/boss/boss_spriteframes.tres" id="4_fef42"]
+[ext_resource type="AudioStream" uid="uid://el6o5gd3da" path="res://audio/SFX/500-milliseconds-of-silence.mp3" id="5_m5ern"]
 [ext_resource type="AudioStream" uid="uid://cu1cpquh4inh8" path="res://audio/SFX/Impact Body.wav" id="5_qrovx"]
 [ext_resource type="AudioStream" uid="uid://dqmi0udhr2ncg" path="res://audio/SFX/Impact Metal Armour.wav" id="6_atx7f"]
+[ext_resource type="AudioStream" uid="uid://dk6reav5um3ov" path="res://audio/SFX/AOE Stomp.wav" id="6_bops6"]
 [ext_resource type="AudioStream" uid="uid://ci8u21id8lmbd" path="res://audio/SFX/Impact Sword and Swipe.wav" id="7_ge60q"]
-[ext_resource type="AudioStream" uid="uid://c3ne4ep7lnwh5" path="res://audio/SFX/Impact Wooden.wav" id="8_lswfc"]
+[ext_resource type="AudioStream" uid="uid://bjcrhn0velm1o" path="res://audio/SFX/Flame Sword.wav" id="7_i5ah4"]
+[ext_resource type="AudioStream" uid="uid://c6qkkyvmqnufw" path="res://audio/SFX/Boss Jump.wav" id="8_rosqn"]
+[ext_resource type="AudioStream" uid="uid://c2rqcvukgubxr" path="res://audio/SFX/Boss Stomp.wav" id="9_th1hs"]
 [ext_resource type="Texture2D" uid="uid://co1b3nsskubur" path="res://ui/axe_icon.png" id="10_3tgui"]
+[ext_resource type="AudioStream" uid="uid://co0akp7wfm68w" path="res://audio/SFX/Boss Death.wav" id="10_4ogvb"]
 [ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="11_n01wj"]
+[ext_resource type="AudioStream" uid="uid://bxplvglmcrhmu" path="res://audio/SFX/Tile Break.wav" id="11_vx3ar"]
 [ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="12_tw6fv"]
 
 [sub_resource type="Curve" id="Curve_8vtqr"]
@@ -33,7 +39,7 @@ particle_flag_disable_z = true
 particle_flag_damping_as_friction = true
 spread = 180.0
 initial_velocity_min = 246.06
-initial_velocity_max = 296.53
+initial_velocity_max = 422.71
 gravity = Vector3(0, 0, 0)
 damping_max = 10.094
 damping_curve = SubResource("CurveTexture_8vtqr")
@@ -48,19 +54,19 @@ radius = 40.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_55pft"]
 radius = 40.0
 
-[sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_8vtqr"]
+[sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_k1fd1"]
 clip_count = 4
-clip_0/name = &"Impact Body"
-clip_0/stream = ExtResource("5_qrovx")
+clip_0/name = &"500-milliseconds-of-silence"
+clip_0/stream = ExtResource("5_m5ern")
 clip_0/auto_advance = 0
-clip_1/name = &"Impact Metal Armour"
-clip_1/stream = ExtResource("6_atx7f")
+clip_1/name = &"Impact Body"
+clip_1/stream = ExtResource("5_qrovx")
 clip_1/auto_advance = 0
-clip_2/name = &"Impact Sword And Swipe"
-clip_2/stream = ExtResource("7_ge60q")
+clip_2/name = &"Impact Metal Armour"
+clip_2/stream = ExtResource("6_atx7f")
 clip_2/auto_advance = 0
-clip_3/name = &"Impact Wooden"
-clip_3/stream = ExtResource("8_lswfc")
+clip_3/name = &"a"
+clip_3/stream = ExtResource("7_ge60q")
 clip_3/auto_advance = 0
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kteb8"]
@@ -87,6 +93,27 @@ orbit_velocity_min = -0.19
 orbit_velocity_max = 2.0
 gravity = Vector3(0, 0, 0)
 
+[sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_i5ah4"]
+clip_count = 6
+clip_0/name = &"500-milliseconds-of-silence"
+clip_0/stream = ExtResource("5_m5ern")
+clip_0/auto_advance = 0
+clip_1/name = &"Aoe Stomp"
+clip_1/stream = ExtResource("6_bops6")
+clip_1/auto_advance = 0
+clip_2/name = &"Boss Death"
+clip_2/stream = ExtResource("10_4ogvb")
+clip_2/auto_advance = 0
+clip_3/name = &"Boss Jump"
+clip_3/stream = ExtResource("8_rosqn")
+clip_3/auto_advance = 0
+clip_4/name = &"Boss Stomp"
+clip_4/stream = ExtResource("9_th1hs")
+clip_4/auto_advance = 0
+clip_5/name = &"Flame Sword"
+clip_5/stream = ExtResource("7_i5ah4")
+clip_5/auto_advance = 0
+
 [node name="CharacterModel" type="CharacterBody2D"]
 z_index = 1
 y_sort_enabled = true
@@ -111,9 +138,7 @@ show_behind_parent = true
 texture_filter = 1
 material = ExtResource("3_ybik2")
 sprite_frames = ExtResource("4_fef42")
-animation = &"jump"
-frame = 38
-frame_progress = 1.0
+animation = &"attack_from_left"
 
 [node name="HitBoxFront" type="Area2D" parent="CharacterSprite"]
 position = Vector2(0, -128)
@@ -155,14 +180,8 @@ position = Vector2(-1, -11)
 shape = SubResource("CircleShape2D_chf46")
 disabled = true
 
-[node name="ShadowSprite" type="AnimatedSprite2D" parent="CharacterSprite"]
-self_modulate = Color(0.2, 0.2, 0.2, 0.4)
-show_behind_parent = true
-sprite_frames = ExtResource("4_fef42")
-animation = &"attack_from_right"
-offset = Vector2(-7, 7)
-
 [node name="CharacterCollider" type="CollisionShape2D" parent="."]
+visible = false
 light_mask = 0
 visibility_layer = 0
 shape = SubResource("CircleShape2D_cepk8")
@@ -184,6 +203,7 @@ target_position = Vector2(140, 0)
 collide_with_areas = true
 
 [node name="HurtBox" type="Area2D" parent="."]
+visible = false
 collision_layer = 2
 collision_mask = 0
 
@@ -192,10 +212,15 @@ position = Vector2(0, -11)
 shape = SubResource("CircleShape2D_55pft")
 debug_color = Color(0.920729, 0.234891, 0.397624, 0.42)
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = SubResource("AudioStreamInteractive_8vtqr")
+[node name="CombatAudioPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = SubResource("AudioStreamInteractive_k1fd1")
+
+[node name="MovementAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("11_vx3ar")
+pitch_scale = 0.01
 
 [node name="AttackFromRightSprite" type="Sprite2D" parent="."]
+visible = false
 self_modulate = Color(3, 1, 1, 0.6)
 rotation = 2.35619
 scale = Vector2(0.7, 0.7)
@@ -203,6 +228,7 @@ texture = ExtResource("10_3tgui")
 offset = Vector2(-180, -100)
 
 [node name="AttackFromLeftSprite" type="Sprite2D" parent="."]
+visible = false
 self_modulate = Color(3, 1, 1, 0.6)
 rotation = 3.92699
 scale = Vector2(0.7, 0.7)
@@ -225,6 +251,16 @@ process_material = SubResource("ParticleProcessMaterial_kteb8")
 emitting = false
 texture = ExtResource("12_tw6fv")
 process_material = SubResource("ParticleProcessMaterial_8vtqr")
+
+[node name="BossAudio" type="AudioStreamPlayer2D" parent="."]
+stream = SubResource("AudioStreamInteractive_i5ah4")
+
+[node name="ShadowSprite" type="AnimatedSprite2D" parent="."]
+self_modulate = Color(0.2, 0.2, 0.2, 0.4)
+show_behind_parent = true
+sprite_frames = ExtResource("4_fef42")
+animation = &"attack_from_right"
+offset = Vector2(-7, 7)
 
 [connection signal="area_entered" from="CharacterSprite/HitBoxFront" to="." method="_on_attack_area_entered"]
 [connection signal="area_entered" from="CharacterSprite/HitBoxFront2" to="." method="_on_attack_area_entered"]

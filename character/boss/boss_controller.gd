@@ -15,17 +15,22 @@ enum DIR {
 @onready var spark_particle: GPUParticles2D = $SparkParticle
 @onready var attack_from_right_sprite: Sprite2D = $AttackFromRightSprite
 @onready var attack_from_left_sprite: Sprite2D = $AttackFromLeftSprite
-@onready var audio_stream_player_2d: AudioStreamPlayer2D = $AudioStreamPlayer2D
 @onready var strike_shape_front: CollisionShape2D = $CharacterSprite/HitBoxFront/StrikeShapeFront
 @onready var strike_shape_front_2: CollisionShape2D = $CharacterSprite/HitBoxFront2/StrikeShapeFront2
 @onready var strike_shape_left: CollisionShape2D = $CharacterSprite/HitBoxLeft/StrikeShapeLeft
 @onready var strike_shape_right: CollisionShape2D = $CharacterSprite/HitBoxRight/StrikeShapeRight
 @onready var character_sprite: AnimatedSprite2D = $CharacterSprite
-@onready var shadow_sprite: AnimatedSprite2D = $CharacterSprite/ShadowSprite
-@onready var ray_cast_2dfront: RayCast2D = $CharacterCollider/RayCast2DFront
-@onready var ray_cast_2dfront_2: RayCast2D = $CharacterCollider/RayCast2DFront2
-@onready var ray_cast_2dleft: RayCast2D = $CharacterCollider/RayCast2DLeft
-@onready var ray_cast_2dright: RayCast2D = $CharacterCollider/RayCast2DRight
+@onready var shadow_sprite: AnimatedSprite2D = $ShadowSprite
+@onready var ray_cast_2d_front: RayCast2D = $CharacterCollider/RayCast2DFront
+@onready var ray_cast_2d_front_2: RayCast2D = $CharacterCollider/RayCast2DFront2
+@onready var ray_cast_2d_left: RayCast2D = $CharacterCollider/RayCast2DLeft
+@onready var ray_cast_2d_right: RayCast2D = $CharacterCollider/RayCast2DRight
+@onready var combat_audio_player: AudioStreamPlayer2D = $CombatAudioPlayer
+@onready var movement_audio: AudioStreamPlayer2D = $MovementAudio
+@onready var boss_audio: AudioStreamPlayer2D = $BossAudio
+
+var block_direction: int = -1
+var is_blocking: bool = false
 
 var recursion_index: int = 0
 var has_target: bool = false
@@ -58,6 +63,7 @@ var move_on_cooldown: bool = false
 var cooldown_time_turn: float = 0.0
 var cooldown_time_move: float = 0.0
 var movement_time: float = 0.0 
+var steps_timer: float = 0.0
 
 var is_preparing_attack: bool = false
 var attack_direction: int = -1
@@ -101,9 +107,9 @@ var cooldown_time_jump: float = 0.0
 var jump_area_time: float = 0.0
 
 signal attack_signal(value: float)
-signal block_signal(value: float)
+signal jump_signal(value: float)
 signal move_signal(value: float)
-signal kick_signal(value: float)
+signal stomp_signal(value: float)
 signal killed_by_player(team: String)
 signal killed_by_knight(team: String)
 signal killed_by_orc(team: String)
@@ -170,6 +176,9 @@ func level_up():
 	if is_player:
 		SignalBus.emit_signal("request_reinforcements", team)
 
+func _on_target_timeout() -> void:
+	has_target = false
+
 func _physics_process(delta) -> void:
 	if is_in_group("dead"):
 		set_physics_process(false)
@@ -186,6 +195,12 @@ func _physics_process(delta) -> void:
 		else:
 			stun_on_cooldown = false
 			stun_particle.emitting = false
+	if ray_cast_2d_front.is_colliding() and ray_cast_2d_front.get_collider().is_in_group("wall"):
+		SignalBus.wall_hit.emit(self.position)
+	if ray_cast_2d_right.is_colliding() and ray_cast_2d_right.get_collider().is_in_group("wall"):
+		SignalBus.wall_hit.emit(self.position)
+	if ray_cast_2d_left.is_colliding() and ray_cast_2d_left.get_collider().is_in_group("wall"):
+		SignalBus.wall_hit.emit(self.position)
 	if attack_from_left_on_cooldown:
 		if cooldown_time_attack_from_left > 0:
 			cooldown_time_attack_from_left -= delta
@@ -216,6 +231,11 @@ func _physics_process(delta) -> void:
 			movement_time -= delta
 		else:
 			_on_move_timeout()
+		if steps_timer > 0:
+			steps_timer -= delta
+		else:
+			movement_audio.play()
+			steps_timer = 0.4
 	if stomp_on_cooldown:
 		if cooldown_time_stomp > 0:
 			cooldown_time_stomp -= delta
@@ -268,15 +288,6 @@ func prepare_attack_from_left() -> void:
 		attack_from_left_sprite.show()
 		attack_direction = ((facing_direction+4) - 1) % 4
 		is_preparing_attack = true
-
-func prepare_attack_from_right() -> void:
-	if is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping or attack_from_right_on_cooldown:
-		return
-	else:
-		attack_from_left_sprite.hide()
-		attack_from_right_sprite.show()
-		attack_direction = ((facing_direction+4) + 1) % 4
-		is_preparing_attack = true
 		
 
 func attack_from_left() -> void:
@@ -295,61 +306,145 @@ func attack_from_left() -> void:
 		if is_player:
 			emit_signal("attack_signal", current_attack_from_left_cooldown)
 
+func _on_attack_from_left_begin() -> void:
+	strike_shape_front.set_deferred("disabled", false)
+	attack_from_left_windup = false
+	attack_from_left_area_time = current_attack_from_left_speed/2
+	is_attacking_from_left = true
+
+func _on_attack_from_left_timeout() -> void:
+	strike_shape_front.set_deferred("disabled", true)
+	is_attacking_from_left = false
+	attack_direction = -1
+	character_sprite.play("idle")
+	shadow_sprite.play("idle")
+
+func _on_attack_from_left_cooldown_timeout() -> void:
+	attack_from_left_on_cooldown = false
+
+func prepare_attack_from_right() -> void:
+	if is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping or attack_from_right_on_cooldown:
+		print("cant prepare attack from right")
+		return
+	else:
+		attack_from_left_sprite.hide()
+		attack_from_right_sprite.show()
+		attack_direction = ((facing_direction+4) + 1) % 4
+		is_preparing_attack = true
+		print("prepare attack from right")
+
 #TODO shader fire, spawning in a line
 func attack_from_right() -> void:
 	attack_from_left_sprite.hide()
 	attack_from_right_sprite.hide()
 	is_preparing_attack = false
 	if attack_from_right_on_cooldown or is_attacking_from_left or is_attacking_from_right or moving or is_turning or is_stomping or is_jumping or attack_from_left_windup or attack_from_right_windup:
+		print("attack from right cancelled")
 		return
+
 	else:
+		boss_audio["parameters/switch_to_clip"] = "Flame Sword"
+		boss_audio.play()
 		character_sprite.play("attack_from_right")
 		shadow_sprite.play("attack_from_right")
-		right_windup_time = current_attack_from_right_speed/2
+		right_windup_time = current_attack_from_right_speed/2.5
 		attack_from_right_windup = true
-		cooldown_time_attack_from_right = current_attack_from_right_cooldown
-		attack_from_right_on_cooldown = true
+		print("attack windup from right")
 		if is_player:
 			emit_signal("attack_signal", current_attack_from_right_cooldown)
 
+func _on_attack_from_right_begin() -> void:
+	strike_shape_front.set_deferred("disabled", false)
+	strike_shape_front_2.set_deferred("disabled", false)
+	print("attack from right begin")
+	attack_from_right_windup = false
+	attack_from_right_area_time = current_attack_from_right_speed/2
+	is_attacking_from_right = true
+	cooldown_time_attack_from_right = current_attack_from_right_cooldown
+	attack_from_right_on_cooldown = true
+
+func _on_attack_from_right_timeout() -> void:
+	strike_shape_front.set_deferred("disabled", true)
+	strike_shape_front_2.set_deferred("disabled", true)
+	print("attack from right timeout")
+	is_attacking_from_right = false
+	attack_direction = -1
+
+func _on_attack_from_right_cooldown_timeout() -> void:
+	attack_from_right_on_cooldown = false
 
 #TODO move to target and activate collision area
 func jump() -> void:
-	if jump_on_cooldown or not has_target or is_attacking_from_left or is_attacking_from_right or moving or is_turning or attack_from_left_windup or is_stomping:
+	if jump_on_cooldown or not has_target or is_attacking_from_left or is_attacking_from_right or moving or is_turning or attack_from_left_windup or attack_from_right_windup or is_stomping:
 		return
-	var jump_target = target
+	var jump_targets = get_tree().get_nodes_in_group("knight")
+	var selected_target = jump_targets[randi_range(0, jump_targets.size()-1)]
+	if selected_target != null and not selected_target.is_in_group("dead"):
+		var old_position = global_position
+		global_position = selected_target.global_position + Vector2(128, 0)
+		character_sprite.global_position = old_position
+		var sprite_tween = create_tween()
+		sprite_tween.tween_property(character_sprite, "global_position", global_position, current_jump_speed)
+	else:
+		return
+	boss_audio["parameters/switch_to_clip"] = "Boss Jump"
+	boss_audio.play()
 	character_sprite.play("jump")
 	shadow_sprite.play("jump")
 	cooldown_time_jump = current_jump_cooldown
 	jump_on_cooldown = true
 	jump_area_time = current_jump_speed
 	is_jumping = true
+	
 	if is_player:
 		emit_signal("jump_signal", current_jump_cooldown)
+
+func _on_jump_timeout() -> void:
+	boss_audio["parameters/switch_to_clip"] = "Boss Stomp"
+	boss_audio.play()
+	is_jumping = false
+
+func _on_jump_cooldown_timeout() -> void:
+	jump_on_cooldown = false
 
 #TODO aoe collision area and fire shader
 func stomp() -> void:
 	if stomp_on_cooldown or is_attacking_from_left or is_attacking_from_right or is_turning or attack_from_left_windup or attack_from_right_windup or is_jumping or moving:
 		return
-	cooldown_time_jump = current_jump_cooldown
+	boss_audio["parameters/switch_to_clip"] = "Aoe Stomp"
+	boss_audio.play()
+	cooldown_time_stomp = current_stomp_cooldown
 	stomp_on_cooldown = true
 	stomp_area_time = current_stomp_speed/2
 	is_stomping = true
 	strike_shape_front.set_deferred("disabled", false)
+	strike_shape_left.set_deferred("disabled", false)
+	strike_shape_right.set_deferred("disabled", false)
 	character_sprite.play("stomp")
 	shadow_sprite.play("stomp")
 	if is_player:
 		emit_signal("stomp_signal", current_stomp_cooldown)
-	
+
+func _on_stomp_timeout() -> void:
+	is_stomping = false
+	strike_shape_front.set_deferred("disabled", true)
+	strike_shape_left.set_deferred("disabled", true)
+	strike_shape_right.set_deferred("disabled", true)
+
+func _on_stomp_cooldown_timeout() -> void:
+	stomp_on_cooldown = false
+
 func move(direction: int) -> void:
 	if direction != facing_direction and recursion_index < 10:
 		recursion_index += 1
 		turn(direction)
 		return
-	ray_cast_2dfront.force_raycast_update()
-	if ray_cast_2dfront.is_colliding() or move_on_cooldown or is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_turning or moving or is_jumping:
+	ray_cast_2d_front.force_raycast_update()
+	if ray_cast_2d_front.is_colliding() or move_on_cooldown or is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_turning or moving or is_jumping:
 		return
 	moving = true
+	steps_timer = 0.4
+
 	character_sprite.play("walk")
 	shadow_sprite.play("walk")
 	var previous_position = global_position
@@ -363,8 +458,11 @@ func move(direction: int) -> void:
 		DIR.WEST:
 			global_position += Vector2(-128, 0)	
 	character_sprite.global_position = previous_position
+	shadow_sprite.global_position = previous_position
 	var move_sprite = create_tween()
 	move_sprite.tween_property(character_sprite, "global_position", global_position, (30/current_speed))
+	var shadow_sprite_tween = create_tween()
+	shadow_sprite_tween.tween_property(shadow_sprite, "global_position", global_position, (30/current_speed))
 	movement_time = 30/current_speed
 	cooldown_time_move = current_move_cooldown
 	move_on_cooldown = true
@@ -372,6 +470,14 @@ func move(direction: int) -> void:
 	if is_player:
 		emit_signal("move_signal", current_move_cooldown)
 		SignalBus.emit_signal("player_move", position)
+
+func _on_move_timeout() -> void:
+	moving = false
+	character_sprite.play("idle")
+	shadow_sprite.play("idle")
+
+func _on_move_cooldown_timeout() -> void:
+	move_on_cooldown = false
 
 func turn(direction : int) -> void:
 	if is_attacking_from_left or is_attacking_from_right or moving or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping:
@@ -422,72 +528,6 @@ func turn(direction : int) -> void:
 				facing_direction = 3
 				cooldown_time_turn = 0.15
 
-func _on_move_timeout() -> void:
-	moving = false
-	character_sprite.play("idle")
-	shadow_sprite.play("idle")
-
-func _on_target_timeout() -> void:
-	has_target = false
-
-func _on_attack_from_left_cooldown_timeout() -> void:
-	attack_from_left_on_cooldown = false
-
-func _on_attack_from_right_cooldown_timeout() -> void:
-	attack_from_right_on_cooldown = false
-
-func _on_attack_from_left_timeout() -> void:
-	strike_shape_front.set_deferred("disabled", true)
-	is_attacking_from_left = false
-	attack_direction = -1
-	character_sprite.play("idle")
-	shadow_sprite.play("idle")
-
-func _on_attack_from_right_timeout() -> void:
-	strike_shape_front.set_deferred("disabled", true)
-	is_attacking_from_right = false
-	attack_direction = -1
-	character_sprite.play("idle")
-	shadow_sprite.play("idle")
-
-func _on_attack_from_left_begin() -> void:
-	strike_shape_front.set_deferred("disabled", false)
-	attack_from_left_windup = false
-	attack_from_left_area_time = current_attack_from_left_speed/2
-	is_attacking_from_left = true
-	ray_cast_2dfront.force_raycast_update()
-	if ray_cast_2dfront.is_colliding() and ray_cast_2dfront.get_collider().is_in_group("wall"):
-		print( str(self) + " hit wall!" )
-		SignalBus.wall_hit.emit(self.position)
-
-func _on_attack_from_right_begin() -> void:
-	strike_shape_front.set_deferred("disabled", false)
-	attack_from_right_windup = false
-	attack_from_left_area_time = current_attack_from_right_speed/2
-	is_attacking_from_right = true
-	ray_cast_2dfront.force_raycast_update()
-	if ray_cast_2dfront.is_colliding() and ray_cast_2dfront.get_collider().is_in_group("wall"):
-		print( str(self) + " hit wall!" )
-		SignalBus.wall_hit.emit(self.position)
-
-func _on_jump_timeout() -> void:
-	is_jumping = false
-
-func _on_jump_cooldown_timeout() -> void:
-	jump_on_cooldown = false
-
-func _on_move_cooldown_timeout() -> void:
-	move_on_cooldown = false
-
-func _on_stomp_timeout() -> void:
-	is_stomping = false
-	strike_shape_front.set_deferred("disabled", true)
-	character_sprite.play("idle")
-	shadow_sprite.play("idle")
-
-func _on_stomp_cooldown_timeout() -> void:
-	stomp_on_cooldown = false
-
 func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 	var stun_duration: float = kicker.current_kick_stun_duration
 	stun_particle.emitting = true
@@ -512,9 +552,9 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 	stomp_on_cooldown = true
 	cooldown_time_stomp += stun_duration/(current_level*level_up_multiplier*2)
 	if is_player:
-		emit_signal("kick_signal", stun_duration)
+		emit_signal("stomp_signal", stun_duration)
 		emit_signal("attack_signal", stun_duration)
-		emit_signal("block_signal", stun_duration)
+		emit_signal("jump_signal", stun_duration)
 		emit_signal("move_signal", stun_duration)
 	SignalBus.combat_log_entry.emit(log_string)
 
@@ -533,18 +573,15 @@ func killed(attacker : CharacterBody2D) -> void:
 	elif is_player:
 		SignalBus.combat_log_entry.emit("You were killed by " + str(attacker.team))
 
-func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
+func hit(attacker:CharacterBody2D, incoming_damage : int) -> void:
 	bleed_cooldown += 1.0
 	is_bleeding = true
 	blood_particle.emitting = true
-	if glancing_blow:
-		current_health -= attacker.current_attack_damage/2
-	else:
-		current_health -= attacker.current_attack_damage
+	current_health -= incoming_damage
 	var flash_tween = create_tween()
 	character_sprite.self_modulate = Color(3, 3, 3, 1)
 	flash_tween.tween_property(character_sprite, "self_modulate", Color(1, 1, 1, 1), 0.1)
-	SignalBus.emit_signal("boss_health_signal", current_health, base_health, self)
+	#SignalBus.emit_signal("boss_health_signal", current_health, base_health, self)
 	if current_health <= 0:
 		killed(attacker)
 		die()
@@ -556,11 +593,18 @@ func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
 			log_string = "Player hit by " + str(attacker.team) + " for " + str(attacker.current_attack_damage) + " damage!"
 
 func die() -> void:
+	boss_audio["parameters/switch_to_clip"] = "Boss Death"
+	boss_audio.play()
 	add_to_group("dead")
 	z_index = 0
 	character_sprite.play("die")
-	var new_tween = create_tween()
-	new_tween.tween_property(character_sprite, "self_modulate", Color(1.5, 1.5, 1.5, 0.8), 5.0)
+	var shapes = character_sprite.get_children()
+	for shape in shapes:
+		queue_free()
+	var nodes = get_children()
+	for node in nodes:
+		if node is Area2D or node is CollisionShape2D:
+			node.queue_free()
 	remove_from_group(team)
 	if is_player:
 		is_player = false
@@ -571,25 +615,40 @@ func _on_attack_area_entered(area: Area2D) -> void:
 	var log_string : String
 	if _target is CharacterBody2D:
 		if is_stomping:
-			_target.kicked(self, facing_direction)
-			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Body"
-			audio_stream_player_2d.play()
-			strike_shape_front.set_deferred("disabled" , true)
-			return
-		elif _target.block_direction == attack_direction:
-			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " blocked Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
+			log_string = "Boss stomped on " + str(_target) + " for " + str(current_stomp_damage) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
-			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Wooden"
-			audio_stream_player_2d.play()
-			spark_particle.emitting = true
-		elif _target.attack_direction == attack_direction:
-			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " parried Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
+			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
+			combat_audio_player.play()
+			_target.kicked(self, randi_range(0,3))
+		elif is_jumping:
+			log_string = "Boss jumped on " + str(_target) + " for " + str(current_jump_damage) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
-			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Metal Armour"
-			audio_stream_player_2d.play()
+			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
+			combat_audio_player.play()
+			_target.hit(self, current_jump_damage)
+		elif is_attacking_from_right:
+			log_string = "Boss attacked " + str(_target) + " from the right for " + str(current_attack_from_right_damage) + " damage!"
+			SignalBus.combat_log_entry.emit(log_string)
+			combat_audio_player["parameters/switch_to_clip"] = "Impact Sword and Swipe"
+			combat_audio_player.play()
+			_target.hit(self, current_attack_from_right_damage)
+		elif _target.is_blocking:
+			log_string = "Boss attack on " + str(_target) + " from the left was partially blocked for " + str(current_attack_from_left_damage/2) + " damage!"
+			SignalBus.combat_log_entry.emit(log_string)
 			spark_particle.emitting = true
-			_target.hit(self, true)
+			_target.hit(self, current_attack_from_left_damage/2)
+			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
+			combat_audio_player.play()
+		elif _target.is_preparing_attack:
+			log_string = "Boss attack on " + str(_target) + " from the left was partially parried for " + str(current_attack_from_left_damage/2) + " damage!"
+			SignalBus.combat_log_entry.emit(log_string)
+			_target.hit(self, current_attack_from_left_damage/2)
+			spark_particle.emitting = true
+			combat_audio_player["parameters/switch_to_clip"] = "Impact Metal Armour"
+			combat_audio_player.play()
 		else:
-			_target.hit(self, false)
-			audio_stream_player_2d["parameters/switch_to_clip"] = "Impact Sword And Swipe"
-			audio_stream_player_2d.play()
+			log_string = "Boss attacked " + str(_target) + " from the left for " + str(current_attack_from_left_damage) + " damage!"
+			SignalBus.combat_log_entry.emit(log_string)
+			_target.hit(self, current_attack_from_left_damage)
+			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
+			combat_audio_player.play()

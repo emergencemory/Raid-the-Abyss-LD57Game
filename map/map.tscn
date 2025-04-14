@@ -213,7 +213,6 @@ tile_set = ExtResource("6_112ik")
 
 [node name="SoundtrackPlayer" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamPlaylist_kxmgb")
-autoplay = true
 
 [node name="RubbleParticle1" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)

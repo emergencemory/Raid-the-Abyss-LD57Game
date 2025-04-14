@@ -21,6 +21,7 @@ var character_data : Dictionary
 var layer : int = 1
 var current_orcs : int = 0
 var current_knights : int = 0
+var boss_spawned : int = 0
 var enemy_deaths : int = 0
 var knight_deaths : int = 0
 var your_deaths : int = -1
@@ -195,14 +196,16 @@ func _physics_process(delta: float) -> void:
 	if current_knights <= 1 and player != null and not spawning_wave_knight:	
 		spawning_wave_knight = true
 		spawn_wave("knight")
-
-	if layer == 5 or layer == 10 or layer == 15 or layer == 20:
-		var boss = boss_scene.instantiate()
-		boss.global_position = await(get_valid_spawn("orc"))
-		boss.add_to_group("ai")
-		boss.add_to_group("orc")
-		boss.add_to_group("boss")
-		add_child(boss)
+	
+	if layer == 2 or layer == 10 or layer == 15 or layer == 20:
+		if boss_spawned <= 0:
+			var boss = boss_scene.instantiate()
+			boss.global_position = await(get_valid_spawn("orc"))
+			boss.add_to_group("ai")
+			boss.add_to_group("orc")
+			boss.add_to_group("boss")
+			add_child(boss)
+			boss_spawned += 1
 
 	for character in get_tree().get_nodes_in_group("ai"):
 		if not is_instance_valid(character) or character.is_queued_for_deletion() or character.is_in_group("dead"):
@@ -233,7 +236,7 @@ func spawn_wave(team:String) -> void:
 
 func ai_action(character: CharacterBody2D) -> void:
 	character.order_ticks = 0.5
-	if character.is_boss:
+	if character.is_boss and not character.is_in_group("dead"):
 		boss_ai(character)
 		return
 	var coin_flip = randi_range(0, 4)
@@ -362,8 +365,8 @@ func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	return nearest_target
 
 func boss_ai(character: CharacterBody2D) -> void:
-	var coin_flip = randi_range(0, 4)
 	character.ray_cast_2d_front.force_raycast_update()
+	character.ray_cast_2d_front_2.force_raycast_update()
 	character.ray_cast_2d_left.force_raycast_update()
 	character.ray_cast_2d_right.force_raycast_update()
 	if character.ray_cast_2d_front.is_colliding() and character.ray_cast_2d_front.get_collider() == character.target:
@@ -392,23 +395,43 @@ func boss_ai(character: CharacterBody2D) -> void:
 					character.attack_from_right()
 			else:
 				character.jump()
-	if character.ray_cast_2d_left.is_colliding() and character.ray_cast_2d_front_3.get_collider() == character.target:
+	elif character.ray_cast_2d_left.is_colliding() and character.ray_cast_2d_left.get_collider() == character.target:
 			if not character.stomp_on_cooldown: 
 				character.stomp()
-			elif not character.attack_from_right_on_cooldown:
-				if character.is_preparing_attack == false:
-					character.swing_from_right = true
-					character.prepare_attack_from_right()
-				else:
-					character.attack_from_right()
-			elif not character.attack_from_left_on_cooldown:
-				if character.is_preparing_attack == false:
-					character.swing_from_right = false
-					character.prepare_attack_from_left()
-				else:
-					character.attack_from_left()
-			else:
+			elif not character.jump_on_cooldown:
 				character.jump()
+			else:
+				character.turn(((character.facing_direction + 4) - 1) % 4)
+	elif character.ray_cast_2d_right.is_colliding() and character.ray_cast_2d_right.get_collider() == character.target:
+			if not character.stomp_on_cooldown: 
+				character.stomp()
+			elif not character.jump_on_cooldown:
+				character.jump()
+			else:
+				character.turn(((character.facing_direction + 4) + 1) % 4)
+	elif character.ray_cast_2d_front.is_colliding() and character.ray_cast_2d_front.get_collider() != character.target:
+		if character.facing_direction == character.DIR.NORTH and character.ray_cast_2d_front.is_colliding():
+			pass
+		else:
+			character.turn(character.DIR.NORTH)
+	elif not character.jump_on_cooldown:
+		character.jump()
+	elif character.ray_cast_2d_front.is_colliding() and character.ray_cast_2d_front.get_collider.get_parent.is_in_group("cliff"):
+		if character.ray_cast_2d_left.is_colliding() and character.ray_cast_2d_left.get_collider.get_parent.is_in_group("cliff"):
+			character.turn(((character.facing_direction + 4) + 1) % 4)
+		elif character.ray_cast_2d_right.is_colliding() and character.ray_cast_2d_right.get_collider.get_parent.is_in_group("cliff"):
+			character.turn(((character.facing_direction + 4) - 1) % 4)
+		else:
+			character.turn(((character.facing_direction + 4) -2) % 4)
+	var coin_flip = randi_range(0, 4)
+	if character.target.global_position.x < character.global_position.x and coin_flip == 3:
+		character.turn(character.DIR.WEST)
+	elif character.target.global_position.y < character.global_position.y and coin_flip == 0:
+		character.turn(character.DIR.NORTH)
+	elif character.target.global_position.y > character.global_position.y and coin_flip == 4:
+		character.turn(character.DIR.SOUTH)
+	elif character.target.global_position.x > character.global_position.x and coin_flip == 1:
+		character.turn(character.DIR.EAST)
 
 func _on_knight_kill(team: String) -> void:
 	if team == "orc":
@@ -436,4 +459,3 @@ func _on_player_kill(team: String) -> void:
 
 func update_hud() -> void:
 	emit_signal("update_player_hud", layer, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
-

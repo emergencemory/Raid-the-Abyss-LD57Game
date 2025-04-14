@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://n1koaitsyfef"]
+[gd_scene load_steps=31 format=3 uid="uid://n1koaitsyfef"]
 
 [ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
 [ext_resource type="SpriteFrames" uid="uid://cn2o2v7sl57ow" path="res://character/orc/orc_spriteframes.tres" id="2_waqkf"]
@@ -17,6 +17,7 @@
 [ext_resource type="AudioStream" uid="uid://cx1r2yvpjocie" path="res://audio/SFX/Sword Draw.wav" id="11_0fqca"]
 [ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="11_1px7v"]
 [ext_resource type="AudioStream" uid="uid://el6o5gd3da" path="res://audio/SFX/500-milliseconds-of-silence.mp3" id="12_to0ii"]
+[ext_resource type="AudioStream" uid="uid://cclf6boykbog" path="res://audio/SFX/Shield Ready.wav" id="13_0fqca"]
 
 [sub_resource type="Curve" id="Curve_8vtqr"]
 _limits = [0.0, 100.0, 0.0, 1.0]
@@ -55,7 +56,7 @@ radius = 40.0
 radius = 40.0
 
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_8vtqr"]
-clip_count = 8
+clip_count = 9
 clip_0/name = &"Impact Body"
 clip_0/stream = ExtResource("5_55pft")
 clip_0/auto_advance = 0
@@ -80,6 +81,9 @@ clip_6/auto_advance = 0
 clip_7/name = &"500-milliseconds-of-silence"
 clip_7/stream = ExtResource("12_to0ii")
 clip_7/auto_advance = 0
+clip_8/name = &"Shield Ready"
+clip_8/stream = ExtResource("13_0fqca")
+clip_8/auto_advance = 0
 initial_clip = 7
 
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_k67b1"]
@@ -181,6 +185,7 @@ stream = SubResource("AudioStreamInteractive_8vtqr")
 [node name="MovementAudio" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamInteractive_k67b1")
 volume_db = 15.0
+max_distance = 512.0
 
 [node name="BlockRightSprite" type="Sprite2D" parent="."]
 visible = false

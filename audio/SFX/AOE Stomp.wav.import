@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dk6reav5um3ov"
+path="res://.godot/imported/AOE Stomp.wav-754f6fa4f94b966e6e82a487c36ff0a5.sample"
+
+[deps]
+
+source_file="res://audio/SFX/AOE Stomp.wav"
+dest_files=["res://.godot/imported/AOE Stomp.wav-754f6fa4f94b966e6e82a487c36ff0a5.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

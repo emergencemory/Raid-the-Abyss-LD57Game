@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cclf6boykbog"
+path="res://.godot/imported/Shield Ready.wav-0f730a5886e9a3c89819ecf351f116f6.sample"
+
+[deps]
+
+source_file="res://audio/SFX/Shield Ready.wav"
+dest_files=["res://.godot/imported/Shield Ready.wav-0f730a5886e9a3c89819ecf351f116f6.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

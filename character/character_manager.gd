@@ -22,7 +22,7 @@ enum DIR {
 @onready var shadow_sprite: AnimatedSprite2D = $CharacterSprite/ShadowSprite
 @onready var ray_cast_2d: RayCast2D = $CharacterCollider/RayCast2D
 
-
+var is_boss: bool = false
 var has_target: bool = false
 var target: CharacterBody2D
 var base_health: int
@@ -164,7 +164,7 @@ func _physics_process(delta) -> void:
 		if steps_timer > 0:
 			steps_timer -= delta
 		else:
-			steps_timer = 0.5
+			steps_timer = 0.3
 			movement_audio_player["parameters/switch_to_clip"] = "Steps Armored"
 			movement_audio_player.play()
 		if cooldown_time_moving > 0:
@@ -242,9 +242,8 @@ func prepare_attack() -> void:
 		attack_from_left_sprite.show()
 		attack_direction = ((facing_direction+4) - 1) % 4
 	is_preparing_attack = true
-	combat_audio_player["parameters/switch_to_clip"] = "Sword Draw"
+	combat_audio_player["parameters/switch_to_clip"] = "Leather Buckle"
 	combat_audio_player.play()
-
 
 func attack() -> void:
 	attack_from_left_sprite.hide()
@@ -272,8 +271,7 @@ func block() -> void:
 		return
 	elif is_blocking:
 		_on_block_timeout()
-	combat_audio_player.stream.initial_clip = -1
-	combat_audio_player["parameters/switch_to_clip"] = "Leather Buckle"
+	combat_audio_player["parameters/switch_to_clip"] = "Shield Ready"
 	combat_audio_player.call_deferred("play")
 	block_direction = get_block_direction()
 	character_sprite.play("block")
@@ -310,11 +308,11 @@ func move(direction: int) -> void:
 		return
 	elif is_blocking:
 		_on_block_timeout()
-	movement_audio_player.pitch_scale = 1.0 + randf_range(-0.9, 0.9)
-	movement_audio_player.volume_db = randf_range(9.0, 15.0)
+	movement_audio_player.pitch_scale = randf_range(0.1, 1.9)
+	movement_audio_player.volume_db = randf_range(6.0, 9.0)
 	movement_audio_player["parameters/switch_to_clip"] = "Steps Armored"
 	movement_audio_player.play()
-	steps_timer = 0.5
+	steps_timer = 0.3
 	moving = true
 	character_sprite.play("walk")
 	shadow_sprite.play("walk")
@@ -549,11 +547,8 @@ func killed(attacker : CharacterBody2D) -> void:
 	elif is_player:
 		SignalBus.combat_log_entry.emit("You were killed by " + str(attacker.team))
 
-func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
-	if glancing_blow:
-		current_health -= attacker.current_attack_damage/2
-	else:
-		current_health -= attacker.current_attack_damage
+func hit(attacker:CharacterBody2D, incoming_damage: int) -> void:
+	current_health -= incoming_damage
 	blood_particle.restart()
 	blood_particle.emitting = true
 	var flash_tween = create_tween()
@@ -565,11 +560,12 @@ func hit(attacker:CharacterBody2D, glancing_blow : bool) -> void:
 		die()
 	else:
 		var log_string : String
-		if not is_player:
-			log_string = str(self.team) + " hit by " + str(attacker.team) + " for " + str(attacker.current_attack_damage) + " damage!"
-		else:
-			log_string = "Player hit by " + str(attacker.team) + " for " + str(attacker.current_attack_damage) + " damage!"
-		SignalBus.combat_log_entry.emit(log_string)
+		if not attacker.is_boss:
+			if not is_player:
+				log_string = str(self.team) + " hit by " + str(attacker.team) + " for " + str(incoming_damage) + " damage!"
+			else:
+				log_string = "Player hit by " + str(attacker.team) + " for " + str(incoming_damage) + " damage!"
+			SignalBus.combat_log_entry.emit(log_string)
 		cooldown_time_health_regen = current_health_regen
 		character_sprite.play("hit")
 		shadow_sprite.play("hit")
@@ -626,8 +622,8 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Metal Armour"
 			combat_audio_player.play()
 			spark_particle.emitting = true
-			_target.hit(self, true)
+			_target.hit(self, current_attack_damage/2)
 		else:
-			_target.hit(self, false)
+			_target.hit(self, current_attack_damage)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Sword And Swipe"
 			combat_audio_player.play()
