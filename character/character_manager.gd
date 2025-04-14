@@ -202,7 +202,7 @@ func _physics_process(delta) -> void:
 		else:
 			_on_block_timeout()
 	if has_target:
-		if cooldown_time_target > 0:
+		if cooldown_time_target > 0 and target != null and not target.is_in_group("dead"):
 			cooldown_time_target -= delta
 		else:
 			_on_target_timeout()
@@ -576,6 +576,8 @@ func die() -> void:
 	combat_audio_player.pitch_scale = randf_range(0.3, 1.7)
 	combat_audio_player.play()
 	add_to_group("dead")
+	remove_from_group(team)
+	remove_from_group("ai")
 	z_index = 0
 	for child in get_children():
 		if not child.name == "BloodParticle" and not child == player_camera and not child == combat_audio_player:

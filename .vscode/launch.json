@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Godot Editor",
+      "type": "godot",
+      "request": "launch",
+      "project": "${workspaceFolder}",
+      "executable": "C:/Path/To/Godot.exe",
+      "debug": false
+    },
+    {
+      "name": "Launch Game in Debug Mode",
+      "type": "godot",
+      "request": "launch",
+      "project": "${workspaceFolder}",
+      "executable": "C:/Path/To/Godot.exe",
+      "debug": true
+    }
+  ]
+}

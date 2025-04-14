@@ -105,6 +105,8 @@ var current_jump_cooldown: float
 var jump_on_cooldown: bool = false
 var cooldown_time_jump: float = 0.0
 var jump_area_time: float = 0.0
+var is_landing: bool = false
+var jump_land_area_time: float = 0.0
 
 signal attack_signal(value: float)
 signal jump_signal(value: float)
@@ -216,6 +218,14 @@ func _physics_process(delta) -> void:
 			cooldown_time_jump -= delta
 		else:
 			_on_jump_cooldown_timeout()
+	if is_landing:
+		if jump_land_area_time > 0:
+			jump_land_area_time -= delta
+			print("landing")
+		else:
+			strike_shape_front.set_deferred("disabled", true)
+			is_landing = false
+			print("land finished")
 	if is_turning:
 		if cooldown_time_turn > 0:
 			cooldown_time_turn -= delta
@@ -265,6 +275,7 @@ func _physics_process(delta) -> void:
 		if jump_area_time > 0:
 			jump_area_time -= delta
 		else:
+			print("jump finished")
 			_on_jump_timeout()
 	if is_stomping:
 		if stomp_area_time > 0:
@@ -272,7 +283,7 @@ func _physics_process(delta) -> void:
 		else:
 			_on_stomp_timeout()
 	if has_target:
-		if cooldown_time_target > 0:
+		if cooldown_time_target > 0 and target != null and not target.is_in_group("dead"):
 			cooldown_time_target -= delta
 		else:
 			_on_target_timeout()
@@ -281,7 +292,7 @@ func _physics_process(delta) -> void:
 
 
 func prepare_attack_from_left() -> void:
-	if is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping or attack_from_left_on_cooldown:
+	if is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping or is_landing or attack_from_left_on_cooldown:
 		return
 	else:	
 		attack_from_right_sprite.hide()
@@ -294,7 +305,7 @@ func attack_from_left() -> void:
 	attack_from_left_sprite.hide()
 	attack_from_right_sprite.hide()
 	is_preparing_attack = false
-	if attack_from_left_on_cooldown or is_attacking_from_left or is_attacking_from_right or moving or is_turning or is_stomping or is_jumping or attack_from_right_windup or attack_from_left_windup:
+	if attack_from_left_on_cooldown or is_attacking_from_left or is_attacking_from_right or moving or is_turning or is_stomping or is_jumping or is_landing or attack_from_right_windup or attack_from_left_windup:
 		return
 	else:
 		character_sprite.play("attack_from_left")
@@ -323,25 +334,21 @@ func _on_attack_from_left_cooldown_timeout() -> void:
 	attack_from_left_on_cooldown = false
 
 func prepare_attack_from_right() -> void:
-	if is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping or attack_from_right_on_cooldown:
-		print("cant prepare attack from right")
+	if is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping or is_landing or attack_from_right_on_cooldown:
 		return
 	else:
 		attack_from_left_sprite.hide()
 		attack_from_right_sprite.show()
 		attack_direction = ((facing_direction+4) + 1) % 4
 		is_preparing_attack = true
-		print("prepare attack from right")
 
 #TODO shader fire, spawning in a line
 func attack_from_right() -> void:
 	attack_from_left_sprite.hide()
 	attack_from_right_sprite.hide()
 	is_preparing_attack = false
-	if attack_from_right_on_cooldown or is_attacking_from_left or is_attacking_from_right or moving or is_turning or is_stomping or is_jumping or attack_from_left_windup or attack_from_right_windup:
-		print("attack from right cancelled")
+	if attack_from_right_on_cooldown or is_attacking_from_left or is_attacking_from_right or moving or is_turning or is_stomping or is_jumping or is_landing or attack_from_left_windup or attack_from_right_windup:
 		return
-
 	else:
 		boss_audio["parameters/switch_to_clip"] = "Flame Sword"
 		boss_audio.play()
@@ -349,14 +356,12 @@ func attack_from_right() -> void:
 		shadow_sprite.play("attack_from_right")
 		right_windup_time = current_attack_from_right_speed/2.5
 		attack_from_right_windup = true
-		print("attack windup from right")
 		if is_player:
 			emit_signal("attack_signal", current_attack_from_right_cooldown)
 
 func _on_attack_from_right_begin() -> void:
 	strike_shape_front.set_deferred("disabled", false)
 	strike_shape_front_2.set_deferred("disabled", false)
-	print("attack from right begin")
 	attack_from_right_windup = false
 	attack_from_right_area_time = current_attack_from_right_speed/2
 	is_attacking_from_right = true
@@ -366,7 +371,6 @@ func _on_attack_from_right_begin() -> void:
 func _on_attack_from_right_timeout() -> void:
 	strike_shape_front.set_deferred("disabled", true)
 	strike_shape_front_2.set_deferred("disabled", true)
-	print("attack from right timeout")
 	is_attacking_from_right = false
 	attack_direction = -1
 
@@ -377,11 +381,17 @@ func _on_attack_from_right_cooldown_timeout() -> void:
 func jump() -> void:
 	if jump_on_cooldown or not has_target or is_attacking_from_left or is_attacking_from_right or moving or is_turning or attack_from_left_windup or attack_from_right_windup or is_stomping:
 		return
-	var jump_targets = get_tree().get_nodes_in_group("knight")
-	var selected_target = jump_targets[randi_range(0, jump_targets.size()-1)]
-	if selected_target != null and not selected_target.is_in_group("dead"):
+	if target != null and not target.is_in_group("dead"):
 		var old_position = global_position
-		global_position = selected_target.global_position + Vector2(128, 0)
+		match facing_direction:
+			DIR.NORTH:
+				global_position = target.global_position + Vector2(0, 128)
+			DIR.EAST:
+				global_position = target.global_position + Vector2(-128, 0)
+			DIR.SOUTH:
+				global_position = target.global_position + Vector2(0, -128)
+			DIR.WEST:
+				global_position = target.global_position + Vector2(128, 0)
 		character_sprite.global_position = old_position
 		var sprite_tween = create_tween()
 		sprite_tween.tween_property(character_sprite, "global_position", global_position, current_jump_speed)
@@ -391,25 +401,32 @@ func jump() -> void:
 	boss_audio.play()
 	character_sprite.play("jump")
 	shadow_sprite.play("jump")
-	cooldown_time_jump = current_jump_cooldown
-	jump_on_cooldown = true
 	jump_area_time = current_jump_speed
 	is_jumping = true
-	
+	print("jump started")
 	if is_player:
 		emit_signal("jump_signal", current_jump_cooldown)
 
 func _on_jump_timeout() -> void:
 	boss_audio["parameters/switch_to_clip"] = "Boss Stomp"
 	boss_audio.play()
+	strike_shape_front.set_deferred("disabled", false)
+	jump_land_area_time = current_jump_speed
+	cooldown_time_jump = current_jump_cooldown
+	print("jump landed")
 	is_jumping = false
+	jump_on_cooldown = true
+	is_landing = true
 
 func _on_jump_cooldown_timeout() -> void:
 	jump_on_cooldown = false
+	#is_landing = false
+	#is_jumping = false
+	print("jump cooldown ended")
 
 #TODO aoe collision area and fire shader
 func stomp() -> void:
-	if stomp_on_cooldown or is_attacking_from_left or is_attacking_from_right or is_turning or attack_from_left_windup or attack_from_right_windup or is_jumping or moving:
+	if stomp_on_cooldown or is_attacking_from_left or is_attacking_from_right or is_turning or attack_from_left_windup or attack_from_right_windup or is_jumping or is_landing or moving:
 		return
 	boss_audio["parameters/switch_to_clip"] = "Aoe Stomp"
 	boss_audio.play()
@@ -440,7 +457,7 @@ func move(direction: int) -> void:
 		turn(direction)
 		return
 	ray_cast_2d_front.force_raycast_update()
-	if ray_cast_2d_front.is_colliding() or move_on_cooldown or is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_turning or moving or is_jumping:
+	if ray_cast_2d_front.is_colliding() or move_on_cooldown or is_attacking_from_left or is_attacking_from_right or attack_from_left_windup or attack_from_right_windup or is_stomping or is_turning or moving or is_jumping or is_landing:
 		return
 	moving = true
 	steps_timer = 0.4
@@ -480,7 +497,7 @@ func _on_move_cooldown_timeout() -> void:
 	move_on_cooldown = false
 
 func turn(direction : int) -> void:
-	if is_attacking_from_left or is_attacking_from_right or moving or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping:
+	if is_attacking_from_left or is_attacking_from_right or moving or attack_from_left_windup or attack_from_right_windup or is_stomping or is_jumping or is_landing:
 		return
 	match direction:
 		DIR.NORTH:
@@ -533,7 +550,7 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 	stun_particle.emitting = true
 	var log_string : String = "Kicked! Stunned for " + str(stun_duration/(level_up_multiplier*2)) + " seconds"
 	_on_stomp_timeout()
-	_on_jump_timeout()
+	#_on_jump_timeout()
 	_on_attack_from_left_timeout()
 	_on_attack_from_right_timeout()
 	attack_from_left_windup = false
@@ -560,7 +577,7 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 
 func killed(attacker : CharacterBody2D) -> void:
 	if attacker != null:
-		attacker.current_xp += current_level*100
+		attacker.current_xp += current_level*1000
 	if attacker.is_player and not is_player:
 		emit_signal("killed_by_player", team)
 		SignalBus.combat_log_entry.emit("Player killed " + str(self.team))		
@@ -596,16 +613,22 @@ func die() -> void:
 	boss_audio["parameters/switch_to_clip"] = "Boss Death"
 	boss_audio.play()
 	add_to_group("dead")
+	remove_from_group(team)
+	remove_from_group("ai")
+	remove_from_group("boss")
 	z_index = 0
 	character_sprite.play("die")
-	var shapes = character_sprite.get_children()
-	for shape in shapes:
-		queue_free()
-	var nodes = get_children()
-	for node in nodes:
-		if node is Area2D or node is CollisionShape2D:
-			node.queue_free()
-	remove_from_group(team)
+	shadow_sprite.play("die")
+	for child in get_children():
+		if not child is AudioStreamPlayer2D and not child is GPUParticles2D and not child is AnimatedSprite2D:
+			child.queue_free()
+	strike_shape_front.queue_free()
+	strike_shape_front_2.queue_free()
+	strike_shape_left.queue_free()
+	strike_shape_right.queue_free()
+	character_sprite.play("die")
+	shadow_sprite.play("die")
+	blood_particle.emitting = false
 	if is_player:
 		is_player = false
 		get_tree().create_timer(2.0).timeout.connect(get_parent().spawn_player)
@@ -620,7 +643,7 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
 			combat_audio_player.play()
 			_target.kicked(self, randi_range(0,3))
-		elif is_jumping:
+		elif is_jumping or is_landing:
 			log_string = "Boss jumped on " + str(_target) + " for " + str(current_jump_damage) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"

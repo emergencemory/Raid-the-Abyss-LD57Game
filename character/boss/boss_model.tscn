@@ -65,7 +65,7 @@ clip_1/auto_advance = 0
 clip_2/name = &"Impact Metal Armour"
 clip_2/stream = ExtResource("6_atx7f")
 clip_2/auto_advance = 0
-clip_3/name = &"a"
+clip_3/name = &"Impact Sword and Swipe"
 clip_3/stream = ExtResource("7_ge60q")
 clip_3/auto_advance = 0
 
