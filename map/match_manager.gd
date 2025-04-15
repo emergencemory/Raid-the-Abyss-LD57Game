@@ -47,20 +47,28 @@ func _ready() -> void:
 	SignalBus.request_reinforcements.connect(spawn_ai)
 	SignalBus.console_kill_ai.connect(_on_console_kill_ai)
 	SignalBus.player_move.connect(update_spawn_area)
+	SignalBus.boss_killed.connect(layer_cleared)
 	get_tree().create_timer(1.0).timeout.connect(spawn_player)
 
+func layer_cleared() -> void:
+	pass
+
 func _on_console_kill_ai() -> void:
+	set_physics_process(false)
 	for character in get_tree().get_nodes_in_group("ai"):
 		if character != null and not character.is_queued_for_deletion():
 			print_debug("Killing AI: ", character.name)
 			if character.is_in_group("orc"):
-				current_orcs -= 1
+				set_orcs(current_orcs - 1)
 			elif character.is_in_group("knight"):
-				current_knights -= 1
+				set_knights(current_knights - 1)
 			character.queue_free()
 		else:
 			print_debug("Invalid character for deletion")
 	update_hud()
+	spawning_wave_orc = false
+	spawning_wave_knight = false
+	set_physics_process(true)
 
 func update_spawn_area(player_pos : Vector2) -> void:
 	spawn_center = player_pos
@@ -85,6 +93,9 @@ func spawn_player() -> void:
 	player_camera.position_smoothing_enabled = true
 	player.player_camera = player_camera
 	player.add_child(player_camera)
+	SignalBus.shake_screen.connect(player.shake_screen)
+	SignalBus.emit_signal("reset_input")
+	SignalBus.emit_signal("player_move", player.global_position)
 	your_deaths += 1
 	update_hud()
 	player_camera.make_current()
@@ -94,6 +105,9 @@ func spawn_player() -> void:
 	player.block_left_sprite.texture = kite_shield_icon
 	player.attack_from_right_sprite.texture = sword_icon
 	player.attack_from_left_sprite.texture = sword_icon
+	#! debug
+	#for i in 15:
+	#	player.level_up()
 	spawn_ai("orc")
 	spawn_ai("knight")
 
@@ -123,10 +137,18 @@ func spawn_ai(team:String) -> void:
 	character.killed_by_knight.connect(_on_knight_kill)
 	character.killed_by_orc.connect(_on_orc_kill)
 	character.killed_by_player.connect(_on_player_kill)
-	add_child(character)
+	self.call_deferred("add_child",(character))
 	character.add_to_group(team)
 	character.position = await(get_valid_spawn(character.team))
 	character.add_to_group("ai")
+	if team == "orc":
+		set_orcs(current_orcs + 1)
+	if team == "knight":
+		set_knights(current_knights + 1)
+	update_hud()
+	self.call_deferred("configure_ai_sprite", character, team)
+
+func configure_ai_sprite(character: CharacterBody2D, team : String) -> void:
 	if team == "orc":
 		character.character_sprite.material = orc_outline_shader
 	#	character.character_sprite.sprite_frames = orc_spriteframes
@@ -135,7 +157,6 @@ func spawn_ai(team:String) -> void:
 	#	character.block_left_sprite.texture = round_shield_icon
 	#	character.attack_from_right_sprite.texture = axe_icon
 	#	character.attack_from_left_sprite.texture = axe_icon
-		current_orcs += 1
 	if team == "knight":
 		character.character_sprite.sprite_frames = knight_spriteframes
 		character.shadow_sprite.sprite_frames = knight_spriteframes
@@ -144,10 +165,8 @@ func spawn_ai(team:String) -> void:
 		character.attack_from_right_sprite.texture = sword_icon
 		character.attack_from_left_sprite.texture = sword_icon
 		character.character_sprite.material = knight_outline_shader
-		current_knights += 1
 	for i in (randi_range(0, layer)):
 		character.level_up()
-	update_hud()
 
 func get_valid_spawn(team:String) -> Vector2:
 	var spawn_pos : Vector2
@@ -187,27 +206,33 @@ func get_valid_spawn(team:String) -> Vector2:
 		print_debug("Failed to find a valid spawn position after ", max_attempts, " attempts.")
 	return spawn_pos
 
-func _physics_process(delta: float) -> void:
-	if current_orcs <= 1 and player != null and not spawning_wave_orc:
-		layer += 1
-		spawning_wave_orc = true
-		spawn_wave("orc")
-
-	if current_knights <= 1 and player != null and not spawning_wave_knight:	
-		spawning_wave_knight = true
-		spawn_wave("knight")
-	
+func set_layer(new_layer : int) -> void:
+	layer = new_layer
 	if layer == 7 or layer == 14 or layer == 21 or layer == 28:
-		if boss_spawned < (layer / 7):
+		if boss_spawned < 1:#(layer / 7):
+			boss_spawned += 1
 			var boss = boss_scene.instantiate()
+			boss.team = "orc"
+			set_orcs(current_orcs + 1)
 			boss.global_position = await(get_valid_spawn("orc"))
 			boss.add_to_group("ai")
 			boss.add_to_group("orc")
 			boss.add_to_group("boss")
-			add_child(boss)
-			boss_spawned += 1
+			boss.killed_by_knight.connect(_on_knight_kill)
+			boss.killed_by_orc.connect(_on_orc_kill)
+			boss.killed_by_player.connect(_on_player_kill)
+			self.call_deferred("add_child",(boss))
+	update_hud()
 
-	for character in get_tree().get_nodes_in_group("ai"):
+func _physics_process(delta: float) -> void:
+	var ai_characters = get_tree().get_nodes_in_group("ai")
+	if ai_characters.size() <= 1:
+		#spawning_wave_orc = false
+		#spawning_wave_knight = false
+		set_orcs(current_orcs)
+		set_knights(current_knights)
+		return
+	for character in ai_characters:
 		if not is_instance_valid(character) or character.is_queued_for_deletion() or character.is_in_group("dead"):
 			continue
 		elif character.has_target == false or not is_instance_valid(character.target) or character.target.is_in_group("dead"):
@@ -226,6 +251,7 @@ func _physics_process(delta: float) -> void:
 				continue
 			else:
 				ai_action(character)
+		
 
 func spawn_wave(team:String) -> void:
 	for i in range(layer):
@@ -356,12 +382,16 @@ func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	var nearest_target = null
 	if character.is_in_group("orc"):
 		var potential_targets = get_tree().get_nodes_in_group("knight")
+		if potential_targets.size() <= 1:
+			set_knights(current_knights)
 		for target in potential_targets:
 			if not target.is_queued_for_deletion() and not target.is_in_group("dead"):
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
 					nearest_target = target
 	elif character.is_in_group("knight"):
 		var potential_targets = get_tree().get_nodes_in_group("orc")
+		if potential_targets.size() <= 1:
+			set_orcs(current_orcs)
 		for target in potential_targets:
 			if not target.is_queued_for_deletion() and not target.is_in_group("dead"):
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
@@ -444,26 +474,41 @@ func boss_ai(character: CharacterBody2D) -> void:
 
 func _on_knight_kill(team: String) -> void:
 	if team == "orc":
-		current_orcs -= 1
+		set_orcs(current_orcs - 1)
 		knight_kills += 1
 	elif team == "knight":
-		current_knights -= 1
+		set_knights(current_knights - 1)
 	update_hud()
+
+func set_orcs(value: int) -> void:
+	current_orcs = value
+	if current_orcs <= 1 and not spawning_wave_orc:
+		spawning_wave_orc = true
+		spawn_wave("orc")
+		set_layer(layer + 1)
+		update_hud()
 
 func _on_orc_kill(team: String) -> void:
 	if team == "knight":
-		current_knights -= 1
+		set_knights(current_knights - 1)
 		knight_deaths += 1
 	elif team == "orc":
-		current_orcs -= 1
+		set_orcs(current_orcs - 1)
 	update_hud()
+
+func set_knights(value: int) -> void:
+	current_knights = value
+	if current_knights <= 1 and not spawning_wave_knight:
+		spawning_wave_knight = true
+		spawn_wave("knight")
+		update_hud()
 
 func _on_player_kill(team: String) -> void:
 	if team == "orc":
-		current_orcs -= 1
+		set_orcs(current_orcs - 1)
 		your_kills += 1
 	elif team == "knight":
-		current_knights -= 1
+		set_knights(current_knights - 1)
 	update_hud()
 
 func update_hud() -> void:

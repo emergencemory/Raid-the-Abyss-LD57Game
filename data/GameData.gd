@@ -23,8 +23,8 @@ const character_data: Dictionary = {
 
 const boss_data: Dictionary = {
 	"base_health": 20,
-	"base_speed": 25.0,
-	"move_cooldown": 1.0,
+	"base_speed": 13.0,
+	"move_cooldown": 2.3,
 	"attack_from_right_damage": 10,
 	"attack_from_right_cooldown": 10.0,
 	"attack_from_right_speed": 1.0,

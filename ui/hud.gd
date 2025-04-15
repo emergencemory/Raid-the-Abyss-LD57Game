@@ -21,6 +21,7 @@ class_name Hud
 @onready var cues_audio_level_up: AudioStreamPlayer2D = $CuesAudio1
 @onready var cues_audio_layer_up: AudioStreamPlayer2D = $CuesAudio2
 
+
 var layer_level: int = 0
 var attack_cooldown: float = 0.0
 var block_cooldown: float = 0.0

@@ -1,0 +1,44 @@
+[gd_resource type="ParticleProcessMaterial" load_steps=7 format=3 uid="uid://blq41btse82h8"]
+
+[sub_resource type="Curve" id="Curve_j7l3h"]
+_limits = [-18.5425, 26.5207, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.206186, 11.7106), 0.0, 0.0, 0, 0, Vector2(0.512028, -1.04258), 0.0, 0.0, 0, 0, Vector2(0.780069, 10.065), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="CurveTexture" id="CurveTexture_kq1qm"]
+curve = SubResource("Curve_j7l3h")
+
+[sub_resource type="Gradient" id="Gradient_gxvim"]
+offsets = PackedFloat32Array(0, 0.0316206, 0.110672, 1)
+colors = PackedColorArray(0.427912, 0.00615923, 1.20327e-07, 0.9, 0.9, 0.6, 0.2, 0.8, 0.081, 0.037, 0.002, 0.55, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_pdkuj"]
+gradient = SubResource("Gradient_gxvim")
+
+[sub_resource type="Curve" id="Curve_scxc4"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_2ygv8"]
+curve = SubResource("Curve_scxc4")
+
+[resource]
+particle_flag_rotate_y = true
+particle_flag_disable_z = true
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 30.0
+emission_ring_radius = 50.0
+emission_ring_inner_radius = 5.0
+emission_ring_cone_angle = 0.0
+direction = Vector3(0, 1, 0)
+initial_velocity_max = 100.0
+angular_velocity_min = -10.0
+angular_velocity_max = 9.99998
+angular_velocity_curve = SubResource("CurveTexture_kq1qm")
+orbit_velocity_min = -0.0199999
+orbit_velocity_max = 0.0200001
+gravity = Vector3(0, 0, 0)
+scale_max = 3.0
+scale_curve = SubResource("CurveTexture_2ygv8")
+color_ramp = SubResource("GradientTexture1D_pdkuj")

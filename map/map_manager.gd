@@ -22,7 +22,6 @@ class_name MapManager
 
 var rubble_emitters: Array = []
 var emitter_index : int = 0
-
 var chunk_height: int = 16  # Number of tiles per chunk (e.g., 16x16 tiles)
 var chunk_width: int = 32
 var tile_size: int = 128  # Size of each tile in pixels
@@ -35,6 +34,8 @@ func _ready() -> void:
 	SignalBus.player_move.connect(generate_chunk)
 	SignalBus.console_flush_map.connect(_on_flush_map)
 	SignalBus.wall_hit.connect(destroy_wall)
+	SignalBus.boss_health_signal.connect(spawn_boss_blood)
+	SignalBus.shockwave.connect(_on_shockwave)
 	noise = FastNoiseLite.new()
 	noise.seed = randi()
 	noise.frequency = .2
@@ -49,6 +50,12 @@ func _ready() -> void:
 		rubble_particle_7,
 		rubble_particle_8
 	]
+
+func _on_shockwave(char_pos: Vector2) -> void:
+	var shockwave_pos : Vector2i = ground_layer.local_to_map(char_pos)
+	spawn_rubble(shockwave_pos)
+
+	
 
 func destroy_wall(char_pos : Vector2) -> void:
 	## Destroys the wall and spawns blood
@@ -73,6 +80,8 @@ func spawn_rubble(check_tile : Vector2i):
 	_rubble_particle.position = ground_layer.map_to_local(check_tile)
 	_rubble_particle.restart()
 	_rubble_particle.emitting = true
+
+
 
 func _on_flush_map() -> void:
 	var cliff_tiles = cliff_layer.get_used_cells()
@@ -116,6 +125,36 @@ func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> vo
 	blood_effect.scale = Vector2(randf_range(0.5, 1.5), randf_range(0.5, 1.5))
 	blood_effect.rotation_degrees = randf_range(0, 360)
 	blood_effect.self_modulate = Color(0.5, 0.5, 0.5, 0.8)
+	add_child(blood_effect)
+	if value > 0:
+		spawn_label(label_string, character.global_position, Color(3,.5,.5,1))
+		var roll = randi_range(0,2)
+		match roll:
+			0:
+				blood_effect.texture = splat_1
+			1:
+				blood_effect.texture = splat_2
+			2:
+				blood_effect.texture = splat_3
+	else:
+		label_string =  "0  / " + str(_base_value) + " HP - DEAD"
+		spawn_label(label_string, character.global_position, Color(.5,.5,.5,1))
+		blood_effect.texture = blood_pool
+	var tween = create_tween()
+	tween.tween_property(blood_effect, "scale", Vector2(9,9), 20.0)
+	texture_library[blood_effect] = ground_layer.local_to_map(blood_effect.position)
+
+#only difference is blood color, can be combined
+func spawn_boss_blood(value: int, _base_value: int, character: CharacterBody2D) -> void:
+	var label_string : String = str(value) + " / " + str(_base_value) + " HP"
+	if value == _base_value:
+		spawn_label(label_string, character.global_position, Color(.5,3,.5,1))
+		return
+	var blood_effect :Sprite2D = Sprite2D.new()
+	blood_effect.global_position = character.global_position + Vector2(randf_range(24, 84), randf_range(-30, 30)) 
+	blood_effect.scale = Vector2(randf_range(0.5, 1.5), randf_range(0.5, 1.5))
+	blood_effect.rotation_degrees = randf_range(0, 360)
+	blood_effect.self_modulate = Color(0.0, 0.0, 0.0, 0.8)
 	add_child(blood_effect)
 	if value > 0:
 		spawn_label(label_string, character.global_position, Color(3,.5,.5,1))

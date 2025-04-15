@@ -19,7 +19,11 @@ var marker : Marker2D
 func _ready() -> void:
 	marker = Marker2D.new()
 	add_child(marker)
+	SignalBus.reset_input.connect(_on_reset_input)
 
+func _on_reset_input() -> void:
+	for key in held_directions.keys():
+		held_directions[key] = false
 
 func _input(event: InputEvent) -> void:
 	## Player control inputs
@@ -58,12 +62,12 @@ func _input(event: InputEvent) -> void:
 		held_directions["attack"] = false
 		player.attack()
 	if event.is_action_pressed("zoom in"):
-		if player.is_queued_for_deletion() or player.is_in_group("dead") or player.player_camera == null:
+		if player.is_queued_for_deletion() or player.is_in_group("dead") or player.player_camera == null or player.player_camera.zoom <= Vector2(0.1, 0.1):
 			return
 		else:
 			player.player_camera.zoom -= Vector2(0.05, 0.05)
 	if event.is_action_pressed("zoom out"):
-		if player.is_queued_for_deletion() or player.is_in_group("dead") or player.player_camera == null:
+		if player.is_queued_for_deletion() or player.is_in_group("dead") or player.player_camera == null or player.player_camera.zoom >= Vector2(5.0, 5.0):
 			return
 		else:
 			player.player_camera.zoom += Vector2(0.05, 0.05)

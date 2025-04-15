@@ -121,6 +121,7 @@ func _ready() -> void:
 	combat_audio_player.play()
 	if is_player:
 		SignalBus.emit_signal("health_signal", current_health, base_health, self)
+		SignalBus.emit_signal("reset_input")
 
 func _physics_process(delta) -> void:
 	if is_in_group("dead") and not falling:
@@ -413,7 +414,6 @@ func _on_attack_begin() -> void:
 	is_attacking = true
 	ray_cast_2d.force_raycast_update()
 	if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("wall"):
-		print( str(self) + " hit wall!" )
 		SignalBus.wall_hit.emit(self.position)
 
 func _on_block_timeout() -> void:
@@ -629,3 +629,13 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			_target.hit(self, current_attack_damage)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Sword And Swipe"
 			combat_audio_player.play()
+
+func shake_screen() -> void:
+	if player_camera != null:
+		var original_offset = player_camera.offset
+		var strength = randf_range(1.0, 10.0)
+		var duration = randf_range(0.1, 0.5)
+		var direction = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0))
+		player_camera.offset = Vector2(direction.x*strength, direction.y*strength)
+		var shake_tween = create_tween()
+		shake_tween.tween_property(player_camera, "offset", original_offset, duration)
