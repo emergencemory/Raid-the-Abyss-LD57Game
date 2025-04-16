@@ -106,9 +106,6 @@ func spawn_player() -> void:
 	player.block_left_sprite.texture = kite_shield_icon
 	player.attack_from_right_sprite.texture = sword_icon
 	player.attack_from_left_sprite.texture = sword_icon
-	#! debug
-	#for i in 15:
-	#	player.level_up()
 	spawn_ai("orc")
 	spawn_ai("knight")
 

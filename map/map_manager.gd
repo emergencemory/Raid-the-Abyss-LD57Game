@@ -39,6 +39,7 @@ func _ready() -> void:
 	noise = FastNoiseLite.new()
 	noise.seed = randi()
 	noise.frequency = .2
+	generate_chunk(Vector2(0,0))
 	spawn_shadows()
 	rubble_emitters = [
 		rubble_particle_1,
@@ -125,6 +126,7 @@ func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> vo
 	blood_effect.scale = Vector2(randf_range(0.5, 1.5), randf_range(0.5, 1.5))
 	blood_effect.rotation_degrees = randf_range(0, 360)
 	blood_effect.self_modulate = Color(0.5, 0.5, 0.5, 0.8)
+	blood_effect.z_index = -1
 	add_child(blood_effect)
 	if value > 0:
 		spawn_label(label_string, character.global_position, Color(3,.5,.5,1))

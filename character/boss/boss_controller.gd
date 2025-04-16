@@ -606,19 +606,21 @@ func hit(attacker:CharacterBody2D, incoming_damage : int) -> void:
 	is_bleeding = true
 	blood_particle.emitting = true
 	current_health -= incoming_damage
-	var flash_tween = create_tween()
-	character_sprite.self_modulate = Color(3, 3, 3, 1)
-	flash_tween.tween_property(character_sprite, "self_modulate", Color(1, 1, 1, 1), 0.1)
 	SignalBus.emit_signal("boss_health_signal", current_health, base_health, self)
 	if current_health <= 0:
 		killed(attacker)
 		die()
 	else:
+		var flash_tween = create_tween()
+		character_sprite.self_modulate = Color(3, 3, 3, 1)
+		flash_tween.tween_property(character_sprite, "self_modulate", Color(1, 1, 1, 1), 0.1)
 		var log_string : String
 		if not is_player:
 			log_string = str(self.team) + " hit by " + str(attacker.team) + " for " + str(incoming_damage) + " damage!"
+			SignalBus.combat_log_entry.emit(log_string)
 		else:
 			log_string = "Player hit by " + str(attacker.team) + " for " + str(incoming_damage) + " damage!"
+			SignalBus.combat_log_entry.emit(log_string)
 
 func die() -> void:
 	SignalBus.emit_signal("boss_killed")
@@ -643,7 +645,7 @@ func die() -> void:
 	SignalBus.emit_signal("shake_screen")
 	character_sprite.material = null
 	var new_tween = create_tween()
-	new_tween.tween_property(character_sprite, "self_modulate", Color(1.5, 1.5, 1.5, 0.8), 10.0)
+	new_tween.tween_property(character_sprite, "self_modulate", Color(0.3, 0.3, 0.3, 0.9), 10.0)
 	blood_particle.emitting = false
 	if is_player:
 		is_player = false
