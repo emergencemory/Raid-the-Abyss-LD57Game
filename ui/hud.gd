@@ -20,7 +20,8 @@ class_name Hud
 @onready var check_box: CheckBox = $CombatLog/LabelContainer/CheckBox
 @onready var cues_audio_level_up: AudioStreamPlayer2D = $CuesAudio1
 @onready var cues_audio_layer_up: AudioStreamPlayer2D = $CuesAudio2
-
+@onready var console_input: LineEdit = $DevConsole/ConsoleInput
+@onready var console_history: TextEdit = $DevConsole/ConsoleHistory
 
 var layer_level: int = 0
 var attack_cooldown: float = 0.0
@@ -28,8 +29,10 @@ var block_cooldown: float = 0.0
 var move_cooldown: float = 0.0
 var kick_cooldown: float = 0.0
 var auto_scroll: bool = true
+var expression = Expression.new()
 
 func _ready() -> void:
+	console_input.text_submitted.connect(_on_text_submitted)
 	SignalBus.combat_log_entry.connect(_on_combat_log_entry)
 	SignalBus.leveled_up.connect(_on_level_up)
 	check_box.toggled.connect(_on_check_box_toggled)
@@ -112,3 +115,27 @@ func _on_update_player_hud(_layer:int, current_orcs:int, your_kills:int, your_de
 	allies.text = "Current Knights : " + str(current_knights)
 	allied_kills.text = "Knight Kills : " + str(knight_kills)
 	allies_killed.text = "Knight Deaths : " + str(knight_deaths)
+
+##DevConsole
+
+func _on_text_submitted(command) -> void:
+	var was_at_bottom : bool = console_history.scroll_vertical >= console_history.get_line_count() - console_history.get_visible_line_count() - 2
+	var error = expression.parse(command)
+	if error != OK:
+		console_history.text += command + expression.get_error_text() + "\n"
+		scroll_to_bottom(was_at_bottom)
+		return
+	var result = expression.execute([], self)
+	if not expression.has_execute_failed():
+		console_history.text += command + str(result) + "\n"
+		scroll_to_bottom(was_at_bottom)
+
+func scroll_to_bottom(was_at_bottom: bool) -> void:
+	if was_at_bottom:
+		console_history.scroll_vertical = console_history.get_line_count() -2
+
+func kill_ai():
+	SignalBus.emit_signal("console_kill_ai")
+
+func flush_map():
+	SignalBus.emit_signal("console_flush_map")

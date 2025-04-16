@@ -197,3 +197,80 @@ stream = ExtResource("8_spcu4")
 [node name="CuesAudio2" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("7_srpbi")
 volume_db = 1.0
+
+[node name="TutorialHints" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TutorialHints"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -770.0
+offset_bottom = 158.0
+grow_horizontal = 0
+
+[node name="Instructions" type="Label" parent="TutorialHints/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 0
+text = "INSTRUCTIONS: Push a direction key to turn your character to face that direction."
+
+[node name="Instructions2" type="Label" parent="TutorialHints/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 0
+text = "Pushing the same direction key as your facing direction moves your character to the next tile."
+
+[node name="Instructions3" type="Label" parent="TutorialHints/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 0
+text = "Block (rtclick default) stops attacks from the side of your character (right or left) your mouse was on"
+
+[node name="Instructions4" type="Label" parent="TutorialHints/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 0
+text = "Hold attack(leftclick default) to parry attacks coming from the side of your character (right or left)"
+
+[node name="Instructions5" type="Label" parent="TutorialHints/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 0
+text = "that your mouse was on.  Release to initiate an attack from that side."
+
+[node name="Instructions6" type="Label" parent="TutorialHints/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 0
+text = "Kick (E default) will momentarily stun the enemy in front of you."
+
+[node name="DevConsole" type="VBoxContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 85.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 10
+
+[node name="ConsoleHistory" type="TextEdit" parent="DevConsole"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Dev Console Commands : kill_ai(), flush_map()"
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+shortcut_keys_enabled = false
+wrap_mode = 1
+
+[node name="ConsoleInput" type="LineEdit" parent="DevConsole"]
+layout_mode = 2
+placeholder_text = "Command Input"

@@ -1,0 +1,12 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://b1b0vy6r8slxb"]
+
+[ext_resource type="Texture2D" uid="uid://cacfwpsn0vp63" path="res://ui/sword_large_horizontal.png" id="1_bghnf"]
+
+[resource]
+texture = ExtResource("1_bghnf")
+texture_margin_left = 317.71
+texture_margin_top = 118.028
+texture_margin_right = 67.4373
+texture_margin_bottom = 119.713
+region_rect = Rect2(21.782, 117.235, 949.31, 267.156)
+modulate_color = Color(0.2, 0.2, 1, 1)
