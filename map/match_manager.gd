@@ -32,6 +32,7 @@ var player_controller : INPUT_PARSER
 var spawn_center : Vector2 = Vector2(0,0)
 var spawning_wave_orc : bool = false
 var spawning_wave_knight : bool = false
+var spawn_attempts : int = 0
 
 signal update_player_hud(layer, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
 
@@ -227,8 +228,7 @@ func set_layer(new_layer : int) -> void:
 func _physics_process(delta: float) -> void:
 	var ai_characters = get_tree().get_nodes_in_group("ai")
 	if ai_characters.size() <= 1:
-		#spawning_wave_orc = false
-		#spawning_wave_knight = false
+		spawn_attempts += 1
 		set_orcs(current_orcs)
 		set_knights(current_knights)
 		return
@@ -254,15 +254,20 @@ func _physics_process(delta: float) -> void:
 		
 
 func spawn_wave(team:String) -> void:
-	for i in range(layer):
+	var spawns_number : int = layer
+	for i in range(spawns_number):
 		spawn_ai(team)
 		update_hud()
-		if i == (layer-1):
+		print("spawning: " + str(i+1) + " of " + str(spawns_number) + " for " + team)
+		if i == (spawns_number-1):
 			if team == "orc":
 				spawning_wave_orc = false
+				print("done spawning orc wave")
 			elif team == "knight":
-				spawning_wave_knight = false	
+				spawning_wave_knight = false
+				print("done spawning knight wave")
 		await(get_tree().physics_frame)
+	spawn_attempts = 0	
 
 func ai_action(character: CharacterBody2D) -> void:
 	character.order_ticks = 0.5
@@ -382,16 +387,18 @@ func get_target(character: CharacterBody2D) -> CharacterBody2D:
 	var nearest_target = null
 	if character.is_in_group("orc"):
 		var potential_targets = get_tree().get_nodes_in_group("knight")
-		if potential_targets.size() <= 1:
+		if potential_targets.size() <= 0:
 			set_knights(current_knights)
+			spawn_attempts += 1
 		for target in potential_targets:
 			if not target.is_queued_for_deletion() and not target.is_in_group("dead"):
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
 					nearest_target = target
 	elif character.is_in_group("knight"):
 		var potential_targets = get_tree().get_nodes_in_group("orc")
-		if potential_targets.size() <= 1:
+		if potential_targets.size() <= 0:
 			set_orcs(current_orcs)
+			spawn_attempts += 1
 		for target in potential_targets:
 			if not target.is_queued_for_deletion() and not target.is_in_group("dead"):
 				if nearest_target == null or character.position.distance_to(target.position) < character.position.distance_to(nearest_target.position):
@@ -418,8 +425,6 @@ func boss_ai(character: CharacterBody2D) -> void:
 					character.prepare_attack_from_left()
 				else:
 					character.attack_from_left()
-			#else:
-			#	character.jump()
 	elif character.ray_cast_2d_front_2.is_colliding() and character.ray_cast_2d_front_2.get_collider() == character.target:
 			if not character.attack_from_right_on_cooldown:
 				if character.is_preparing_attack == false:
@@ -427,20 +432,14 @@ func boss_ai(character: CharacterBody2D) -> void:
 					character.prepare_attack_from_right()
 				else:
 					character.attack_from_right()
-			#else:
-			#	character.jump()
 	elif character.ray_cast_2d_left.is_colliding() and character.ray_cast_2d_left.get_collider() == character.target:
 			if not character.stomp_on_cooldown: 
 				character.stomp()
-			#elif not character.jump_on_cooldown:
-			#	character.jump()
 			else:
 				character.turn(((character.facing_direction + 4) - 1) % 4)
 	elif character.ray_cast_2d_right.is_colliding() and character.ray_cast_2d_right.get_collider() == character.target:
 			if not character.stomp_on_cooldown: 
 				character.stomp()
-			#elif not character.jump_on_cooldown:
-			#	character.jump()
 			else:
 				character.turn(((character.facing_direction + 4) + 1) % 4)
 	elif character.ray_cast_2d_front.is_colliding() and character.ray_cast_2d_front.get_collider().get_parent().is_in_group("cliff"):
@@ -478,6 +477,8 @@ func _on_knight_kill(team: String) -> void:
 		knight_kills += 1
 	elif team == "knight":
 		set_knights(current_knights - 1)
+	if spawn_attempts >= 60:
+		spawn_wave(team)
 	update_hud()
 
 func set_orcs(value: int) -> void:
@@ -494,6 +495,8 @@ func _on_orc_kill(team: String) -> void:
 		knight_deaths += 1
 	elif team == "orc":
 		set_orcs(current_orcs - 1)
+	if spawn_attempts >= 60:
+		spawn_wave(team)
 	update_hud()
 
 func set_knights(value: int) -> void:
@@ -509,6 +512,8 @@ func _on_player_kill(team: String) -> void:
 		your_kills += 1
 	elif team == "knight":
 		set_knights(current_knights - 1)
+	if spawn_attempts >= 60:
+		spawn_wave(team)
 	update_hud()
 
 func update_hud() -> void:

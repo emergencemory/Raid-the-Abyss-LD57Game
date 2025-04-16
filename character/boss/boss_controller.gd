@@ -202,11 +202,11 @@ func _physics_process(delta) -> void:
 		else:
 			stun_on_cooldown = false
 			stun_particle.emitting = false
-	if ray_cast_2d_front.is_colliding() and ray_cast_2d_front.get_collider().is_in_group("wall"):
+	if ray_cast_2d_front.is_colliding() and ray_cast_2d_front.get_collider().is_in_group("wall") and not is_jumping:
 		SignalBus.wall_hit.emit(self.position)
-	if ray_cast_2d_right.is_colliding() and ray_cast_2d_right.get_collider().is_in_group("wall"):
+	if ray_cast_2d_right.is_colliding() and ray_cast_2d_right.get_collider().is_in_group("wall") and not is_jumping:
 		SignalBus.wall_hit.emit(self.position)
-	if ray_cast_2d_left.is_colliding() and ray_cast_2d_left.get_collider().is_in_group("wall"):
+	if ray_cast_2d_left.is_colliding() and ray_cast_2d_left.get_collider().is_in_group("wall") and not is_jumping:
 		SignalBus.wall_hit.emit(self.position)
 	if attack_from_left_on_cooldown:
 		if cooldown_time_attack_from_left > 0:
@@ -634,11 +634,16 @@ func die() -> void:
 	for child in get_children():
 		if not child is AudioStreamPlayer2D and not child is GPUParticles2D and not child is AnimatedSprite2D and not child is AnimationPlayer:
 			child.queue_free()
+		elif not child == character_sprite:
+			get_tree().create_timer(10.0).timeout.connect(child.queue_free)
 	strike_shape_front.queue_free()
 	strike_shape_front_2.queue_free()
 	strike_shape_left.queue_free()
 	strike_shape_right.queue_free()
 	SignalBus.emit_signal("shake_screen")
+	character_sprite.material = null
+	var new_tween = create_tween()
+	new_tween.tween_property(character_sprite, "self_modulate", Color(1.5, 1.5, 1.5, 0.8), 10.0)
 	blood_particle.emitting = false
 	if is_player:
 		is_player = false

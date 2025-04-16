@@ -578,7 +578,6 @@ func die() -> void:
 	add_to_group("dead")
 	remove_from_group(team)
 	remove_from_group("ai")
-	z_index = 0
 	for child in get_children():
 		if not child.name == "BloodParticle" and not child == player_camera and not child == combat_audio_player:
 			child.queue_free()
@@ -587,6 +586,7 @@ func die() -> void:
 	character_sprite = AnimatedSprite2D.new()
 	character_sprite.sprite_frames = ResourceLoader.load("res://character/" + team + "/" + team + "_spriteframes.tres")
 	add_child(character_sprite)
+	z_index = -1
 	character_sprite.play("die")
 	var new_tween = create_tween()
 	new_tween.tween_property(character_sprite, "self_modulate", Color(1.5, 1.5, 1.5, 0.8), 5.0)
