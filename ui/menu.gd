@@ -3,8 +3,6 @@ class_name Menu
 
 @onready var resume: Button = $MenuDivider/TitleScreen/GameControls/Resume
 
-signal change_pause
-
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
@@ -13,7 +11,7 @@ func _on_start_pressed() -> void:
 	resume.show()
 
 func _on_resume_pressed() -> void:
-	emit_signal("change_pause")
+	SignalBus.emit_signal("change_pause")
 
 
 

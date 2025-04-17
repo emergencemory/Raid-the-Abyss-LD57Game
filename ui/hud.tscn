@@ -10,7 +10,6 @@
 [ext_resource type="AudioStream" uid="uid://o6vaduy703ji" path="res://audio/SFX/Gong Crash SFX.mp3" id="8_spcu4"]
 
 [node name="HUD" type="CanvasLayer"]
-visible = false
 script = ExtResource("1_1v5rv")
 
 [node name="StatusAnchor" type="Control" parent="."]
@@ -188,7 +187,7 @@ snap_2d_transforms_to_pixel = true
 snap_2d_vertices_to_pixel = true
 gui_disable_input = true
 size = Vector2i(256, 256)
-render_target_update_mode = 0
+render_target_update_mode = 4
 
 [node name="Camera2D" type="Camera2D" parent="MinimapContainer/SubViewport"]
 
@@ -257,6 +256,7 @@ size_flags_vertical = 0
 text = "Kick (E default) will momentarily stun the enemy in front of you."
 
 [node name="DevConsole" type="VBoxContainer" parent="."]
+visible = false
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 85.0

@@ -24,14 +24,14 @@ func _ready() -> void:
 	SignalBus.sfx_volume_slider_changed.connect(set_sfx_volume)
 	SignalBus.music_volume_slider_changed.connect(set_music_volume)
 	SignalBus.quit_game.connect(quit)
-	menu.change_pause.connect(_pause_unpause)
+	SignalBus.change_pause.connect(_pause_unpause)
 	loading_screen_instance.hide()
 
 
 
 func start_game() -> void:
 	loading_screen_instance.show()
-	background.layer = 0
+	background.layer = 5
 	if map:
 		map.queue_free()
 	if match_manager:
@@ -76,13 +76,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		_pause_unpause()
 			
 
-	elif event.is_action_pressed("console"):
-		if menu.dev_console.visible:
-			menu.dev_console.hide()
-		else:
-			menu.show()
-			menu.dev_console.show()
-
 func _pause_unpause() -> void:
 	if menu.visible:
 		get_tree().paused = false
@@ -90,6 +83,7 @@ func _pause_unpause() -> void:
 		if map != null and match_manager != null:
 			map.show()
 			match_manager.show()
+			SignalBus.emit_signal("hide_hud", false)
 				# If the map is not visible, we want to pause the game
 				# when the menu is opened.
 				# This is to prevent the player from moving while the menu is open.
@@ -97,6 +91,7 @@ func _pause_unpause() -> void:
 		if map != null and match_manager != null and map.visible and match_manager.visible:
 			map.hide()
 			match_manager.hide()
+			SignalBus.emit_signal("hide_hud", true)
 		get_tree().paused = true
 		menu.show()
 

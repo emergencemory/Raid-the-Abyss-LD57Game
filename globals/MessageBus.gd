@@ -20,6 +20,8 @@ signal boss_health_signal(value: int, base_value: int, character : CharacterBody
 signal reset_input
 signal boss_killed
 signal loading_screen_timer(value: float)
+signal change_pause
+signal hide_hud(pause:bool)
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS

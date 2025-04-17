@@ -22,6 +22,7 @@ class_name Hud
 @onready var cues_audio_layer_up: AudioStreamPlayer2D = $CuesAudio2
 @onready var console_input: LineEdit = $DevConsole/ConsoleInput
 @onready var console_history: TextEdit = $DevConsole/ConsoleHistory
+@onready var dev_console: VBoxContainer = $DevConsole
 
 var layer_level: int = 0
 var attack_cooldown: float = 0.0
@@ -32,13 +33,20 @@ var auto_scroll: bool = true
 var expression = Expression.new()
 
 func _ready() -> void:
+	#self.hide()
 	console_input.text_submitted.connect(_on_text_submitted)
 	SignalBus.combat_log_entry.connect(_on_combat_log_entry)
 	SignalBus.leveled_up.connect(_on_level_up)
 	check_box.toggled.connect(_on_check_box_toggled)
 	SignalBus.player_move.connect(_move_minimap_camera)
 	sub_viewport.world_2d = get_parent().get_world_2d()
-	
+	SignalBus.hide_hud.connect(_pause_unpause)
+
+func _pause_unpause(pause:bool) -> void:
+	if pause:
+		self.hide()
+	else:
+		self.show()
 
 func _move_minimap_camera(player_pos: Vector2) -> void:
 	if minimap_camera != null:
@@ -117,6 +125,13 @@ func _on_update_player_hud(_layer:int, current_orcs:int, your_kills:int, your_de
 	allies_killed.text = "Knight Deaths : " + str(knight_deaths)
 
 ##DevConsole
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event.is_action_pressed("console"):
+		if dev_console.visible:
+			dev_console.hide()
+		else:
+			show()
+			dev_console.show()
 
 func _on_text_submitted(command) -> void:
 	var was_at_bottom : bool = console_history.scroll_vertical >= console_history.get_line_count() - console_history.get_visible_line_count() - 2
