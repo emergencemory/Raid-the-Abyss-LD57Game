@@ -37,9 +37,7 @@ var kick_cooldown: float = 0.0
 var auto_scroll: bool = true
 var expression = Expression.new()
 
-#TODO next layer dialogue signalbus next_layer
-#TODO endless mode dialogue
-#TODO retreat dialogue
+
 #TODO hook up game_over
 func _ready() -> void:
 	#self.hide()
@@ -144,7 +142,10 @@ func _physics_process(delta: float) -> void:
 		move.value += (delta / move_cooldown) * 100
 	if kick.value < 100:
 		kick.value += (delta / kick_cooldown) * 100
-	elif attack.value >= 100 and block.value >= 170 and move.value >= 100 and kick.value >= 100:
+	if advance_button.visible:
+		dialogue_box.modulate.r = sin(dialogue_modulate)
+		dialogue_modulate += delta*3
+	elif attack.value >= 100 and block.value >= 170 and move.value >= 100 and kick.value >= 100 and not advance_button.visible:
 		set_physics_process(false)
 		
 func _on_update_player_hud(_layer:int, _wave: int, current_orcs:int, your_kills:int, your_deaths:int, current_knights:int, knight_kills:int, knight_deaths:int) -> void:
@@ -204,6 +205,7 @@ func flush_map():
 @onready var stay_button: Button = $DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/StayButton
 @onready var _text: Label = $DialogueContainer/DialogueBox/VBoxContainer/Text
 
+var dialogue_modulate: float = 0.0
 var dialogue: Array = [
 	"To move, Push a direction key (WASD default) to turn your character to face that direction.",
 	"Holding or pushing the same direction key as your facing direction moves your character",
@@ -236,12 +238,16 @@ func _on_layer_cleared()-> void:
 	dialogue_box.show()
 	round_shield.show()
 	hide_button.text = "Hide Dialogue Box"
-	_text.text = layer_clear_text
+	if layer_level >= 3:
+		_text.text = "You are victorious! Return to the surface for your score (game_over)"
+	else:
+		_text.text = layer_clear_text
 	forward_button.hide()
 	back_button.hide()
 	advance_button.show()
 	retreat_button.show()
 	stay_button.show()
+	set_physics_process(true)
 	#show layer clear dialogue
 
 func _on_hide_button_pressed()-> void:
@@ -271,5 +277,5 @@ func _on_advance_button_pressed()-> void:
 func _on_endless_button_pressed()-> void:
 	stay_button.hide()
 	_text.text = endless_text
-	SignalBus.emit_signal("endless_mode")
+	#SignalBus.emit_signal("endless_mode")
 	#endless mode

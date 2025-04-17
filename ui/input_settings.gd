@@ -7,7 +7,6 @@ class_name InputSettings
 var is_remapping :bool = false
 var action_to_remap = null
 var remapping_button = null
-
 var input_actions : Dictionary = {
 	"move up": "W",
 	"move down": "S",
@@ -44,7 +43,6 @@ func _load_keybindings() -> void:
 func _create_action_list() -> void:
 	for item in self.get_children():
 		item.queue_free()
-	
 	for action in input_actions.keys():
 		var button : Button = input_button_scene.instantiate()
 		var action_label : Label = button.find_child("LabelAction")
@@ -73,10 +71,7 @@ func _input(event) -> void:
 		):
 			if event is InputEventMouseButton && event.double_click:
 				event.double_click = false
-				
 			InputMap.action_erase_events(action_to_remap)
-			
-			#logic to remove duplicates
 			for action in input_actions:
 				if InputMap.action_has_event(action, event):
 					InputMap.action_erase_event(action, event)
@@ -85,19 +80,15 @@ func _input(event) -> void:
 					)
 					for button in buttons_with_action:
 						button.find_child("LabelInput").text = ""
-						
 			InputMap.action_add_event(action_to_remap, event)
 			_update_action_list(remapping_button, event)
-			
 			is_remapping = false
 			action_to_remap = null
 			remapping_button = null
-			
 			accept_event()
 
 func _update_action_list(button, event) -> void:
 	button.find_child("LabelInput").text = event.as_text().trim_suffix(" (Physical)")
-
 
 func _on_reset_button_pressed() -> void:
 	SignalBus.emit_signal("reset_keybindings")

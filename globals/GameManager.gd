@@ -33,10 +33,6 @@ func _ready() -> void:
 func next_layer() -> void:
 	loading_screen_instance.show()
 	background.layer = 5
-	if map:
-		map.queue_free()
-	map = map_scene.instantiate()
-	add_child(map)
 	loading_screen_timer = 0.0
 	set_physics_process(true)
 
@@ -77,9 +73,11 @@ func set_music_volume(value:float) -> void:
 
 func _on_reset_keybindings() -> void:
 	if menu:
+		var resume : bool = menu.resume.visible
 		menu.queue_free()
 		menu = menu_scene.instantiate()
 		add_child(menu)
+		menu.resume.visible = resume
 	else:
 		printerr("No menu instance to reset.")
 
@@ -96,9 +94,6 @@ func _pause_unpause() -> void:
 			map.show()
 			match_manager.show()
 			SignalBus.emit_signal("hide_hud", false)
-				# If the map is not visible, we want to pause the game
-				# when the menu is opened.
-				# This is to prevent the player from moving while the menu is open.
 	else:	
 		if map != null and match_manager != null and map.visible and match_manager.visible:
 			map.hide()

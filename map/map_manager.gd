@@ -8,7 +8,6 @@ class_name MapManager
 @onready var splat_2: Texture = preload("res://map/effects/blood_2.png")
 @onready var splat_3: Texture = preload("res://map/effects/blood_3.png")
 @onready var blood_pool: Texture = preload("res://character/effects/blood.png")
-#!@onready var soundtrack_player: AudioStreamPlayer2D = $SoundtrackPlayer
 @onready var shadow_layer: TileMapLayer = $ShadowLayer
 @onready var rubble_particle_1: GPUParticles2D = $RubbleParticle1
 @onready var rubble_particle_2: GPUParticles2D = $RubbleParticle2
@@ -22,11 +21,11 @@ class_name MapManager
 
 var rubble_emitters: Array = []
 var emitter_index : int = 0
-var chunk_height: int = 16  # Number of tiles per chunk (e.g., 16x16 tiles)
+var chunk_height: int = 16  
 var chunk_width: int = 32
-var tile_size: int = 128  # Size of each tile in pixels
-var texture_library: Dictionary = {}  # Dictionary to track loaded textures
-var noise : FastNoiseLite   # FastNoiseLite instance
+var tile_size: int = 128  
+var texture_library: Dictionary = {}  
+var noise : FastNoiseLite   
 var player : CharacterBody2D
 
 func _ready() -> void:
@@ -36,6 +35,7 @@ func _ready() -> void:
 	SignalBus.wall_hit.connect(destroy_wall)
 	SignalBus.boss_health_signal.connect(spawn_boss_blood)
 	SignalBus.shockwave.connect(_on_shockwave)
+	SignalBus.next_layer.connect(_on_next_layer)
 	noise = FastNoiseLite.new()
 	noise.seed = randi()
 	noise.frequency = .2
@@ -56,10 +56,13 @@ func _on_shockwave(char_pos: Vector2) -> void:
 	var shockwave_pos : Vector2i = ground_layer.local_to_map(char_pos)
 	spawn_rubble(shockwave_pos)
 
-	
+func _on_next_layer() -> void:
+	_on_flush_map()
+	unload_corpses(Vector2i(-9000, -9000))
+	unload_textures(Vector2i(-9000, -9000))
 
 func destroy_wall(char_pos : Vector2) -> void:
-	## Destroys the wall and spawns blood
+	## Destroys the wall and spawns rubble
 	var tile_pos = wall_layer.local_to_map(char_pos)
 	environment_audio.position = char_pos
 	environment_audio.volume_db =  17
@@ -81,8 +84,6 @@ func spawn_rubble(check_tile : Vector2i):
 	_rubble_particle.position = ground_layer.map_to_local(check_tile)
 	_rubble_particle.restart()
 	_rubble_particle.emitting = true
-
-
 
 func _on_flush_map() -> void:
 	var cliff_tiles = cliff_layer.get_used_cells()
@@ -146,7 +147,7 @@ func spawn_blood(value: int, _base_value: int, character: CharacterBody2D) -> vo
 	tween.tween_property(blood_effect, "scale", Vector2(9,9), 20.0)
 	texture_library[blood_effect] = ground_layer.local_to_map(blood_effect.position)
 
-#only difference is blood color, can be combined
+#only difference with above is blood color, can be combined to optimize
 func spawn_boss_blood(value: int, _base_value: int, character: CharacterBody2D) -> void:
 	var label_string : String = str(value) + " / " + str(_base_value) + " HP"
 	if value == _base_value:
@@ -177,9 +178,8 @@ func spawn_boss_blood(value: int, _base_value: int, character: CharacterBody2D) 
 	texture_library[blood_effect] = ground_layer.local_to_map(blood_effect.position)
 
 func generate_chunk(chunk_position: Vector2) -> void:
-	## Generate terrain for the chunk and moves the music player
+	## Generate terrain as the player moves
 	var tile_pos = wall_layer.local_to_map(chunk_position)
-	#!soundtrack_player.position = chunk_position
 	for y in range(chunk_height):
 		for x in range(chunk_width):
 			var world_x = tile_pos.x - (chunk_width / 2) + x

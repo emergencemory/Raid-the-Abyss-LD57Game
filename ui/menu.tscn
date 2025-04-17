@@ -40,6 +40,7 @@ layout_mode = 2
 visible = false
 self_modulate = Color(0.752595, 0.934879, 0.95493, 1)
 layout_mode = 2
+tooltip_text = "Resume currently paused in-progress game"
 theme_override_font_sizes/font_size = 12
 text = "Resume
 ."
@@ -48,12 +49,14 @@ text = "Resume
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
+tooltip_text = "Start a new game, if a game is ongoing, it will end with no score"
 text = "New
 Game"
 
 [node name="Quit" type="Button" parent="MenuDivider/TitleScreen/GameControls"]
 layout_mode = 2
 size_flags_horizontal = 0
+tooltip_text = "Quit to OS"
 text = "Quit
 ."
 
@@ -61,11 +64,13 @@ text = "Quit
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+tooltip_text = "Reset Keybindings"
 text = "Reset
 Ctrls"
 
 [node name="ControlContainer" type="HBoxContainer" parent="MenuDivider/TitleScreen"]
 layout_mode = 2
+tooltip_text = "Rebind controls by clicking on them and then pressing the desired key"
 
 [node name="Controls" type="VBoxContainer" parent="MenuDivider/TitleScreen/ControlContainer"]
 layout_direction = 2
@@ -102,6 +107,7 @@ size_flags_vertical = 10
 [node name="SoundContainer" type="HBoxContainer" parent="MenuDivider/TitleScreen/MainOptions"]
 layout_mode = 2
 size_flags_vertical = 8
+tooltip_text = "Control SFX Volume, left is quieter, right is louder"
 
 [node name="SoundLabel" type="Label" parent="MenuDivider/TitleScreen/MainOptions/SoundContainer"]
 layout_mode = 2
@@ -119,6 +125,8 @@ value = -10.0
 [node name="VBoxContainer" type="VBoxContainer" parent="MenuDivider"]
 layout_mode = 2
 size_flags_vertical = 8
+tooltip_text = "staticleapstudios.com
+https://youtube.com/@smthngclvr?feature=shareda"
 
 [node name="Credits" type="Label" parent="MenuDivider/VBoxContainer"]
 layout_mode = 2
@@ -134,6 +142,7 @@ horizontal_alignment = 2
 
 [node name="MusicContainer" type="HBoxContainer" parent="MenuDivider/VBoxContainer"]
 layout_mode = 2
+tooltip_text = "Control Music Volume, left is quieter, right is louder"
 
 [node name="MusicLabel" type="Label" parent="MenuDivider/VBoxContainer/MusicContainer"]
 layout_mode = 2

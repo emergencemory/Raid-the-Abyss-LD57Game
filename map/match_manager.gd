@@ -18,7 +18,7 @@ const GAME_DATA : Script = preload("res://data/GameData.gd")
 var player : CharacterBody2D
 var hud_scene : PackedScene = preload("res://ui/hud.tscn")
 var character_data : Dictionary
-var layer : int = 1
+var _layer : int = 1
 var wave: int = 1
 var current_orcs : int = 0
 var current_knights : int = 0
@@ -34,6 +34,7 @@ var spawn_center : Vector2 = Vector2(0,0)
 var spawning_wave_orc : bool = false
 var spawning_wave_knight : bool = false
 var spawn_attempts : int = 0
+var endless_mode : bool = false
 
 signal update_player_hud(layer, wave, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
 
@@ -50,10 +51,21 @@ func _ready() -> void:
 	SignalBus.console_kill_ai.connect(_on_console_kill_ai)
 	SignalBus.player_move.connect(update_spawn_area)
 	SignalBus.next_layer.connect(layer_cleared)
+	SignalBus.boss_killed.connect(_on_endless_mode)
 	get_tree().create_timer(1.0).timeout.connect(spawn_player)
 
 func layer_cleared() -> void:
-	layer += 1
+	for orc in get_tree().get_nodes_in_group("orc"):
+		orc.queue_free()
+	SignalBus.emit_signal("player_move", player.global_position)
+	for knight in get_tree().get_nodes_in_group("knight"):
+		if not knight.is_player:
+			knight.position = await(get_valid_spawn(knight.team))
+	endless_mode = false
+	set_wave(0)
+	set_layer(_layer + 1)
+	set_orcs(0)
+	update_hud()
 
 func _on_console_kill_ai() -> void:
 	set_physics_process(false)
@@ -164,8 +176,7 @@ func configure_ai_sprite(character: CharacterBody2D, team : String) -> void:
 		character.attack_from_right_sprite.texture = sword_icon
 		character.attack_from_left_sprite.texture = sword_icon
 		character.character_sprite.material = knight_outline_shader
-	for i in (randi_range(0, wave*layer)):
-		character.level_up()
+	character.level_up(randi_range(0, wave+(_layer*7)))
 
 func get_valid_spawn(team:String) -> Vector2:
 	var spawn_pos : Vector2
@@ -205,11 +216,17 @@ func get_valid_spawn(team:String) -> Vector2:
 		print_debug("Failed to find a valid spawn position after ", max_attempts, " attempts.")
 	return spawn_pos
 
-#TODO fix this
+func set_layer(new_layer : int) -> void:
+	_layer = new_layer
+	boss_spawned = 0
+	update_hud()
+	if _layer == 4:
+		SignalBus.emit_signal("game_over")
+
 func set_wave(new_wave : int) -> void:
 	wave = new_wave
-	if new_wave == 7 or new_wave == 14 or new_wave == 21 or new_wave == 28:
-		if boss_spawned < (new_wave/7):
+	if new_wave >= 7:
+		if boss_spawned < 1:
 			boss_spawned += 1
 			var boss = boss_scene.instantiate()
 			boss.team = "orc"
@@ -222,6 +239,9 @@ func set_wave(new_wave : int) -> void:
 			boss.killed_by_orc.connect(_on_orc_kill)
 			boss.killed_by_player.connect(_on_player_kill)
 			self.call_deferred("add_child",(boss))
+			await(get_tree().physics_frame)
+			boss.call_deferred("level_up", (_layer - 1))
+
 	update_hud()
 
 func _physics_process(delta: float) -> void:
@@ -250,10 +270,12 @@ func _physics_process(delta: float) -> void:
 				continue
 			else:
 				ai_action(character)
-		
+
+func _on_endless_mode() -> void:
+	endless_mode = true
 
 func spawn_wave(team:String) -> void:
-	var spawns_number : int = wave + layer*2
+	var spawns_number : int = wave + _layer*2
 	for i in range(spawns_number):
 		spawn_ai(team)
 		update_hud()
@@ -487,6 +509,9 @@ func set_orcs(value: int) -> void:
 		spawn_wave("orc")
 		set_wave(wave + 1)
 		update_hud()
+	if endless_mode and current_orcs <= 10:
+		for i in (_layer*2):
+			spawn_ai("orc")
 
 func _on_orc_kill(team: String) -> void:
 	if team == "knight":
@@ -516,4 +541,4 @@ func _on_player_kill(team: String) -> void:
 	update_hud()
 
 func update_hud() -> void:
-	emit_signal("update_player_hud", layer, wave,current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
+	emit_signal("update_player_hud", _layer, wave,current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)

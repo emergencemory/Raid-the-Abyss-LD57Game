@@ -208,26 +208,26 @@ func _physics_process(delta) -> void:
 		else:
 			_on_target_timeout()
 	if current_xp >= current_xp_to_next_level:
-		level_up()
+		level_up(1)
 
 
-func level_up():
-	current_level += 1
+func level_up(levels_to_gain: int):
+	current_level += levels_to_gain
 	SignalBus.emit_signal("leveled_up", self, current_level)
 	character_sprite.self_modulate = Color(3, 3, 1, 1)
 	var level_tween = create_tween()
 	level_tween.tween_property(character_sprite, "self_modulate", Color((1 + float(current_level)/10), (1 + float(current_level)/10), 1, 1), 0.5)
-	current_xp_to_next_level = base_xp_to_next_level_multiplier * current_xp_to_next_level
-	base_health += level_up_addition
+	current_xp_to_next_level *= pow(base_xp_to_next_level_multiplier, levels_to_gain)
+	base_health = level_up_addition*current_level
 	current_health = base_health
 	current_attack_damage = (level_up_addition*current_level)/2
-	current_attack_cooldown = current_attack_cooldown / level_up_multiplier
-	current_block_duration = current_block_duration * level_up_multiplier
-	current_block_cooldown = current_block_cooldown / level_up_multiplier
-	current_move_cooldown = current_move_cooldown / level_up_multiplier
-	current_kick_stun_duration = current_kick_stun_duration * level_up_multiplier
-	current_kick_cooldown = current_kick_cooldown / level_up_multiplier
-	current_health_regen = current_health_regen / level_up_multiplier
+	current_attack_cooldown /= pow(level_up_multiplier, levels_to_gain)
+	current_block_duration *= pow(level_up_multiplier, levels_to_gain)
+	current_block_cooldown /= pow(level_up_multiplier, levels_to_gain)
+	current_move_cooldown /= pow(level_up_multiplier, levels_to_gain)
+	current_kick_stun_duration *= pow(level_up_multiplier, levels_to_gain)
+	current_kick_cooldown /= pow(level_up_multiplier, levels_to_gain)
+	current_health_regen /= pow(level_up_multiplier, levels_to_gain)
 	if is_player:
 		SignalBus.emit_signal("request_reinforcements", team)
 
@@ -450,7 +450,7 @@ func get_block_direction() -> int:
 		return block_dir
 
 func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
-	var stun_duration: float = kicker.current_kick_stun_duration
+	var stun_duration: float = (kicker.current_kick_stun_duration / current_level)
 	stun_particle.emitting = true
 	var log_string : String = "Kicked! Stunned for " + str(stun_duration) + " seconds"
 	character_sprite.play("hit")
@@ -470,6 +470,7 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 	cooldown_time_move += stun_duration
 	kick_on_cooldown = true
 	cooldown_time_kick += stun_duration
+	cooldown_time_health_regen += stun_duration
 	if is_player:
 		emit_signal("kick_signal", stun_duration)
 		emit_signal("attack_signal", stun_duration)
@@ -566,7 +567,7 @@ func hit(attacker:CharacterBody2D, incoming_damage: int) -> void:
 			else:
 				log_string = "Player hit by " + str(attacker.team) + " for " + str(incoming_damage) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
-		cooldown_time_health_regen = current_health_regen
+		cooldown_time_health_regen += current_health_regen
 		character_sprite.play("hit")
 		shadow_sprite.play("hit")
 
@@ -599,7 +600,7 @@ func _on_health_regen_timeout() -> void:
 	current_health += 1
 	if current_health > base_health:
 		current_health = base_health
-	cooldown_time_health_regen = current_health_regen
+	cooldown_time_health_regen += current_health_regen
 	SignalBus.emit_signal("health_signal", current_health, base_health, self)
 
 func _on_attack_area_entered(area: Area2D) -> void:

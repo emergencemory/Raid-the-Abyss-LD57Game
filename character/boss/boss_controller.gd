@@ -154,31 +154,30 @@ func _ready() -> void:
 	if is_player:
 		SignalBus.emit_signal("health_signal", current_health, base_health, self)
 
-func level_up():
-	current_level += 1
+func level_up(levels_to_gain: int = 1) -> void:
+	if levels_to_gain == 0:
+		return
+	current_level += levels_to_gain
 	SignalBus.emit_signal("leveled_up", self, current_level)
-	character_sprite.self_modulate = Color(3, 3, 1, 1)
-	var level_tween = create_tween()
-	level_tween.tween_property(character_sprite, "self_modulate", Color((1 + float(current_level)/10), (1 + float(current_level)/10), 1, 1), 0.5)
 	
-	current_xp_to_next_level = base_xp_to_next_level_multiplier * current_xp_to_next_level
+	current_xp_to_next_level *= pow(base_xp_to_next_level_multiplier , levels_to_gain)
 	
-	base_health += level_up_addition
+	base_health = level_up_addition*current_level
 	current_health = base_health
-	current_move_cooldown = current_move_cooldown / level_up_multiplier
+	current_move_cooldown /= pow(level_up_multiplier , levels_to_gain)
 
 	current_attack_from_left_damage = (level_up_addition*current_level)/2
-	current_attack_from_left_cooldown = current_attack_from_left_cooldown / level_up_multiplier
+	current_attack_from_left_cooldown /=  pow(level_up_multiplier , levels_to_gain)
 	
 	current_attack_from_right_damage = (level_up_addition*current_level)/2
-	current_attack_from_right_cooldown = current_attack_from_right_cooldown / level_up_multiplier
+	current_attack_from_right_cooldown /= pow(level_up_multiplier , levels_to_gain)
 
 	current_stomp_damage = (level_up_addition*current_level)/2
-	current_stomp_cooldown = current_stomp_cooldown / level_up_multiplier
-	current_kick_stun_duration = current_kick_stun_duration * level_up_multiplier
+	current_stomp_cooldown /= pow(level_up_multiplier , levels_to_gain)
+	current_kick_stun_duration *=  pow(level_up_multiplier , levels_to_gain)
 
 	current_jump_damage = (level_up_addition*current_level)/2
-	current_jump_cooldown = current_jump_cooldown / level_up_multiplier
+	current_jump_cooldown /= pow(level_up_multiplier , levels_to_gain)
 	
 	if is_player:
 		SignalBus.emit_signal("request_reinforcements", team)
@@ -296,7 +295,7 @@ func _physics_process(delta) -> void:
 		else:
 			_on_target_timeout()
 	if current_xp >= current_xp_to_next_level:
-		level_up()
+		level_up(1)
 
 
 func prepare_attack_from_left() -> void:

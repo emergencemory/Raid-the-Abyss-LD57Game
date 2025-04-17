@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://dy47ah37cpylh"]
+[gd_scene load_steps=4 format=3 uid="uid://bwj6w0p7vr1n5"]
 
 [ext_resource type="Texture2D" uid="uid://ccwvkmgqr3xpn" path="res://ui/boss_walk.png" id="1_5eixk"]
-[ext_resource type="Script" uid="uid://6q078tyi1s0u" path="res://ui/game_over.gd" id="1_j1fe5"]
+[ext_resource type="Script" path="res://ui/game_over.gd" id="1_j1fe5"]
 [ext_resource type="Texture2D" uid="uid://c1jendxth7byy" path="res://ui/orc_large.png" id="2_j1fe5"]
 
 [node name="GameOver" type="CanvasLayer"]
