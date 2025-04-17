@@ -6,6 +6,7 @@ class_name GameManager
 @onready var map_scene : PackedScene = preload("res://map/map.tscn")
 @onready var loading_screen : PackedScene = preload("res://ui/loading_screen.tscn")
 @onready var background : CanvasLayer = $Background
+@onready var soundtrack_player: AudioStreamPlayer2D = $Background/SoundtrackPlayer
 
 var menu
 var map
@@ -25,8 +26,19 @@ func _ready() -> void:
 	SignalBus.music_volume_slider_changed.connect(set_music_volume)
 	SignalBus.quit_game.connect(quit)
 	SignalBus.change_pause.connect(_pause_unpause)
+	SignalBus.next_layer.connect(next_layer)
+	SignalBus.player_move.connect(_move_soundtrack)
 	loading_screen_instance.hide()
 
+func next_layer() -> void:
+	loading_screen_instance.show()
+	background.layer = 5
+	if map:
+		map.queue_free()
+	map = map_scene.instantiate()
+	add_child(map)
+	loading_screen_timer = 0.0
+	set_physics_process(true)
 
 
 func start_game() -> void:
@@ -97,3 +109,6 @@ func _pause_unpause() -> void:
 
 func quit() -> void:
 	get_tree().quit()
+
+func _move_soundtrack(player_pos: Vector2) -> void:
+	soundtrack_player.position = player_pos

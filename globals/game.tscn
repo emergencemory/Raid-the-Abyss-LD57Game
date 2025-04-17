@@ -1,17 +1,29 @@
-[gd_scene load_steps=10 format=3 uid="uid://dx3ishtlsfhpc"]
+[gd_scene load_steps=9 format=3 uid="uid://dx3ishtlsfhpc"]
 
 [ext_resource type="Script" uid="uid://dhyrr3d4sptxn" path="res://globals/GameManager.gd" id="1_qdmn5"]
-[ext_resource type="Texture2D" uid="uid://dop34ibp1gt6v" path="res://ui/round_shield_large.png" id="2_ylvxq"]
-[ext_resource type="Texture2D" uid="uid://c1jendxth7byy" path="res://ui/orc_large.png" id="3_06wfu"]
-[ext_resource type="Texture2D" uid="uid://cp1r00qnfmox3" path="res://ui/balrog_sword_large.png" id="4_u0hhh"]
-[ext_resource type="Texture2D" uid="uid://ccwvkmgqr3xpn" path="res://ui/boss_walk.png" id="6_6dsdn"]
-[ext_resource type="Texture2D" uid="uid://d1bvxpyg6v26k" path="res://ui/knight_large_2.png" id="8_sw6f3"]
-[ext_resource type="Texture2D" uid="uid://bef5guqs7615m" path="res://ui/boss_jump.png" id="9_nnybr"]
+[ext_resource type="Shader" uid="uid://clu08xgwpjxfv" path="res://ui/loading_screen.gdshader" id="3_3q0u3"]
 [ext_resource type="AudioStream" uid="uid://cahxteyvxp4l8" path="res://audio/Music/Into the Depths.mp3" id="9_ylvxq"]
 
 [sub_resource type="AudioStreamPlaylist" id="AudioStreamPlaylist_06wfu"]
 stream_count = 1
 stream_0 = ExtResource("9_ylvxq")
+
+[sub_resource type="Gradient" id="Gradient_ehmke"]
+offsets = PackedFloat32Array(0, 0.516981, 0.988679)
+colors = PackedColorArray(0, 0, 0, 1, 0.352941, 0.34902, 0.290196, 1, 0.521345, 0.0538852, 0.139029, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_nqac0"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_yb3ym"]
+seamless = true
+bump_strength = 3.5
+normalize = false
+color_ramp = SubResource("Gradient_ehmke")
+noise = SubResource("FastNoiseLite_nqac0")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y5hx0"]
+shader = ExtResource("3_3q0u3")
+shader_parameter/noise = SubResource("NoiseTexture2D_yb3ym")
 
 [node name="Game" type="Node2D"]
 process_mode = 3
@@ -22,51 +34,18 @@ script = ExtResource("1_qdmn5")
 process_mode = 3
 layer = 0
 
-[node name="RoundShieldLarge" type="Sprite2D" parent="Background"]
-position = Vector2(1184, 1358)
-scale = Vector2(3.84955, 3.84955)
-texture = ExtResource("2_ylvxq")
-
-[node name="BossJump2" type="Sprite2D" parent="Background/RoundShieldLarge"]
-self_modulate = Color(0, 0, 0, 0.5)
-position = Vector2(-96.3749, -240.028)
-scale = Vector2(0.207817, 0.207817)
-texture = ExtResource("9_nnybr")
-
-[node name="KnightLarge3" type="Sprite2D" parent="Background/RoundShieldLarge"]
-self_modulate = Color(0, 0, 0, 0.5)
-position = Vector2(-175.865, -255.614)
-scale = Vector2(0.207817, 0.207817)
-texture = ExtResource("8_sw6f3")
-flip_h = true
-
-[node name="BossJump" type="Sprite2D" parent="Background/RoundShieldLarge"]
-position = Vector2(-80.7887, -300.295)
-scale = Vector2(0.207817, 0.207817)
-texture = ExtResource("9_nnybr")
-
-[node name="KnightLarge2" type="Sprite2D" parent="Background/RoundShieldLarge"]
-position = Vector2(-151.55, -244.86)
-scale = Vector2(0.207817, 0.207817)
-texture = ExtResource("8_sw6f3")
-flip_h = true
-
-[node name="OrcLarge" type="Sprite2D" parent="Background"]
-position = Vector2(-1527, 528)
-texture = ExtResource("3_06wfu")
-
-[node name="BalrogSwordLarge" type="Sprite2D" parent="Background"]
-position = Vector2(-985, 83)
-rotation = 1.5708
-scale = Vector2(1.60674, 1.60674)
-texture = ExtResource("4_u0hhh")
-
-[node name="BossWalk" type="Sprite2D" parent="Background"]
-position = Vector2(-713, 480)
-texture = ExtResource("6_6dsdn")
-
 [node name="SoundtrackPlayer" type="AudioStreamPlayer2D" parent="Background"]
 process_mode = 3
 stream = SubResource("AudioStreamPlaylist_06wfu")
 autoplay = true
 bus = &"Music"
+
+[node name="ColorRect" type="ColorRect" parent="Background"]
+show_behind_parent = true
+material = SubResource("ShaderMaterial_y5hx0")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.415686, 0.333333, 0.223529, 1)

@@ -22,6 +22,9 @@ signal boss_killed
 signal loading_screen_timer(value: float)
 signal change_pause
 signal hide_hud(pause:bool)
+signal next_layer
+signal endless_mode
+signal game_over
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS

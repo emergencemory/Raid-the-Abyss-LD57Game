@@ -1,13 +1,22 @@
-[gd_scene load_steps=9 format=3 uid="uid://bfu3esac8trv1"]
+[gd_scene load_steps=18 format=3 uid="uid://bfu3esac8trv1"]
 
 [ext_resource type="Script" uid="uid://c4s2x55wkc3tv" path="res://ui/hud.gd" id="1_1v5rv"]
 [ext_resource type="Texture2D" uid="uid://o1ir26vc6gwh" path="res://ui/knight_icon.png" id="1_en2x2"]
 [ext_resource type="Texture2D" uid="uid://cujqpoykki85h" path="res://ui/sword_icon.png" id="2_1v5rv"]
+[ext_resource type="Theme" uid="uid://cn38knnhoa4y8" path="res://ui/menu_theme.tres" id="2_65xic"]
 [ext_resource type="Texture2D" uid="uid://d28qhgrrd3nni" path="res://ui/shield_icon.png" id="3_q43x7"]
 [ext_resource type="Texture2D" uid="uid://cwy0hhwfq467f" path="res://ui/walk_icon.png" id="4_srpbi"]
 [ext_resource type="Texture2D" uid="uid://k108pdtpbf01" path="res://ui/kick_icon.png" id="5_spcu4"]
 [ext_resource type="AudioStream" uid="uid://c2ypmm4mrjuel" path="res://audio/SFX/Horn SFX.mp3" id="7_srpbi"]
+[ext_resource type="FontFile" uid="uid://c2fmrsalewht8" path="res://ui/scribish.ttf" id="8_mp5xd"]
 [ext_resource type="AudioStream" uid="uid://o6vaduy703ji" path="res://audio/SFX/Gong Crash SFX.mp3" id="8_spcu4"]
+[ext_resource type="Theme" uid="uid://ifeuanprlh1n" path="res://ui/hud_theme.tres" id="8_xtm2r"]
+[ext_resource type="Texture2D" uid="uid://cffwkg4co7w7g" path="res://ui/kite_shield_icon_2.png" id="9_m0eg6"]
+[ext_resource type="Texture2D" uid="uid://cacfwpsn0vp63" path="res://ui/sword_large_horizontal.png" id="9_so1yu"]
+[ext_resource type="Texture2D" uid="uid://bvehwr2g2ff3p" path="res://ui/balrog_sword_large_horizontal.png" id="9_spcu4"]
+[ext_resource type="Texture2D" uid="uid://dop34ibp1gt6v" path="res://ui/round_shield_large.png" id="11_b00kl"]
+[ext_resource type="Texture2D" uid="uid://bdno7pb3g5ijk" path="res://ui/round_shield_icon.png" id="12_u6vop"]
+[ext_resource type="Texture2D" uid="uid://bu8a5njdwlfri" path="res://ui/axe_large_horizontal.png" id="13_65xic"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_1v5rv")
@@ -23,6 +32,7 @@ offset_left = -40.0
 offset_top = -40.0
 grow_horizontal = 0
 grow_vertical = 0
+theme = ExtResource("2_65xic")
 
 [node name="Status" type="HBoxContainer" parent="StatusAnchor"]
 texture_filter = 1
@@ -48,6 +58,22 @@ texture_under = ExtResource("1_en2x2")
 texture_progress = ExtResource("1_en2x2")
 tint_progress = Color(3, 1, 1, 1)
 
+[node name="Level" type="Label" parent="StatusAnchor/Status/Health"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Lvl: 2"
+horizontal_alignment = 1
+
 [node name="Attack" type="TextureProgressBar" parent="StatusAnchor/Status"]
 texture_filter = 1
 layout_mode = 2
@@ -59,6 +85,22 @@ fill_mode = 3
 texture_under = ExtResource("2_1v5rv")
 texture_progress = ExtResource("2_1v5rv")
 tint_progress = Color(1, 1, 3, 1)
+
+[node name="PlayerKills" type="Label" parent="StatusAnchor/Status/Attack"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Kills: 0"
+horizontal_alignment = 1
 
 [node name="Block" type="TextureProgressBar" parent="StatusAnchor/Status"]
 texture_filter = 1
@@ -72,6 +114,21 @@ fill_mode = 3
 texture_under = ExtResource("3_q43x7")
 texture_progress = ExtResource("3_q43x7")
 tint_progress = Color(1, 1, 3, 1)
+
+[node name="PlayerDeaths" type="Label" parent="StatusAnchor/Status/Block"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Deaths: 0"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="StatusAnchor/Status"]
 texture_filter = 1
@@ -101,42 +158,6 @@ texture_under = ExtResource("5_spcu4")
 texture_progress = ExtResource("5_spcu4")
 tint_progress = Color(1, 1, 3, 1)
 
-[node name="Progress" type="VBoxContainer" parent="."]
-offset_right = 144.0
-offset_bottom = 185.0
-
-[node name="StageLabel" type="Label" parent="Progress"]
-layout_mode = 2
-text = "Layer : 1"
-
-[node name="Level" type="Label" parent="Progress"]
-layout_mode = 2
-text = "Character Level : 1"
-
-[node name="Enemies" type="Label" parent="Progress"]
-layout_mode = 2
-text = "Current Orcs : 0"
-
-[node name="Kills" type="Label" parent="Progress"]
-layout_mode = 2
-text = "Your Kills : 0"
-
-[node name="Deaths" type="Label" parent="Progress"]
-layout_mode = 2
-text = "Your Deaths : 0"
-
-[node name="Allies" type="Label" parent="Progress"]
-layout_mode = 2
-text = "Current Knights : 0"
-
-[node name="AlliedKills" type="Label" parent="Progress"]
-layout_mode = 2
-text = "Knight Kills : 0"
-
-[node name="AlliesKilled" type="Label" parent="Progress"]
-layout_mode = 2
-text = "Knight Deaths : 0"
-
 [node name="CombatLog" type="VBoxContainer" parent="."]
 custom_minimum_size = Vector2(256, 128)
 anchors_preset = 2
@@ -149,18 +170,43 @@ grow_vertical = 0
 [node name="LabelContainer" type="HBoxContainer" parent="CombatLog"]
 layout_mode = 2
 
-[node name="LogLabel" type="Label" parent="CombatLog/LabelContainer"]
+[node name="LogLabel" type="Button" parent="CombatLog/LabelContainer"]
 layout_mode = 2
-text = "Combat Log"
+size_flags_vertical = 8
+theme = ExtResource("8_xtm2r")
+theme_override_colors/font_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_fonts/font = ExtResource("8_mp5xd")
+text = "Hide Log"
 
 [node name="CheckBox" type="CheckBox" parent="CombatLog/LabelContainer"]
 layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.169245, 0.169245, 0.169245, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.905882, 0.545098, 0.443137, 1)
+theme_override_colors/font_hover_color = Color(0.905882, 0.545098, 0.443137, 1)
+theme_override_colors/icon_disabled_color = Color(0.237539, 0.237539, 0.237539, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.905882, 0.545098, 0.443137, 1)
+theme_override_colors/icon_hover_color = Color(0.905882, 0.545098, 0.443137, 1)
+theme_override_colors/icon_pressed_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/icon_focus_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/icon_normal_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/font_outline_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/font_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/font_focus_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/font_pressed_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_fonts/font = ExtResource("8_mp5xd")
 button_pressed = true
 text = "Auto Scroll"
 
 [node name="Log" type="TextEdit" parent="CombatLog"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_colors/word_highlighted_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/current_line_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/background_color = Color(0.455, 0.545, 0.663, 0.3)
+theme_override_colors/font_outline_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/font_placeholder_color = Color(0.913725, 0.768627, 0.509804, 1)
+theme_override_colors/font_readonly_color = Color(0.905882, 0.545098, 0.443137, 1)
+theme_override_colors/font_color = Color(0.913725, 0.768627, 0.509804, 1)
 editable = false
 context_menu_enabled = false
 emoji_menu_enabled = false
@@ -171,8 +217,8 @@ middle_mouse_paste_enabled = false
 empty_selection_clipboard_enabled = false
 scroll_fit_content_width = true
 
-[node name="MinimapContainer" type="SubViewportContainer" parent="."]
-texture_filter = 1
+[node name="PanelContainer" type="PanelContainer" parent="."]
+self_modulate = Color(1, 1, 1, 0)
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -180,7 +226,30 @@ offset_left = -40.0
 offset_bottom = 40.0
 grow_horizontal = 0
 
-[node name="SubViewport" type="SubViewport" parent="MinimapContainer"]
+[node name="NinePatchRect" type="NinePatchRect" parent="PanelContainer"]
+self_modulate = Color(0.394, 0.271, 0.13, 0.7)
+layout_mode = 2
+texture = ExtResource("9_m0eg6")
+region_rect = Rect2(12.386, 16.6868, 114.892, 118.747)
+patch_margin_left = 20
+patch_margin_top = 25
+patch_margin_right = 20
+patch_margin_bottom = 50
+
+[node name="TopRightMargin" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 30
+
+[node name="MinimapContainer" type="SubViewportContainer" parent="PanelContainer/TopRightMargin"]
+texture_filter = 1
+layout_mode = 2
+focus_mode = 0
+mouse_filter = 2
+
+[node name="SubViewport" type="SubViewport" parent="PanelContainer/TopRightMargin/MinimapContainer"]
 transparent_bg = true
 handle_input_locally = false
 snap_2d_transforms_to_pixel = true
@@ -189,7 +258,7 @@ gui_disable_input = true
 size = Vector2i(256, 256)
 render_target_update_mode = 4
 
-[node name="Camera2D" type="Camera2D" parent="MinimapContainer/SubViewport"]
+[node name="Camera2D" type="Camera2D" parent="PanelContainer/TopRightMargin/MinimapContainer/SubViewport"]
 
 [node name="CuesAudio1" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("8_spcu4")
@@ -201,65 +270,97 @@ stream = ExtResource("7_srpbi")
 volume_db = 1.0
 bus = &"SFX"
 
-[node name="TutorialHints" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -40.0
-offset_bottom = 40.0
-grow_horizontal = 0
+[node name="DialogueContainer" type="PanelContainer" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -74.0
+offset_right = 400.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 8
+theme = ExtResource("8_xtm2r")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TutorialHints"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -770.0
-offset_bottom = 158.0
-grow_horizontal = 0
+[node name="RoundShield" type="NinePatchRect" parent="DialogueContainer"]
+self_modulate = Color(1, 1, 1, 0.6)
+layout_mode = 2
+texture = ExtResource("12_u6vop")
+region_rect = Rect2(6.84293, 21.3008, 129.157, 115.277)
+patch_margin_left = 29
+patch_margin_top = 27
+patch_margin_right = 28
+patch_margin_bottom = 26
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
 
-[node name="Instructions" type="Label" parent="TutorialHints/VBoxContainer"]
+[node name="DialogueBox" type="MarginContainer" parent="DialogueContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Panel" type="Panel" parent="DialogueContainer/DialogueBox"]
+self_modulate = Color(0.455, 0.545, 0.663, 0.6)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DialogueContainer/DialogueBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Text" type="Label" parent="DialogueContainer/DialogueBox/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
 size_flags_vertical = 0
 text = "INSTRUCTIONS: Push a direction key to turn your character to face that direction."
 
-[node name="Instructions2" type="Label" parent="TutorialHints/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="DialogueContainer/DialogueBox/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "Pushing the same direction key as your facing direction moves your character to the next tile."
+size_flags_horizontal = 4
 
-[node name="Instructions3" type="Label" parent="TutorialHints/VBoxContainer"]
+[node name="BackButton" type="Button" parent="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "Block (rtclick default) stops attacks from the side of your character (right or left) your mouse was on"
+text = "<-"
 
-[node name="Instructions4" type="Label" parent="TutorialHints/VBoxContainer"]
+[node name="RetreatButton" type="Button" parent="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "Hold attack(leftclick default) to parry attacks coming from the side of your character (right or left)"
+tooltip_text = "Quit to Score Screen"
+text = "Return to the Surface"
 
-[node name="Instructions5" type="Label" parent="TutorialHints/VBoxContainer"]
+[node name="AdvanceButton" type="Button" parent="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer"]
+visible = false
 layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "that your mouse was on.  Release to initiate an attack from that side."
+tooltip_text = "Continues the Game (3 Layers Total)"
+text = "Proceed to the Next Layer"
 
-[node name="Instructions6" type="Label" parent="TutorialHints/VBoxContainer"]
+[node name="StayButton" type="Button" parent="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer"]
+visible = false
 layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "Kick (E default) will momentarily stun the enemy in front of you."
+tooltip_text = "Endless Waves to Grind before Continuing"
+text = "Prepare First"
+
+[node name="ForwardButton" type="Button" parent="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "->"
+
+[node name="HideButton" type="Button" parent="DialogueContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Hide Dialogue Box"
 
 [node name="DevConsole" type="VBoxContainer" parent="."]
 visible = false
+z_index = 10
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 85.0
+offset_bottom = 207.0
 grow_horizontal = 2
 size_flags_horizontal = 3
 size_flags_vertical = 10
@@ -268,7 +369,10 @@ size_flags_vertical = 10
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_vertical = 3
-placeholder_text = "Dev Console Commands : kill_ai(), flush_map()"
+placeholder_text = "
+
+
+Dev Console Commands : kill_ai(), flush_map()"
 editable = false
 context_menu_enabled = false
 emoji_menu_enabled = false
@@ -278,3 +382,140 @@ wrap_mode = 1
 [node name="ConsoleInput" type="LineEdit" parent="DevConsole"]
 layout_mode = 2
 placeholder_text = "Command Input"
+
+[node name="TopLeftMargin" type="MarginContainer" parent="."]
+offset_right = 4284.0
+offset_bottom = 64.0
+theme = ExtResource("8_xtm2r")
+
+[node name="TopHUD" type="HBoxContainer" parent="TopLeftMargin"]
+layout_mode = 2
+size_flags_horizontal = 0
+alignment = 1
+
+[node name="SwordIcon" type="TextureRect" parent="TopLeftMargin/TopHUD"]
+layout_mode = 2
+texture = ExtResource("9_so1yu")
+expand_mode = 3
+
+[node name="KnightKills" type="Label" parent="TopLeftMargin/TopHUD/SwordIcon"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "0"
+horizontal_alignment = 1
+
+[node name="ShieldIcon" type="TextureRect" parent="TopLeftMargin/TopHUD"]
+layout_mode = 2
+texture = ExtResource("9_m0eg6")
+expand_mode = 3
+stretch_mode = 4
+
+[node name="KnightsAlive" type="Label" parent="TopLeftMargin/TopHUD/ShieldIcon"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -21.5
+offset_top = -11.5
+offset_right = 21.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+text = "0"
+horizontal_alignment = 1
+
+[node name="DemonSword" type="TextureRect" parent="TopLeftMargin/TopHUD"]
+layout_mode = 2
+texture = ExtResource("9_spcu4")
+expand_mode = 3
+stretch_mode = 4
+
+[node name="LayerWaveCount" type="Label" parent="TopLeftMargin/TopHUD/DemonSword"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -57.0
+offset_top = -11.5
+offset_right = 57.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+text = "Layer : Wave"
+horizontal_alignment = 1
+
+[node name="RoundShield" type="TextureRect" parent="TopLeftMargin/TopHUD"]
+layout_mode = 2
+texture = ExtResource("11_b00kl")
+expand_mode = 3
+stretch_mode = 4
+
+[node name="OrcsAlive" type="Label" parent="TopLeftMargin/TopHUD/RoundShield"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -21.5
+offset_top = -11.5
+offset_right = 21.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+text = "0"
+horizontal_alignment = 1
+
+[node name="AxeIcon" type="TextureRect" parent="TopLeftMargin/TopHUD"]
+layout_mode = 2
+texture = ExtResource("13_65xic")
+expand_mode = 3
+
+[node name="OrcKills" type="Label" parent="TopLeftMargin/TopHUD/AxeIcon"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "0"
+horizontal_alignment = 1
+
+[node name="HideMap" type="Button" parent="TopLeftMargin/TopHUD"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme = ExtResource("8_xtm2r")
+text = "Hide Minimap"
+
+[connection signal="pressed" from="CombatLog/LabelContainer/LogLabel" to="." method="_on_hide_log"]
+[connection signal="pressed" from="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/BackButton" to="." method="_on_previous_button_pressed"]
+[connection signal="pressed" from="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/RetreatButton" to="." method="_on_retreat_button_pressed"]
+[connection signal="pressed" from="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/AdvanceButton" to="." method="_on_advance_button_pressed"]
+[connection signal="pressed" from="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/StayButton" to="." method="_on_endless_button_pressed"]
+[connection signal="pressed" from="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/ForwardButton" to="." method="_on_next_button_pressed"]
+[connection signal="pressed" from="DialogueContainer/HideButton" to="." method="_on_hide_button_pressed"]
+[connection signal="pressed" from="TopLeftMargin/TopHUD/HideMap" to="." method="_on_hide_minimap"]

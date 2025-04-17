@@ -68,13 +68,3 @@ texture_under = ExtResource("5_yb3ym")
 texture_progress = SubResource("CompressedTexture2D_mbia5")
 tint_under = Color(0.678944, 0.678944, 0.678944, 1)
 tint_progress = Color(0.480651, 0.108159, 0.123061, 0.8)
-
-[node name="ColorRect" type="ColorRect" parent="."]
-show_behind_parent = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.415686, 0.333333, 0.223529, 1)
