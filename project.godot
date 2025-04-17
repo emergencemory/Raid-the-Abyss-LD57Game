@@ -10,7 +10,8 @@ config_version=5
 
 [application]
 
-config/name="LudumDare57"
+config/name="Raid the Abyss"
+config/description="For Ludum Dare 57 by Emery Smith and Smthngclvr.  staticleapstudios.com https://youtube.com/@smthngclvr?feature=shareda"
 run/main_scene="uid://dx3ishtlsfhpc"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 boot_splash/image="uid://c2ifcf7vn71kj"

@@ -188,7 +188,7 @@ func configure_ai_sprite(character: CharacterBody2D, team : String) -> void:
 		character.attack_from_right_sprite.texture = sword_icon
 		character.attack_from_left_sprite.texture = sword_icon
 		character.character_sprite.material = knight_outline_shader
-	character.level_up(randi_range(0, wave+(_layer*7)))
+	character.level_up(randi_range(0, wave+((_layer-1)*7)))
 
 func get_valid_spawn(team:String) -> Vector2:
 	var spawn_pos : Vector2
