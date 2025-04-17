@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=4 uid="uid://1e231ub6i8rj"]
+[gd_scene load_steps=29 format=4 uid="uid://1e231ub6i8rj"]
 
 [ext_resource type="Script" uid="uid://twvrtpgkny2o" path="res://map/map_manager.gd" id="1_hgrid"]
 [ext_resource type="Shader" uid="uid://dqijjwnp6q830" path="res://map/ground_shader.tres" id="2_7lyie"]
@@ -7,7 +7,6 @@
 [ext_resource type="Shader" uid="uid://b8q065078roce" path="res://map/wall_shader.tres" id="4_kxmgb"]
 [ext_resource type="Shader" uid="uid://dmal7yf7fwg07" path="res://map/cliff_shader.tres" id="5_e8e5r"]
 [ext_resource type="TileSet" uid="uid://dcfb4o11pmbvl" path="res://map/tileset/cliff_tileset.tres" id="6_112ik"]
-[ext_resource type="AudioStream" uid="uid://cahxteyvxp4l8" path="res://audio/Music/Into the Depths.mp3" id="7_5jdw0"]
 [ext_resource type="Texture2D" uid="uid://b0xcqnrdo2mdi" path="res://map/effects/rubble.png" id="9_e8e5r"]
 [ext_resource type="AudioStream" uid="uid://bxplvglmcrhmu" path="res://audio/SFX/Tile Break.wav" id="10_112ik"]
 
@@ -51,10 +50,6 @@ sources/0 = SubResource("TileSetAtlasSource_o2xrn")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wnugf"]
 shader = ExtResource("5_e8e5r")
-
-[sub_resource type="AudioStreamPlaylist" id="AudioStreamPlaylist_kxmgb"]
-stream_count = 1
-stream_0 = ExtResource("7_5jdw0")
 
 [sub_resource type="Curve" id="Curve_112ik"]
 _limits = [0.0, 100.0, 0.0, 1.0]
@@ -210,9 +205,6 @@ texture_filter = 1
 material = SubResource("ShaderMaterial_wnugf")
 tile_set = ExtResource("6_112ik")
 
-[node name="SoundtrackPlayer" type="AudioStreamPlayer2D" parent="."]
-stream = SubResource("AudioStreamPlaylist_kxmgb")
-
 [node name="RubbleParticle1" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)
 show_behind_parent = true
@@ -318,5 +310,7 @@ randomness = 0.1
 process_material = SubResource("ParticleProcessMaterial_58xwf")
 
 [node name="EnvironmentAudio" type="AudioStreamPlayer2D" parent="."]
+process_mode = 1
 stream = ExtResource("10_112ik")
 volume_db = 5.0
+bus = &"SFX"

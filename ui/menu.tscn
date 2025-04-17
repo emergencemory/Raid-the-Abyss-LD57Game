@@ -1,13 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://g3half8qtsa"]
+[gd_scene load_steps=8 format=3 uid="uid://g3half8qtsa"]
 
 [ext_resource type="Script" uid="uid://cagls3xcdvut3" path="res://ui/menu.gd" id="1_4c782"]
 [ext_resource type="Script" uid="uid://camn067plnl2x" path="res://ui/input_settings.gd" id="1_bwjgb"]
-[ext_resource type="Texture2D" uid="uid://c6jr7l22l4328" path="res://character/knight/block/0004.png" id="2_l8jcj"]
 [ext_resource type="PackedScene" uid="uid://bu75qpwk3isq6" path="res://ui/input_button.tscn" id="2_udkah"]
-[ext_resource type="Texture2D" uid="uid://d28qhgrrd3nni" path="res://ui/shield_icon.png" id="3_cp6tm"]
-[ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="4_2fd1n"]
-[ext_resource type="Texture2D" uid="uid://wfd0hlatulbt" path="res://character/knight/attack_from_right/0009.png" id="5_cop0s"]
-[ext_resource type="Texture2D" uid="uid://cujqpoykki85h" path="res://ui/sword_icon.png" id="6_oumb1"]
+[ext_resource type="Theme" uid="uid://cn38knnhoa4y8" path="res://ui/menu_theme.tres" id="4_7toyc"]
+[ext_resource type="Texture2D" uid="uid://dop34ibp1gt6v" path="res://ui/round_shield_large.png" id="5_0bcp5"]
+[ext_resource type="Texture2D" uid="uid://bef5guqs7615m" path="res://ui/boss_jump.png" id="6_l8jcj"]
+[ext_resource type="Texture2D" uid="uid://d1bvxpyg6v26k" path="res://ui/knight_large_2.png" id="7_cp6tm"]
 
 [node name="menu" type="CanvasLayer"]
 script = ExtResource("1_4c782")
@@ -18,6 +17,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("4_7toyc")
 
 [node name="TitleScreen" type="VBoxContainer" parent="MenuDivider"]
 layout_mode = 2
@@ -26,223 +28,158 @@ size_flags_vertical = 3
 
 [node name="Title" type="Label" parent="MenuDivider/TitleScreen"]
 layout_mode = 2
-size_flags_horizontal = 2
+size_flags_horizontal = 4
 size_flags_vertical = 0
-text = "Ludum Dare 57: \"Raid the Abyss\" by Static Leap Studios, LLC staticleapstudios.com"
+theme_override_font_sizes/font_size = 32
+text = "Raid The Abyss!"
 
-[node name="Credits" type="Label" parent="MenuDivider/TitleScreen"]
+[node name="GameControls" type="HBoxContainer" parent="MenuDivider/TitleScreen"]
 layout_mode = 2
-size_flags_horizontal = 2
+
+[node name="Resume" type="Button" parent="MenuDivider/TitleScreen/GameControls"]
+visible = false
+self_modulate = Color(0.752595, 0.934879, 0.95493, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Resume
+."
+
+[node name="Start" type="Button" parent="MenuDivider/TitleScreen/GameControls"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+text = "New
+Game"
+
+[node name="Quit" type="Button" parent="MenuDivider/TitleScreen/GameControls"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Quit
+."
+
+[node name="Reset" type="Button" parent="MenuDivider/TitleScreen/GameControls"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Reset
+Ctrls"
+
+[node name="ControlContainer" type="HBoxContainer" parent="MenuDivider/TitleScreen"]
+layout_mode = 2
+
+[node name="Controls" type="VBoxContainer" parent="MenuDivider/TitleScreen/ControlContainer"]
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ControlsLabel" type="Label" parent="MenuDivider/TitleScreen/ControlContainer/Controls"]
+layout_mode = 2
+size_flags_horizontal = 0
 size_flags_vertical = 0
-text = "SFX and Music: \"Into the Depths\" by SmthngClvr, https://youtube.com/@smthngclvr?feature=shared"
+text = "Controls (left click to rebind):"
+vertical_alignment = 1
+
+[node name="ActionList" type="VBoxContainer" parent="MenuDivider/TitleScreen/ControlContainer/Controls"]
+layout_mode = 2
+size_flags_horizontal = 4
+script = ExtResource("1_bwjgb")
+
+[node name="InputButton" parent="MenuDivider/TitleScreen/ControlContainer/Controls/ActionList" instance=ExtResource("2_udkah")]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VSeparator" type="VSeparator" parent="MenuDivider/TitleScreen/ControlContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="MainOptions" type="VBoxContainer" parent="MenuDivider/TitleScreen"]
 layout_mode = 2
 size_flags_horizontal = 3
-alignment = 1
+size_flags_vertical = 10
 
-[node name="Resume" type="Button" parent="MenuDivider/TitleScreen/MainOptions"]
-visible = false
+[node name="SoundContainer" type="HBoxContainer" parent="MenuDivider/TitleScreen/MainOptions"]
 layout_mode = 2
-text = "Resume"
+size_flags_vertical = 8
 
-[node name="Start" type="Button" parent="MenuDivider/TitleScreen/MainOptions"]
+[node name="SoundLabel" type="Label" parent="MenuDivider/TitleScreen/MainOptions/SoundContainer"]
 layout_mode = 2
-size_flags_vertical = 4
-text = "New Game"
+size_flags_horizontal = 4
+text = "Sound Vol:"
 
-[node name="Label" type="Label" parent="MenuDivider/TitleScreen/MainOptions"]
+[node name="SFXVolume" type="HSlider" parent="MenuDivider/TitleScreen/MainOptions/SoundContainer"]
 layout_mode = 2
-text = "Volume:"
-
-[node name="Volume" type="HSlider" parent="MenuDivider/TitleScreen/MainOptions"]
-layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
 min_value = -80.0
 max_value = 0.0
 value = -10.0
 
-[node name="Quit" type="Button" parent="MenuDivider/TitleScreen/MainOptions"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuDivider"]
 layout_mode = 2
-text = "Quit"
+size_flags_vertical = 8
 
-[node name="Instructions" type="Label" parent="MenuDivider/TitleScreen"]
+[node name="Credits" type="Label" parent="MenuDivider/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "INSTRUCTIONS: Push a direction key to turn your character to face that direction."
+size_flags_horizontal = 10
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 18
+text = "For Ludum Dare 57
+Design: Emery Smith , 
+staticleapstudios.com
+SFX and Music:  SmthngClvr ,
+ https://youtube.com/@smthngclvr?feature=shared"
+horizontal_alignment = 2
 
-[node name="Instructions2" type="Label" parent="MenuDivider/TitleScreen"]
-layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "Pushing the same direction key as your facing direction moves your character to the next tile."
-
-[node name="Instructions3" type="Label" parent="MenuDivider/TitleScreen"]
-layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "Block (rtclick default) stops attacks from the side of your character (right or left) your mouse was on"
-
-[node name="Instructions4" type="Label" parent="MenuDivider/TitleScreen"]
-layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "Hold attack(leftclick default) to parry attacks coming from the side of your character (right or left)"
-
-[node name="Instructions5" type="Label" parent="MenuDivider/TitleScreen"]
-layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "that your mouse was on.  Release to initiate an attack from that side."
-
-[node name="Instructions6" type="Label" parent="MenuDivider/TitleScreen"]
-layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 0
-text = "Kick (E default) will momentarily stun the enemy in front of you."
-
-[node name="PictureContainer" type="MarginContainer" parent="MenuDivider/TitleScreen"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="ControlForScale" type="Control" parent="MenuDivider/TitleScreen/PictureContainer"]
+[node name="MusicContainer" type="HBoxContainer" parent="MenuDivider/VBoxContainer"]
 layout_mode = 2
 
-[node name="VisualInstructions" type="GridContainer" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale"]
-layout_mode = 1
-offset_right = 404.0
-offset_bottom = 516.0
-scale = Vector2(0.5, 0.5)
-columns = 2
-
-[node name="BlockChar" type="TextureRect" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions"]
+[node name="MusicLabel" type="Label" parent="MenuDivider/VBoxContainer/MusicContainer"]
 layout_mode = 2
-texture = ExtResource("2_l8jcj")
-stretch_mode = 2
-flip_h = true
-flip_v = true
+text = "Music Vol:"
 
-[node name="ShieldRect" type="TextureRect" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions"]
-self_modulate = Color(1, 1, 3, 0.6)
-layout_mode = 2
-texture = ExtResource("3_cp6tm")
-stretch_mode = 2
-
-[node name="SparkRect" type="TextureRect" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions/ShieldRect"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("4_2fd1n")
-
-[node name="SparkRect2" type="TextureRect" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions/ShieldRect"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -28.0
-offset_bottom = 28.0
-grow_horizontal = 0
-texture = ExtResource("4_2fd1n")
-
-[node name="SparkRect3" type="TextureRect" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions/ShieldRect"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -28.0
-offset_top = -28.0
-grow_horizontal = 0
-grow_vertical = 0
-texture = ExtResource("4_2fd1n")
-
-[node name="SparkRect4" type="TextureRect" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions/ShieldRect"]
-layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -28.0
-offset_top = -14.0
-offset_bottom = 14.0
-grow_horizontal = 0
-grow_vertical = 2
-texture = ExtResource("4_2fd1n")
-
-[node name="AttackChar" type="TextureRect" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions"]
-layout_mode = 2
-texture = ExtResource("5_cop0s")
-
-[node name="ControlForRotate" type="Control" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions"]
-layout_mode = 2
-
-[node name="SwordRect" type="TextureRect" parent="MenuDivider/TitleScreen/PictureContainer/ControlForScale/VisualInstructions/ControlForRotate"]
-self_modulate = Color(3, 1, 1, 0.6)
-layout_mode = 2
-offset_left = 4.0
-offset_right = 148.0
-offset_bottom = 256.0
-rotation = 4.71239
-texture = ExtResource("6_oumb1")
-
-[node name="Controls" type="VBoxContainer" parent="MenuDivider"]
+[node name="MusicVolume" type="HSlider" parent="MenuDivider/VBoxContainer/MusicContainer"]
+process_mode = 3
 layout_mode = 2
 size_flags_horizontal = 3
+min_value = -80.0
+max_value = 0.0
+value = -10.0
 
-[node name="DevConsole" type="VBoxContainer" parent="MenuDivider/Controls"]
-layout_mode = 2
+[node name="RoundShield" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(1184, 1358)
+scale = Vector2(3.84955, 3.84955)
+texture = ExtResource("5_0bcp5")
 
-[node name="ConsoleLabel" type="Label" parent="MenuDivider/Controls/DevConsole"]
-layout_mode = 2
-text = "Dev Console Commands : kill_ai(), flush_map()"
+[node name="BossShadow" type="Sprite2D" parent="RoundShield"]
+self_modulate = Color(0, 0, 0, 0.5)
+position = Vector2(-100.531, -228.079)
+scale = Vector2(0.163778, 0.163778)
+texture = ExtResource("6_l8jcj")
 
-[node name="ConsoleHistory" type="TextEdit" parent="MenuDivider/Controls/DevConsole"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-size_flags_vertical = 3
-placeholder_text = "Dev Console History"
-editable = false
-context_menu_enabled = false
-emoji_menu_enabled = false
-shortcut_keys_enabled = false
-wrap_mode = 1
+[node name="KnightShadow" type="Sprite2D" parent="RoundShield"]
+self_modulate = Color(0, 0, 0, 0.5)
+position = Vector2(-185.736, -230.676)
+scale = Vector2(0.168344, 0.168344)
+texture = ExtResource("7_cp6tm")
+flip_h = true
 
-[node name="ConsoleInput" type="LineEdit" parent="MenuDivider/Controls/DevConsole"]
-layout_mode = 2
-placeholder_text = "Command Input"
+[node name="Boss" type="Sprite2D" parent="RoundShield"]
+position = Vector2(-91.9588, -273.538)
+scale = Vector2(0.153377, 0.153377)
+texture = ExtResource("6_l8jcj")
 
-[node name="ControlsLabel" type="Label" parent="MenuDivider/Controls"]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Controls:"
-vertical_alignment = 1
+[node name="Knight" type="Sprite2D" parent="RoundShield"]
+position = Vector2(-157.421, -230.676)
+scale = Vector2(0.163879, 0.163879)
+texture = ExtResource("7_cp6tm")
+flip_h = true
 
-[node name="ActionList" type="VBoxContainer" parent="MenuDivider/Controls"]
-layout_mode = 2
-size_flags_vertical = 6
-script = ExtResource("1_bwjgb")
-
-[node name="InputButton" parent="MenuDivider/Controls/ActionList" instance=ExtResource("2_udkah")]
-layout_mode = 2
-
-[node name="Reset" type="Button" parent="MenuDivider/Controls"]
-layout_mode = 2
-size_flags_vertical = 4
-text = "Reset"
-
-[connection signal="pressed" from="MenuDivider/TitleScreen/MainOptions/Resume" to="." method="_on_resume_pressed"]
-[connection signal="pressed" from="MenuDivider/TitleScreen/MainOptions/Start" to="." method="_on_start_pressed"]
-[connection signal="value_changed" from="MenuDivider/TitleScreen/MainOptions/Volume" to="." method="_on_volume_value_changed"]
-[connection signal="pressed" from="MenuDivider/TitleScreen/MainOptions/Quit" to="." method="_on_quit_pressed"]
-[connection signal="pressed" from="MenuDivider/Controls/Reset" to="MenuDivider/Controls/ActionList" method="_on_reset_button_pressed"]
+[connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Resume" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Reset" to="MenuDivider/TitleScreen/ControlContainer/Controls/ActionList" method="_on_reset_button_pressed"]
+[connection signal="value_changed" from="MenuDivider/TitleScreen/MainOptions/SoundContainer/SFXVolume" to="." method="_on_sfx_volume_value_changed"]
+[connection signal="value_changed" from="MenuDivider/VBoxContainer/MusicContainer/MusicVolume" to="." method="_on_music_volume_value_changed"]

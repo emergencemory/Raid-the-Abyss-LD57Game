@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://bu75qpwk3isq6"]
+[gd_scene load_steps=4 format=3 uid="uid://bu75qpwk3isq6"]
+
+[ext_resource type="Theme" uid="uid://du20olnqpp5wh" path="res://ui/input_button.tres" id="1_m0td1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8sys2"]
 bg_color = Color(0.992157, 0.992157, 0.992157, 0.392157)
@@ -11,7 +13,9 @@ custom_minimum_size = Vector2(0, 18)
 anchors_preset = 10
 anchor_right = 1.0
 grow_horizontal = 2
+size_flags_horizontal = 0
 focus_mode = 0
+theme = ExtResource("1_m0td1")
 theme_override_styles/hover = SubResource("StyleBoxFlat_8sys2")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_8sys2")
 theme_override_styles/normal = SubResource("StyleBoxFlat_igdfu")
@@ -33,17 +37,21 @@ layout_mode = 2
 
 [node name="LabelAction" type="Label" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 0
 mouse_filter = 1
 text = "action name"
 vertical_alignment = 1
 
-[node name="Control" type="Control" parent="MarginContainer/HBoxContainer"]
+[node name="Control" type="Label" parent="MarginContainer/HBoxContainer"]
+self_modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
+text = ":"
 
 [node name="LabelInput" type="Label" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 8
 mouse_filter = 1
 text = "input key"
 vertical_alignment = 1

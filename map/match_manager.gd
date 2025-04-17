@@ -19,6 +19,7 @@ var player : CharacterBody2D
 var hud_scene : PackedScene = preload("res://ui/hud.tscn")
 var character_data : Dictionary
 var layer : int = 1
+var wave: int = 1
 var current_orcs : int = 0
 var current_knights : int = 0
 var boss_spawned : int = 0
@@ -34,7 +35,7 @@ var spawning_wave_orc : bool = false
 var spawning_wave_knight : bool = false
 var spawn_attempts : int = 0
 
-signal update_player_hud(layer, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
+signal update_player_hud(layer, wave, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
 
 func _ready() -> void:
 	character_data = GAME_DATA.character_data.duplicate()
@@ -48,11 +49,11 @@ func _ready() -> void:
 	SignalBus.request_reinforcements.connect(spawn_ai)
 	SignalBus.console_kill_ai.connect(_on_console_kill_ai)
 	SignalBus.player_move.connect(update_spawn_area)
-	SignalBus.boss_killed.connect(layer_cleared)
+	SignalBus.next_layer.connect(layer_cleared)
 	get_tree().create_timer(1.0).timeout.connect(spawn_player)
 
 func layer_cleared() -> void:
-	pass
+	layer += 1
 
 func _on_console_kill_ai() -> void:
 	set_physics_process(false)
@@ -163,7 +164,7 @@ func configure_ai_sprite(character: CharacterBody2D, team : String) -> void:
 		character.attack_from_right_sprite.texture = sword_icon
 		character.attack_from_left_sprite.texture = sword_icon
 		character.character_sprite.material = knight_outline_shader
-	for i in (randi_range(0, layer)):
+	for i in (randi_range(0, wave*layer)):
 		character.level_up()
 
 func get_valid_spawn(team:String) -> Vector2:
@@ -204,10 +205,11 @@ func get_valid_spawn(team:String) -> Vector2:
 		print_debug("Failed to find a valid spawn position after ", max_attempts, " attempts.")
 	return spawn_pos
 
-func set_layer(new_layer : int) -> void:
-	layer = new_layer
-	if layer == 7 or layer == 14 or layer == 21 or layer == 28:
-		if boss_spawned < 1:#(layer / 7):
+#TODO fix this
+func set_wave(new_wave : int) -> void:
+	wave = new_wave
+	if new_wave == 7 or new_wave == 14 or new_wave == 21 or new_wave == 28:
+		if boss_spawned < (new_wave/7):
 			boss_spawned += 1
 			var boss = boss_scene.instantiate()
 			boss.team = "orc"
@@ -251,7 +253,7 @@ func _physics_process(delta: float) -> void:
 		
 
 func spawn_wave(team:String) -> void:
-	var spawns_number : int = layer
+	var spawns_number : int = wave + layer*2
 	for i in range(spawns_number):
 		spawn_ai(team)
 		update_hud()
@@ -483,7 +485,7 @@ func set_orcs(value: int) -> void:
 	if current_orcs <= 1 and not spawning_wave_orc:
 		spawning_wave_orc = true
 		spawn_wave("orc")
-		set_layer(layer + 1)
+		set_wave(wave + 1)
 		update_hud()
 
 func _on_orc_kill(team: String) -> void:
@@ -514,4 +516,4 @@ func _on_player_kill(team: String) -> void:
 	update_hud()
 
 func update_hud() -> void:
-	emit_signal("update_player_hud", layer, current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)
+	emit_signal("update_player_hud", layer, wave,current_orcs, your_kills, your_deaths, current_knights, knight_kills, knight_deaths)

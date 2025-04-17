@@ -1,0 +1,13 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://ifeuanprlh1n"]
+
+[ext_resource type="FontFile" uid="uid://c2fmrsalewht8" path="res://ui/scribish.ttf" id="1_4lnw6"]
+
+[resource]
+Button/colors/font_color = Color(0.913725, 0.768627, 0.509804, 1)
+Button/colors/font_focus_color = Color(0.913725, 0.768627, 0.509804, 1)
+Button/colors/font_hover_color = Color(0.905882, 0.545098, 0.443137, 1)
+Button/colors/font_hover_pressed_color = Color(0.905882, 0.545098, 0.443137, 1)
+Button/colors/font_pressed_color = Color(0.905882, 0.545098, 0.443137, 1)
+Button/fonts/font = ExtResource("1_4lnw6")
+Label/colors/font_color = Color(0.913725, 0.768627, 0.509804, 1)
+Label/fonts/font = ExtResource("1_4lnw6")

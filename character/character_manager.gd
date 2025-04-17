@@ -483,7 +483,7 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 				ray_cast_2d.force_raycast_update()
 				if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("cliff"):
 					global_position += Vector2(0, -128)
-					log_string = str(self) + " is falling off cliff!"
+					log_string = str(team) + " is falling off cliff!"
 					falling = true
 					killed(kicker)
 					die()
@@ -496,7 +496,7 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 				ray_cast_2d.force_raycast_update()
 				if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("cliff"):
 					global_position += Vector2(128, 0)
-					log_string = str(self) + " is falling off cliff!"
+					log_string = str(team) + " is falling off cliff!"
 					falling = true
 					killed(kicker)
 					die()	
@@ -509,7 +509,7 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 				ray_cast_2d.force_raycast_update()
 				if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("cliff"):
 					global_position += Vector2(0, 128)
-					log_string = str(self) + " is falling off cliff!"
+					log_string = str(team) + " is falling off cliff!"
 					falling = true
 					killed(kicker)
 					die()
@@ -522,7 +522,7 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 				ray_cast_2d.force_raycast_update()
 				if ray_cast_2d.is_colliding() and ray_cast_2d.get_collider().is_in_group("cliff"):
 					global_position += Vector2(-128, 0)
-					log_string = str(self) + " is falling off cliff!"
+					log_string = str(team) + " is falling off cliff!"
 					falling = true
 					killed(kicker)
 					die()
@@ -613,13 +613,13 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			strike_shape.set_deferred("disabled" , true)
 			return
 		elif _target.block_direction == attack_direction and _target.is_blocking:
-			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " blocked Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
+			log_string = str(_target.team) + " blocked " + str(self.team) + " attack from direction: " + str(attack_direction)
 			SignalBus.combat_log_entry.emit(log_string)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Wooden"
 			combat_audio_player.play()
 			spark_particle.emitting = true
 		elif _target.attack_direction == attack_direction and _target.is_preparing_attack:
-			log_string = "Player: " + str(_target.is_player) + " " + str(_target.team) + " parried Player: " + str(is_player) + " " + str(self.team) + " attack from direction: " + str(attack_direction)
+			log_string = str(_target.team) + " parried " + str(self.team) + " attack from direction: " + str(attack_direction)
 			SignalBus.combat_log_entry.emit(log_string)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Metal Armour"
 			combat_audio_player.play()

@@ -656,21 +656,21 @@ func _on_attack_area_entered(area: Area2D) -> void:
 	var log_string : String
 	if _target is CharacterBody2D:
 		if is_stomping or is_starting_stomp:
-			log_string = "Boss stomped on " + str(_target) + " for " + str(current_stomp_damage) + " damage!"
+			log_string = "Boss stomped on " + str(_target.team) + " for " + str(current_stomp_damage) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
 			SignalBus.emit_signal("shake_screen")
 			combat_audio_player.play()
 			_target.kicked(self, randi_range(0,3))
 		elif is_jumping or is_landing:
-			log_string = "Boss jumped on " + str(_target) + " for " + str(current_jump_damage) + " damage!"
+			log_string = "Boss jumped on " + str(_target.team) + " for " + str(current_jump_damage) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
 			SignalBus.emit_signal("shake_screen")
 			combat_audio_player.play()
 			_target.hit(self, current_jump_damage)
 		elif is_attacking_from_right:
-			log_string = "Boss attacked " + str(_target) + " from the right for " + str(current_attack_from_right_damage) + " damage!"
+			log_string = "Boss attacked " + str(_target.team) + " from the right for " + str(current_attack_from_right_damage) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
 			SignalBus.emit_signal("shake_screen")
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Sword and Swipe"
@@ -681,21 +681,21 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			light_1_tween.tween_property(explosion_light_1, "energy", 0.0, 0.5)
 			_target.hit(self, current_attack_from_right_damage)
 		elif _target.is_blocking:
-			log_string = "Boss attack on " + str(_target) + " from the left was partially blocked for " + str(current_attack_from_left_damage/2) + " damage!"
+			log_string = "Boss attack on " + str(_target.team) + " from the left was partially blocked for " + str(current_attack_from_left_damage/2) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
 			spark_particle.emitting = true
 			_target.hit(self, current_attack_from_left_damage/2)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
 			combat_audio_player.play()
 		elif _target.is_preparing_attack:
-			log_string = "Boss attack on " + str(_target) + " from the left was partially parried for " + str(current_attack_from_left_damage/2) + " damage!"
+			log_string = "Boss attack on " + str(_target.team) + " from the left was partially parried for " + str(current_attack_from_left_damage/2) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
 			_target.hit(self, current_attack_from_left_damage/2)
 			spark_particle.emitting = true
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Metal Armour"
 			combat_audio_player.play()
 		else:
-			log_string = "Boss attacked " + str(_target) + " from the left for " + str(current_attack_from_left_damage) + " damage!"
+			log_string = "Boss attacked " + str(_target.team) + " from the left for " + str(current_attack_from_left_damage) + " damage!"
 			SignalBus.combat_log_entry.emit(log_string)
 			_target.hit(self, current_attack_from_left_damage)
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
