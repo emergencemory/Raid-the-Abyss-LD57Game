@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1urejpvfloun"]
+
+[ext_resource type="Script" uid="uid://bcrfft0efx68" path="res://map/match_manager.gd" id="1_ibhbs"]
+
+[node name="MatchManager" type="Node2D"]
+process_mode = 1
+script = ExtResource("1_ibhbs")

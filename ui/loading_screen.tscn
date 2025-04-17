@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dyvseu2vg8wo6"]
+[gd_scene load_steps=7 format=3 uid="uid://dyvseu2vg8wo6"]
 
 [ext_resource type="Theme" uid="uid://cn38knnhoa4y8" path="res://ui/menu_theme.tres" id="1_gyf4x"]
 [ext_resource type="Texture2D" uid="uid://cnh0evxwoq4fh" path="res://ui/large_kite_shield.png" id="2_o3r17"]
+[ext_resource type="Script" uid="uid://cbhbx2vp6vvtw" path="res://ui/loading_screen.gd" id="3_gyf4x"]
 [ext_resource type="Texture2D" uid="uid://bbm1bhref36yr" path="res://ui/knight_large.png" id="3_w0ar3"]
 [ext_resource type="Texture2D" uid="uid://hp0aufljjex6" path="res://ui/axe_large.png" id="5_yb3ym"]
 
@@ -9,7 +10,8 @@
 load_path = "res://.godot/imported/axe_large.png-b9bc205d7cbc1b930436d7c03538e472.ctex"
 
 [node name="LoadingScreen" type="NinePatchRect"]
-z_index = -3
+process_mode = 3
+z_index = 5
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -31,13 +33,16 @@ patch_margin_right = 107
 patch_margin_bottom = 261
 axis_stretch_horizontal = 2
 axis_stretch_vertical = 2
+script = ExtResource("3_gyf4x")
 
 [node name="KnightLarge" type="Sprite2D" parent="."]
+z_index = 3
 position = Vector2(978.75, 408.75)
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("3_w0ar3")
 
 [node name="ControlContainer" type="VBoxContainer" parent="."]
+z_index = 3
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -46,20 +51,26 @@ grow_horizontal = 2
 scale = Vector2(0.8, 0.8)
 
 [node name="LoadingLabel" type="Label" parent="ControlContainer"]
+process_mode = 3
+z_index = 1
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "...Loading..."
 horizontal_alignment = 1
 
 [node name="LoadingProgress" type="TextureProgressBar" parent="ControlContainer"]
+z_index = 1
 layout_mode = 2
+max_value = 1.5
+step = 0.1
 fill_mode = 3
 texture_under = ExtResource("5_yb3ym")
 texture_progress = SubResource("CompressedTexture2D_mbia5")
 tint_under = Color(0.678944, 0.678944, 0.678944, 1)
-tint_progress = Color(0.045, 0.196, 0.657, 0.8)
+tint_progress = Color(0.480651, 0.108159, 0.123061, 0.8)
 
 [node name="ColorRect" type="ColorRect" parent="."]
-z_index = -1
+show_behind_parent = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

@@ -1,20 +1,26 @@
-[gd_scene load_steps=9 format=3 uid="uid://dx3ishtlsfhpc"]
+[gd_scene load_steps=10 format=3 uid="uid://dx3ishtlsfhpc"]
 
 [ext_resource type="Script" uid="uid://dhyrr3d4sptxn" path="res://globals/GameManager.gd" id="1_qdmn5"]
 [ext_resource type="Texture2D" uid="uid://dop34ibp1gt6v" path="res://ui/round_shield_large.png" id="2_ylvxq"]
 [ext_resource type="Texture2D" uid="uid://c1jendxth7byy" path="res://ui/orc_large.png" id="3_06wfu"]
 [ext_resource type="Texture2D" uid="uid://cp1r00qnfmox3" path="res://ui/balrog_sword_large.png" id="4_u0hhh"]
-[ext_resource type="PackedScene" uid="uid://dyvseu2vg8wo6" path="res://ui/loading_screen.tscn" id="5_f1pwi"]
 [ext_resource type="Texture2D" uid="uid://ccwvkmgqr3xpn" path="res://ui/boss_walk.png" id="6_6dsdn"]
 [ext_resource type="Texture2D" uid="uid://d1bvxpyg6v26k" path="res://ui/knight_large_2.png" id="8_sw6f3"]
 [ext_resource type="Texture2D" uid="uid://bef5guqs7615m" path="res://ui/boss_jump.png" id="9_nnybr"]
+[ext_resource type="AudioStream" uid="uid://cahxteyvxp4l8" path="res://audio/Music/Into the Depths.mp3" id="9_ylvxq"]
+
+[sub_resource type="AudioStreamPlaylist" id="AudioStreamPlaylist_06wfu"]
+stream_count = 1
+stream_0 = ExtResource("9_ylvxq")
 
 [node name="Game" type="Node2D"]
+process_mode = 3
 z_index = -3
 script = ExtResource("1_qdmn5")
 
 [node name="Background" type="CanvasLayer" parent="."]
-layer = -1
+process_mode = 3
+layer = 0
 
 [node name="RoundShieldLarge" type="Sprite2D" parent="Background"]
 position = Vector2(1184, 1358)
@@ -45,10 +51,6 @@ scale = Vector2(0.207817, 0.207817)
 texture = ExtResource("8_sw6f3")
 flip_h = true
 
-[node name="LoadingScreen" parent="Background" instance=ExtResource("5_f1pwi")]
-visible = false
-z_index = 0
-
 [node name="OrcLarge" type="Sprite2D" parent="Background"]
 position = Vector2(-1527, 528)
 texture = ExtResource("3_06wfu")
@@ -62,3 +64,9 @@ texture = ExtResource("4_u0hhh")
 [node name="BossWalk" type="Sprite2D" parent="Background"]
 position = Vector2(-713, 480)
 texture = ExtResource("6_6dsdn")
+
+[node name="SoundtrackPlayer" type="AudioStreamPlayer2D" parent="Background"]
+process_mode = 3
+stream = SubResource("AudioStreamPlaylist_06wfu")
+autoplay = true
+bus = &"Music"

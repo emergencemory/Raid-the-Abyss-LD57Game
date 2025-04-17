@@ -181,11 +181,13 @@ debug_color = Color(0.920729, 0.234891, 0.397624, 0.42)
 
 [node name="CombatAudio" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamInteractive_8vtqr")
+bus = &"SFX"
 
 [node name="MovementAudio" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamInteractive_k67b1")
 volume_db = 15.0
 max_distance = 512.0
+bus = &"SFX"
 
 [node name="BlockRightSprite" type="Sprite2D" parent="."]
 visible = false

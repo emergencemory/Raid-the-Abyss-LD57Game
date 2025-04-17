@@ -1412,10 +1412,12 @@ debug_color = Color(0.920729, 0.234891, 0.397624, 0.42)
 
 [node name="CombatAudioPlayer" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamInteractive_k1fd1")
+bus = &"SFX"
 
 [node name="MovementAudio" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("11_vx3ar")
 pitch_scale = 0.01
+bus = &"SFX"
 
 [node name="AttackFromRightSprite" type="Sprite2D" parent="."]
 visible = false
@@ -1452,6 +1454,7 @@ process_material = SubResource("ParticleProcessMaterial_8vtqr")
 
 [node name="BossAudio" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamInteractive_i5ah4")
+bus = &"SFX"
 
 [connection signal="area_entered" from="CharacterSprite/HitBoxFront" to="." method="_on_attack_area_entered"]
 [connection signal="area_entered" from="CharacterSprite/HitBoxFront2" to="." method="_on_attack_area_entered"]
