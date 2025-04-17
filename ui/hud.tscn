@@ -276,7 +276,7 @@ bus = &"SFX"
 [node name="CuesAudio2" type="AudioStreamPlayer2D" parent="."]
 process_mode = 3
 stream = ExtResource("7_srpbi")
-volume_db = 1.0
+volume_db = -0.5
 bus = &"SFX"
 
 [node name="DialogueContainer" type="PanelContainer" parent="."]

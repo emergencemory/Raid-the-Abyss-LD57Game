@@ -7,7 +7,9 @@ class_name GameManager
 @onready var loading_screen : PackedScene = preload("res://ui/loading_screen.tscn")
 @onready var background : CanvasLayer = $Background
 @onready var soundtrack_player: AudioStreamPlayer2D = $Background/SoundtrackPlayer
+@onready var game_over_scene : PackedScene = preload("res://ui/game_over.tscn")
 
+var game_over
 var menu
 var map
 var match_manager
@@ -28,6 +30,7 @@ func _ready() -> void:
 	SignalBus.change_pause.connect(_pause_unpause)
 	SignalBus.next_layer.connect(next_layer)
 	SignalBus.player_move.connect(_move_soundtrack)
+	SignalBus.cue_game_over.connect(_on_game_over)
 	loading_screen_instance.hide()
 
 func next_layer() -> void:
@@ -36,6 +39,18 @@ func next_layer() -> void:
 	loading_screen_timer = 0.0
 	set_physics_process(true)
 
+func _on_game_over(_highest_level: int) -> void:
+	loading_screen_instance.show()
+	background.layer = 5
+	loading_screen_timer = 0.0
+	set_physics_process(true)
+	if map:
+		map.queue_free()
+	if game_over:
+		game_over.queue_free()
+	menu.resume.visible = false
+	game_over = game_over_scene.instantiate()
+	add_child(game_over)
 
 func start_game() -> void:
 	loading_screen_instance.show()

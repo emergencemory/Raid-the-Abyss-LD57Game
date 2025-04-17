@@ -1,16 +1,382 @@
-[gd_scene load_steps=4 format=3 uid="uid://bwj6w0p7vr1n5"]
+[gd_scene load_steps=13 format=3 uid="uid://bwj6w0p7vr1n5"]
 
 [ext_resource type="Texture2D" uid="uid://ccwvkmgqr3xpn" path="res://ui/boss_walk.png" id="1_5eixk"]
-[ext_resource type="Script" path="res://ui/game_over.gd" id="1_j1fe5"]
+[ext_resource type="Script" uid="uid://6q078tyi1s0u" path="res://ui/game_over.gd" id="1_j1fe5"]
 [ext_resource type="Texture2D" uid="uid://c1jendxth7byy" path="res://ui/orc_large.png" id="2_j1fe5"]
+[ext_resource type="Texture2D" uid="uid://dop34ibp1gt6v" path="res://ui/round_shield_large.png" id="2_l87h4"]
+[ext_resource type="Texture2D" uid="uid://cnh0evxwoq4fh" path="res://ui/large_kite_shield.png" id="5_cnsmc"]
+[ext_resource type="Texture2D" uid="uid://d1bvxpyg6v26k" path="res://ui/knight_large_2.png" id="6_v1fhu"]
+[ext_resource type="Texture2D" uid="uid://bbm1bhref36yr" path="res://ui/knight_large.png" id="7_xtpiw"]
+[ext_resource type="Theme" uid="uid://ifeuanprlh1n" path="res://ui/hud_theme.tres" id="8_exxln"]
+[ext_resource type="Texture2D" uid="uid://ydhdd6k1c41p" path="res://ui/knight_small.png" id="9_ksit6"]
+[ext_resource type="Texture2D" uid="uid://bfr83xu85c1be" path="res://ui/balrog_small.png" id="10_h5kff"]
+[ext_resource type="Texture2D" uid="uid://qgdvykfqya1i" path="res://ui/orc_small.png" id="11_mmccg"]
+[ext_resource type="AudioStream" uid="uid://o6vaduy703ji" path="res://audio/SFX/Gong Crash SFX.mp3" id="12_cnsmc"]
 
 [node name="GameOver" type="CanvasLayer"]
 script = ExtResource("1_j1fe5")
 
-[node name="BossWalk" type="Sprite2D" parent="."]
-position = Vector2(764, 285)
+[node name="DisplayRankC" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect2" type="TextureRect" parent="DisplayRankC"]
+clip_children = 2
+clip_contents = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -512.0
+offset_top = -512.0
+offset_right = 512.0
+offset_bottom = 512.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_l87h4")
+
+[node name="TextureRect3" type="TextureRect" parent="DisplayRankC/TextureRect2"]
+self_modulate = Color(0, 0, 0, 0.7)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -565.0
+offset_top = -545.0
+offset_right = 459.0
+offset_bottom = 479.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("1_5eixk")
 
-[node name="OrcLarge" type="Sprite2D" parent="."]
-position = Vector2(235, 322)
+[node name="TextureRect" type="TextureRect" parent="DisplayRankC"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -512.0
+offset_top = -512.0
+offset_right = 512.0
+offset_bottom = 512.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_5eixk")
+
+[node name="DisplayRankB" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect2" type="TextureRect" parent="DisplayRankB"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -256.0
+offset_top = -512.0
+offset_right = 256.0
+offset_bottom = 512.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_l87h4")
+
+[node name="TextureRect3" type="TextureRect" parent="DisplayRankB/TextureRect2"]
+self_modulate = Color(0, 0, 0, 0.7)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -205.0
+offset_top = -468.0
+offset_right = 307.0
+offset_bottom = 556.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("2_j1fe5")
+
+[node name="TextureRect" type="TextureRect" parent="DisplayRankB"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -267.0
+offset_top = -448.0
+offset_right = 245.0
+offset_bottom = 576.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_j1fe5")
+
+[node name="DisplayRankA" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect2" type="TextureRect" parent="DisplayRankA"]
+clip_children = 2
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_cnsmc")
+
+[node name="TextureRect3" type="TextureRect" parent="DisplayRankA/TextureRect2"]
+self_modulate = Color(0, 0, 0, 0.7)
+layout_mode = 0
+offset_left = 418.0
+offset_top = 337.0
+offset_right = 1442.0
+offset_bottom = 1361.0
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("6_v1fhu")
+
+[node name="TextureRect" type="TextureRect" parent="DisplayRankA"]
+layout_mode = 0
+offset_left = 281.0
+offset_top = 141.0
+offset_right = 1305.0
+offset_bottom = 1165.0
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("6_v1fhu")
+
+[node name="DisplayRankS" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect2" type="TextureRect" parent="DisplayRankS"]
+clip_children = 2
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_cnsmc")
+
+[node name="TextureRect3" type="TextureRect" parent="DisplayRankS/TextureRect2"]
+self_modulate = Color(0, 0, 0, 0.7)
+layout_mode = 0
+offset_left = 459.0
+offset_top = 482.0
+offset_right = 1483.0
+offset_bottom = 1506.0
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("7_xtpiw")
+
+[node name="TextureRect" type="TextureRect" parent="DisplayRankS"]
+layout_mode = 0
+offset_left = 431.0
+offset_top = 148.0
+offset_right = 1455.0
+offset_bottom = 1172.0
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("7_xtpiw")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("8_exxln")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="ScoreLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Game Over
+You cleared 0 Layers
+Your rank: C"
+horizontal_alignment = 1
+
+[node name="Narrative" type="Label" parent="MarginContainer/VBoxContainer"]
+z_index = 4
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Your raid hurt more than it helped, the enemy retaliation was swift and brutal."
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="KnightsKilled" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Fallen Allies
+0"
+horizontal_alignment = 1
+
+[node name="KnightGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+show_behind_parent = true
+layout_mode = 2
+size_flags_vertical = 3
+columns = 8
+
+[node name="KnightIcon" type="Control" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/KnightGrid"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/VBoxContainer/KnightGrid/KnightIcon"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -128.0
+offset_right = 64.0
+offset_bottom = 128.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+texture = ExtResource("9_ksit6")
+stretch_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+
+[node name="Level" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/VBoxContainer2"]
+layout_mode = 2
+text = "Highest Level
+0"
+horizontal_alignment = 1
+
+[node name="Kills" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/VBoxContainer2"]
+layout_mode = 2
+text = "Your Kills
+0"
+horizontal_alignment = 1
+
+[node name="Deaths" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/VBoxContainer2"]
+layout_mode = 2
+text = "Your Deaths
+0"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Quit to Menu"
+
+[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer3"]
+layout_mode = 2
+
+[node name="OrcsKilled" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer3/VBoxContainer3"]
+layout_mode = 2
+text = "Defeated Enemies
+0"
+horizontal_alignment = 1
+
+[node name="EnemyGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer3/VBoxContainer3"]
+show_behind_parent = true
+layout_mode = 2
+size_flags_vertical = 3
+columns = 8
+
+[node name="OrcIcon" type="Control" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer3/VBoxContainer3/EnemyGrid"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TextureRect2" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer3/VBoxContainer3/EnemyGrid/OrcIcon"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -128.0
+offset_right = 64.0
+offset_bottom = 128.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("11_mmccg")
+stretch_mode = 2
+
+[node name="BossIcon" type="Control" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer3/VBoxContainer3/EnemyGrid"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer3/VBoxContainer3/EnemyGrid/BossIcon"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -128.0
+offset_right = 128.0
+offset_bottom = 128.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("10_h5kff")
+stretch_mode = 2
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("12_cnsmc")
+autoplay = true
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/Button" to="." method="_on_hide"]

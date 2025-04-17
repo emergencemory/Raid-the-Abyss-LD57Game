@@ -30,6 +30,7 @@ class_name Hud
 @onready var dev_console: VBoxContainer = $DevConsole
 
 var layer_level: int = 0
+var highest_level: int = 0
 var attack_cooldown: float = 0.0
 var block_cooldown: float = 0.0
 var move_cooldown: float = 0.0
@@ -38,7 +39,6 @@ var auto_scroll: bool = true
 var expression = Expression.new()
 
 
-#TODO hook up game_over
 func _ready() -> void:
 	#self.hide()
 	console_input.text_submitted.connect(_on_text_submitted)
@@ -63,6 +63,8 @@ func _move_minimap_camera(player_pos: Vector2) -> void:
 		sub_viewport.size = Vector2(256, 128)
 	else:
 		printerr("Minimap camera is null")
+	cues_audio_layer_up.position = player_pos
+	cues_audio_level_up.position = player_pos
 
 func _on_hide_minimap() -> void:
 	if top_right_margin.visible:
@@ -83,6 +85,8 @@ func _on_level_up(character: CharacterBody2D, _level: int) -> void:
 		_on_health_changed(character.current_health, character.base_health, character)
 		level.text = "Lvl: " + str(_level)
 		cues_audio_level_up.play()
+		if highest_level < _level:
+			highest_level = _level
 
 func _on_check_box_toggled(toggled_on:bool) -> void:
 	if toggled_on:
@@ -152,7 +156,10 @@ func _on_update_player_hud(_layer:int, _wave: int, current_orcs:int, your_kills:
 	stage_label.text = "Layer : " + str(_layer) + "  Wave : " + str(_wave)
 	if _layer != layer_level:
 		layer_level = _layer
+		cues_audio_layer_up.volume_db = -0.5
 		cues_audio_layer_up.play()
+		var audio_tween = create_tween()
+		audio_tween.tween_property(cues_audio_layer_up, "volume_db", -8.0, 1.5)
 	enemies.text = str(current_orcs)
 	kills.text = "Kills: " + str(your_kills)
 	deaths.text = "Deaths : " + str(your_deaths)
@@ -262,7 +269,9 @@ func _on_hide_button_pressed()-> void:
 	#hide dialogue or show
 
 func _on_retreat_button_pressed()-> void:
-	SignalBus.emit_signal("game_over")
+	SignalBus.emit_signal("player_move", Vector2.ZERO)
+	SignalBus.emit_signal("cue_game_over", highest_level)
+	
 	#game over
 
 func _on_advance_button_pressed()-> void:
@@ -272,6 +281,7 @@ func _on_advance_button_pressed()-> void:
 	stay_button.hide()
 	_text.text = advance_text
 	SignalBus.emit_signal("next_layer")
+	dialogue_box.modulate.r = 1.0
 	#advance to next layer
 
 func _on_endless_button_pressed()-> void:

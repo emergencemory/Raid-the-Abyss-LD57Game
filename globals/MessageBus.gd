@@ -23,7 +23,8 @@ signal loading_screen_timer(value: float)
 signal change_pause
 signal hide_hud(pause:bool)
 signal next_layer
-signal game_over
+signal cue_game_over(highest_level: int)
+signal game_over(highest_level: int, deepest_layer: int, player_kills: int, player_deaths: int, enemy_deaths: int, allied_deaths: int)
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS

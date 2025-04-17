@@ -52,7 +52,14 @@ func _ready() -> void:
 	SignalBus.player_move.connect(update_spawn_area)
 	SignalBus.next_layer.connect(layer_cleared)
 	SignalBus.boss_killed.connect(_on_endless_mode)
+	SignalBus.cue_game_over.connect(_on_game_over)
 	get_tree().create_timer(1.0).timeout.connect(spawn_player)
+
+func _on_game_over(highest_level: int) -> void:
+	SignalBus.emit_signal("game_over", highest_level, _layer, your_kills, your_deaths, enemy_deaths, knight_deaths)
+	for child in get_children():
+		child.queue_free()
+
 
 func layer_cleared() -> void:
 	for orc in get_tree().get_nodes_in_group("orc"):
@@ -73,8 +80,13 @@ func _on_console_kill_ai() -> void:
 		if character != null and not character.is_queued_for_deletion():
 			print_debug("Killing AI: ", character.name)
 			if character.is_in_group("orc"):
+				enemy_deaths += 1
 				set_orcs(current_orcs - 1)
+				if character.is_boss:
+					boss_spawned = 0
+					SignalBus.emit_signal("boss_killed")
 			elif character.is_in_group("knight"):
+				knight_deaths += 1
 				set_knights(current_knights - 1)
 			character.queue_free()
 		else:
@@ -220,8 +232,6 @@ func set_layer(new_layer : int) -> void:
 	_layer = new_layer
 	boss_spawned = 0
 	update_hud()
-	if _layer == 4:
-		SignalBus.emit_signal("game_over")
 
 func set_wave(new_wave : int) -> void:
 	wave = new_wave
@@ -496,8 +506,10 @@ func _on_knight_kill(team: String) -> void:
 	if team == "orc":
 		set_orcs(current_orcs - 1)
 		knight_kills += 1
+		enemy_deaths += 1
 	elif team == "knight":
 		set_knights(current_knights - 1)
+		knight_deaths += 1
 	if spawn_attempts >= 60:
 		spawn_wave(team)
 	update_hud()
@@ -519,6 +531,7 @@ func _on_orc_kill(team: String) -> void:
 		knight_deaths += 1
 	elif team == "orc":
 		set_orcs(current_orcs - 1)
+		enemy_deaths += 1
 	if spawn_attempts >= 60:
 		spawn_wave(team)
 	update_hud()
@@ -534,8 +547,10 @@ func _on_player_kill(team: String) -> void:
 	if team == "orc":
 		set_orcs(current_orcs - 1)
 		your_kills += 1
+		enemy_deaths += 1
 	elif team == "knight":
 		set_knights(current_knights - 1)
+		knight_deaths += 1
 	if spawn_attempts >= 60:
 		spawn_wave(team)
 	update_hud()
