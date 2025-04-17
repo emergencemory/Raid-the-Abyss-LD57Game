@@ -44,20 +44,39 @@ func _on_game_over(_highest_level: int) -> void:
 	loading_screen_timer = 0.0
 	set_physics_process(true)
 	if map:
-		map.queue_free()
+		SignalBus.emit_signal("console_flush_map")
+	if match_manager:
+		for child in match_manager.get_children():
+			child.set_physics_process(false)
+			child.remove_from_group("ai")
+			child.remove_from_group("boss")
+			child.remove_from_group("orc")
+			child.remove_from_group("knight")
+			child.position = Vector2i(-9000, -9000)
+			SignalBus.emit_signal("hide_hud", true)
+			child.hide()
 	if game_over:
-		game_over.queue_free()
+		game_over.hide()
 	menu.resume.visible = false
 	game_over = game_over_scene.instantiate()
 	add_child(game_over)
+	game_over.show()
 
 func start_game() -> void:
 	loading_screen_instance.show()
 	background.layer = 5
 	if map:
-		map.queue_free()
+		SignalBus.emit_signal("console_flush_map")
 	if match_manager:
-		match_manager.queue_free()
+		for child in match_manager.get_children():
+			child.set_physics_process(false)
+			child.remove_from_group("ai")
+			child.remove_from_group("boss")
+			child.remove_from_group("orc")
+			child.remove_from_group("knight")
+			SignalBus.emit_signal("hide_hud", true)
+			child.hide()
+			child.position = Vector2i(-9000, -9000)
 	map = map_scene.instantiate()
 	add_child(map)
 	match_manager = match_manager_scene.instantiate()
@@ -65,6 +84,7 @@ func start_game() -> void:
 	_pause_unpause()
 	loading_screen_timer = 0.0
 	SignalBus.player_move.connect(_move_soundtrack)
+	SignalBus.emit_signal("hide_hud", false)
 	set_physics_process(true)
 
 func _on_loading_screen_timeout() -> void:
@@ -88,13 +108,8 @@ func set_music_volume(value:float) -> void:
 
 func _on_reset_keybindings() -> void:
 	if menu:
-		var resume : bool = menu.resume.visible
-		menu.queue_free()
-		menu = menu_scene.instantiate()
-		add_child(menu)
-		menu.resume.visible = resume
-	else:
-		printerr("No menu instance to reset.")
+		menu.action_list._load_keybindings()
+		menu.action_list._create_action_list()
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_action_pressed("menu"):
@@ -103,7 +118,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 func _pause_unpause() -> void:
 	if menu.visible:
-		get_tree().paused = false
+		#get_tree().paused = false
 		menu.hide()
 		if map != null and match_manager != null:
 			map.show()
@@ -114,7 +129,7 @@ func _pause_unpause() -> void:
 			map.hide()
 			match_manager.hide()
 			SignalBus.emit_signal("hide_hud", true)
-		get_tree().paused = true
+		#get_tree().paused = true
 		menu.show()
 
 func quit() -> void:

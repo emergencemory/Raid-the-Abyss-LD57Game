@@ -2,6 +2,7 @@ extends CanvasLayer
 class_name Menu
 
 @onready var resume: Button = $MenuDivider/TitleScreen/GameControls/Resume
+@onready var action_list: VBoxContainer = $MenuDivider/TitleScreen/ControlContainer/Controls/ActionList
 
 var resume_modulate : float
 

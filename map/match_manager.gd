@@ -58,12 +58,17 @@ func _ready() -> void:
 func _on_game_over(highest_level: int) -> void:
 	SignalBus.emit_signal("game_over", highest_level, _layer, your_kills, your_deaths, enemy_deaths, knight_deaths)
 	for child in get_children():
-		child.queue_free()
+		child.set_physics_process(false)
 
 
 func layer_cleared() -> void:
 	for orc in get_tree().get_nodes_in_group("orc"):
-		orc.queue_free()
+		orc.remove_from_group("orc")
+		orc.remove_from_group("ai")
+		orc.remove_from_group("boss")
+		orc.add_to_group("dead")
+		orc.hide()
+		orc.set_physics_process(false)
 	SignalBus.emit_signal("player_move", player.global_position)
 	for knight in get_tree().get_nodes_in_group("knight"):
 		if not knight.is_player:
@@ -88,7 +93,16 @@ func _on_console_kill_ai() -> void:
 			elif character.is_in_group("knight"):
 				knight_deaths += 1
 				set_knights(current_knights - 1)
-			character.queue_free()
+			character.remove_from_group("ai")
+			character.remove_from_group(character.team)
+			character.remove_from_group("boss")
+			character.add_to_group("dead")
+			for child in character.get_children():
+				if child is CollisionShape2D:
+					child.disabled = true
+			character.position = Vector2i(-9000, -9000)
+			character.hide()
+			character.set_physics_process(false)
 		else:
 			print_debug("Invalid character for deletion")
 	update_hud()
