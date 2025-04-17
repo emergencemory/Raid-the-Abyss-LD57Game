@@ -29,7 +29,6 @@ func _ready() -> void:
 	SignalBus.quit_game.connect(quit)
 	SignalBus.change_pause.connect(_pause_unpause)
 	SignalBus.next_layer.connect(next_layer)
-	SignalBus.player_move.connect(_move_soundtrack)
 	SignalBus.cue_game_over.connect(_on_game_over)
 	loading_screen_instance.hide()
 
@@ -65,6 +64,7 @@ func start_game() -> void:
 	add_child(match_manager)
 	_pause_unpause()
 	loading_screen_timer = 0.0
+	SignalBus.player_move.connect(_move_soundtrack)
 	set_physics_process(true)
 
 func _on_loading_screen_timeout() -> void:

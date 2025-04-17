@@ -1,12 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://dx3ishtlsfhpc"]
+[gd_scene load_steps=8 format=3 uid="uid://dx3ishtlsfhpc"]
 
 [ext_resource type="Script" uid="uid://dhyrr3d4sptxn" path="res://globals/GameManager.gd" id="1_qdmn5"]
 [ext_resource type="Shader" uid="uid://clu08xgwpjxfv" path="res://ui/loading_screen.gdshader" id="3_3q0u3"]
 [ext_resource type="AudioStream" uid="uid://cahxteyvxp4l8" path="res://audio/Music/Into the Depths.mp3" id="9_ylvxq"]
-
-[sub_resource type="AudioStreamPlaylist" id="AudioStreamPlaylist_06wfu"]
-stream_count = 1
-stream_0 = ExtResource("9_ylvxq")
 
 [sub_resource type="Gradient" id="Gradient_ehmke"]
 offsets = PackedFloat32Array(0, 0.516981, 0.988679)
@@ -36,9 +32,10 @@ layer = 0
 
 [node name="SoundtrackPlayer" type="AudioStreamPlayer2D" parent="Background"]
 process_mode = 3
-stream = SubResource("AudioStreamPlaylist_06wfu")
+stream = ExtResource("9_ylvxq")
 autoplay = true
 bus = &"Music"
+parameters/looping = true
 
 [node name="ColorRect" type="ColorRect" parent="Background"]
 show_behind_parent = true
