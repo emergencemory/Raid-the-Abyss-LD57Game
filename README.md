@@ -1,13 +1,17 @@
-entry for ludum dare 57
-theme: depths
-knights (blue, left) raiding abyss full of orcs (red, right)
+Entry for ludum dare 57
+Theme: depths
+Knights (blue, left) raiding abyss full of Orcs (red, right)
 
-main goals:
+Credits:
+Game - Emery Smith - staticleapstudios.com
+Music/SFX - Smthngclvr - https://youtube.com/@smthngclvr?feature=shared
+
+Main Goals:
 melee-system
 terrain-generator
 minimap
 
-controls (rebindable)
+Controls (rebindable)
 WASD - move up/down/left/right
 Left Click - prepare attack and parry from the mouse direction relative to the character's facing direction
 Release Left Click - initiate attack
