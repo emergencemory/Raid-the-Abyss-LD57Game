@@ -2,12 +2,16 @@ extends CanvasLayer
 class_name Menu
 
 @onready var resume: Button = $MenuDivider/TitleScreen/GameControls/Resume
+@onready var action_list: VBoxContainer = $MenuDivider/TitleScreen/ControlContainer/Controls/ActionList
+@onready var quit: Button = $MenuDivider/TitleScreen/GameControls/Quit
 
 var resume_modulate : float
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	SignalBus.hide_hud.connect(_on_hide)
+	if OS.get_name() != "Web":
+		quit.show()
 
 func _on_start_pressed() -> void:
 	SignalBus.start_game.emit()

@@ -133,7 +133,11 @@ func _physics_process(delta) -> void:
 		fall_depth +=  1
 		if fall_depth >= 30:
 			falling = false
-			queue_free()
+			position = Vector2(-9000, -9000)
+			self.hide()
+			set_physics_process(false)
+			if OS.get_name() != "Web":
+				queue_free()
 		return
 	if stun_on_cooldown:
 		if cooldown_time_stun > 0:

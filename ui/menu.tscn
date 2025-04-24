@@ -54,6 +54,7 @@ text = "New
 Game"
 
 [node name="Quit" type="Button" parent="MenuDivider/TitleScreen/GameControls"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 0
 tooltip_text = "Quit to OS"
