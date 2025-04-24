@@ -106,6 +106,7 @@ func spawn_shadows() -> void:
 			continue
 		else:
 			shadow_layer.set_cell(tile, 0, Vector2i(0,0))
+			await(get_tree().physics_frame)
 
 func spawn_label(label_string: String, _position : Vector2, _color : Color) -> void:
 	var _label : Label = Label.new()
@@ -237,12 +238,13 @@ func unload_corpses(player_position: Vector2i) -> void:
 				if child is CollisionShape2D:
 					child.disabled = true
 			corpse.position = Vector2(-9000, -9000)
+			if OS.get_name() != "Web":
+				corpse.queue_free()
 
 func unload_textures(player_position: Vector2i) -> void:
 	for texture in texture_library.keys():
 		var distance: Vector2i = abs(texture_library[texture] - player_position)
 		if distance.x >= 30 or distance.y >= 30:
 			texture.hide()
-			
 			texture_library.erase(texture)
 			texture.queue_free()
