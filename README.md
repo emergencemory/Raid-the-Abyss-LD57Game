@@ -1,3 +1,5 @@
+![Ludum Dare](https://img.shields.io/badge/LudumDare-57-f79122?labelColor=ee5533&link=https%3A%2F%2Fldjam.com%2Fevents%2Fludum-dare%2F56)
+![Ludum Dare](https://img.shields.io/badge/LudumDare57-Extra-66cc23?labelColor=ee5533&link=https%3A%2F%2Fldjam.com%2Fevents%2Fludum-dare%2F56)
 Entry for ludum dare 57
 Theme: depths
 Knights (blue, left) raiding abyss full of Orcs (red, right)
