@@ -45,8 +45,8 @@ var team: String = "orc"
 var order_ticks : float = 0.0
 var current_xp: float
 var current_level: int
-var current_xp_to_next_level: float
-var base_xp_to_next_level_multiplier: float
+#var current_xp_to_next_level: float
+#var base_xp_to_next_level_multiplier: float
 var level_up_multiplier: float
 var level_up_addition: int
 
@@ -124,8 +124,8 @@ signal killed_by_orc(team: String)
 func _ready() -> void:
 	current_level = GAME_DATA.boss_data["base_level"]
 	current_xp = GAME_DATA.boss_data["base_xp"]
-	current_xp_to_next_level = GAME_DATA.boss_data["base_xp_to_next_level"]
-	base_xp_to_next_level_multiplier = GAME_DATA.boss_data["base_xp_to_next_level_multiplier"]
+	#current_xp_to_next_level = GAME_DATA.boss_data["base_xp_to_next_level"]
+	#base_xp_to_next_level_multiplier = GAME_DATA.boss_data["base_xp_to_next_level_multiplier"]
 	level_up_multiplier = GAME_DATA.boss_data["level_up_multiplier"]
 	level_up_addition = GAME_DATA.boss_data["level_up_addition"]
 
@@ -151,6 +151,8 @@ func _ready() -> void:
 	current_jump_damage = GAME_DATA.boss_data["jump_damage"]
 	current_jump_speed = GAME_DATA.boss_data["jump_speed"]
 	
+	animation_player.play("boss_idle")
+
 	if is_player:
 		SignalBus.emit_signal("health_signal", current_health, base_health, self)
 
@@ -160,7 +162,7 @@ func level_up(levels_to_gain: int = 1) -> void:
 	current_level += levels_to_gain
 	SignalBus.emit_signal("leveled_up", self, current_level)
 	
-	current_xp_to_next_level *= pow(base_xp_to_next_level_multiplier , levels_to_gain)
+	#current_xp_to_next_level *= pow(base_xp_to_next_level_multiplier , levels_to_gain)
 	
 	base_health = level_up_addition*current_level
 	current_health = base_health
@@ -294,8 +296,8 @@ func _physics_process(delta) -> void:
 			cooldown_time_target -= delta
 		else:
 			_on_target_timeout()
-	if current_xp >= current_xp_to_next_level:
-		level_up(1)
+	#if current_xp >= current_xp_to_next_level:
+	#	level_up(1)
 
 
 func prepare_attack_from_left() -> void:

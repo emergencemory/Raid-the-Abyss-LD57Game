@@ -25,6 +25,7 @@ signal hide_hud(pause:bool)
 signal next_layer
 signal cue_game_over(highest_level: int)
 signal game_over(highest_level: int, deepest_layer: int, player_kills: int, player_deaths: int, enemy_deaths: int, allied_deaths: int)
+signal touchscreen_toggled(toggled_on: bool)
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS

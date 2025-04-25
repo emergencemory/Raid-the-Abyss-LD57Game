@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bwj6w0p7vr1n5"]
+[gd_scene load_steps=14 format=3 uid="uid://bwj6w0p7vr1n5"]
 
 [ext_resource type="Texture2D" uid="uid://ccwvkmgqr3xpn" path="res://ui/boss_walk.png" id="1_5eixk"]
 [ext_resource type="Script" uid="uid://6q078tyi1s0u" path="res://ui/game_over.gd" id="1_j1fe5"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bbm1bhref36yr" path="res://ui/knight_large.png" id="7_xtpiw"]
 [ext_resource type="Theme" uid="uid://ifeuanprlh1n" path="res://ui/hud_theme.tres" id="8_exxln"]
 [ext_resource type="Texture2D" uid="uid://ydhdd6k1c41p" path="res://ui/knight_small.png" id="9_ksit6"]
+[ext_resource type="FontFile" uid="uid://c2fmrsalewht8" path="res://ui/scribish.ttf" id="9_v1fhu"]
 [ext_resource type="Texture2D" uid="uid://bfr83xu85c1be" path="res://ui/balrog_small.png" id="10_h5kff"]
 [ext_resource type="Texture2D" uid="uid://qgdvykfqya1i" path="res://ui/orc_small.png" id="11_mmccg"]
 [ext_resource type="AudioStream" uid="uid://o6vaduy703ji" path="res://audio/SFX/Gong Crash SFX.mp3" id="12_cnsmc"]
@@ -220,6 +221,7 @@ layout_mode = 2
 
 [node name="ScoreLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("9_v1fhu")
 theme_override_font_sizes/font_size = 32
 text = "Game Over
 You cleared 0 Layers

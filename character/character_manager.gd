@@ -333,7 +333,7 @@ func move(direction: int) -> void:
 			global_position += Vector2(-128, 0)	
 	character_sprite.global_position = previous_position
 	var move_sprite = create_tween()
-	move_sprite.tween_property(character_sprite, "global_position", global_position, (30/current_speed))
+	move_sprite.tween_property(character_sprite, "global_position", global_position, (40/current_speed))
 	cooldown_time_moving = 30/current_speed
 	cooldown_time_move = current_move_cooldown
 	move_on_cooldown = true
@@ -395,8 +395,10 @@ func turn(direction : int) -> void:
 
 func _on_move_timeout() -> void:
 	moving = false
-	character_sprite.play("idle")
-	shadow_sprite.play("idle")
+	await get_tree().create_timer(0.15).timeout
+	if !moving and !is_attacking and !is_kicking and !is_blocking and not is_in_group("dead"):
+		character_sprite.play("idle")
+		shadow_sprite.play("idle")
 
 func _on_target_timeout() -> void:
 	has_target = false
@@ -431,6 +433,9 @@ func _on_block_cooldown_timeout() -> void:
 
 func _on_move_cooldown_timeout() -> void:
 	move_on_cooldown = false
+	#if !moving:
+	#	character_sprite.play("idle")
+	#	shadow_sprite.play("idle")
 
 func _on_kick_timeout() -> void:
 	is_kicking = false
@@ -538,7 +543,7 @@ func kicked(kicker : CharacterBody2D, enemy_facing_dir : int) -> void:
 	SignalBus.combat_log_entry.emit(log_string)
 
 func killed(attacker : CharacterBody2D) -> void:
-	if attacker != null:
+	if attacker != null and attacker.team != team:
 		attacker.current_xp += current_level*100
 	if attacker.is_player and not is_player:
 		emit_signal("killed_by_player", team)
@@ -583,6 +588,8 @@ func die() -> void:
 	add_to_group("dead")
 	remove_from_group(team)
 	remove_from_group("ai")
+	if player_camera:
+		player_camera.reparent(self)
 	for child in get_children():
 		if not child.name == "BloodParticle" and not child == player_camera and not child == combat_audio_player:
 			child.queue_free()
@@ -598,7 +605,7 @@ func die() -> void:
 	remove_from_group(team)
 	if is_player:
 		is_player = false
-		get_tree().create_timer(2.0).timeout.connect(get_parent().spawn_player)
+		get_tree().create_timer(2.0).timeout.connect(get_parent().spawn_player.bind(current_level/2))
 	
 func _on_health_regen_timeout() -> void:
 	current_health += 1
@@ -616,6 +623,8 @@ func _on_attack_area_entered(area: Area2D) -> void:
 			combat_audio_player["parameters/switch_to_clip"] = "Impact Body"
 			combat_audio_player.play()
 			strike_shape.set_deferred("disabled" , true)
+			return
+		elif _target.team == team:
 			return
 		elif _target.block_direction == attack_direction and _target.is_blocking:
 			log_string = str(_target.team) + " blocked " + str(self.team) + " attack from direction: " + str(attack_direction)

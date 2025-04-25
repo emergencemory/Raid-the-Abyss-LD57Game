@@ -1,6 +1,8 @@
 extends CanvasLayer
 class_name Hud
 
+@export var touchscreen_toggled: bool = false
+
 @onready var minimap_camera: Camera2D = $PanelContainer/TopRightMargin/MinimapContainer/SubViewport/Camera2D
 @onready var hide_map: Button = $TopLeftMargin/TopHUD/HideMap
 @onready var sub_viewport: SubViewport = $PanelContainer/TopRightMargin/MinimapContainer/SubViewport
@@ -28,6 +30,8 @@ class_name Hud
 @onready var console_input: LineEdit = $DevConsole/ConsoleInput
 @onready var console_history: TextEdit = $DevConsole/ConsoleHistory
 @onready var dev_console: VBoxContainer = $DevConsole
+@onready var touchscreen_left: MarginContainer = $TouchscreenLeft
+@onready var touchscreen_right: MarginContainer = $TouchscreenRight
 
 var layer_level: int = 0
 var highest_level: int = 0
@@ -49,6 +53,7 @@ func _ready() -> void:
 	sub_viewport.world_2d = get_parent().get_world_2d()
 	SignalBus.hide_hud.connect(_pause_unpause)
 	SignalBus.boss_killed.connect(_on_layer_cleared)
+	_on_touchscreen_toggled(touchscreen_toggled)
 
 func _pause_unpause(pause:bool) -> void:
 	if pause:
@@ -78,6 +83,9 @@ func _on_hide_minimap() -> void:
 		nine_patch_rect.show()
 		minimap_container.show()
 
+func _on_touchscreen_toggled(toggled_on: bool) -> void:
+	touchscreen_left.visible = toggled_on
+	touchscreen_right.visible = toggled_on
 
 func _on_level_up(character: CharacterBody2D, _level: int) -> void:
 	_log.text += character.team + " leveled up to level " + str(_level) + "\n"
@@ -201,7 +209,7 @@ func flush_map():
 	SignalBus.emit_signal("console_flush_map")
 
 ##DialogueBox
-
+@onready var dialogue_container: PanelContainer = $DialogueContainer
 @onready var hide_button: Button = $DialogueContainer/HideButton
 @onready var round_shield: NinePatchRect = $DialogueContainer/RoundShield
 @onready var dialogue_box: MarginContainer = $DialogueContainer/DialogueBox
@@ -242,6 +250,7 @@ func _on_previous_button_pressed()-> void:
 	#cyce through dialogue
 
 func _on_layer_cleared()-> void:
+	dialogue_container.set_anchors_preset(dialogue_container.LayoutPreset.PRESET_CENTER_BOTTOM, true)
 	dialogue_box.show()
 	round_shield.show()
 	hide_button.text = "Hide Dialogue Box"
@@ -255,13 +264,14 @@ func _on_layer_cleared()-> void:
 	retreat_button.show()
 	stay_button.show()
 	set_physics_process(true)
-	#show layer clear dialogue
+	dialogue_container.set_anchors_preset(dialogue_container.LayoutPreset.PRESET_CENTER, true)
 
 func _on_hide_button_pressed()-> void:
 	if dialogue_box.visible:
 		dialogue_box.hide()
 		hide_button.text = "Show Dialogue Box"
 		round_shield.hide()
+		dialogue_container.set_anchors_preset(dialogue_container.LayoutPreset.PRESET_CENTER_BOTTOM, true)
 	else:
 		dialogue_box.show()
 		hide_button.text = "Hide Dialogue Box"
@@ -269,12 +279,13 @@ func _on_hide_button_pressed()-> void:
 	#hide dialogue or show
 
 func _on_retreat_button_pressed()-> void:
+	dialogue_container.set_anchors_preset(dialogue_container.LayoutPreset.PRESET_CENTER_BOTTOM, true)
 	SignalBus.emit_signal("player_move", Vector2.ZERO)
 	SignalBus.emit_signal("cue_game_over", highest_level)
-	
 	#game over
 
 func _on_advance_button_pressed()-> void:
+	dialogue_container.set_anchors_preset(dialogue_container.LayoutPreset.PRESET_CENTER_BOTTOM, true)
 	forward_button.show()
 	back_button.show()
 	advance_button.hide()
@@ -287,5 +298,6 @@ func _on_advance_button_pressed()-> void:
 func _on_endless_button_pressed()-> void:
 	stay_button.hide()
 	_text.text = endless_text
+	dialogue_container.set_anchors_preset(dialogue_container.LayoutPreset.PRESET_CENTER_BOTTOM, true)
 	#SignalBus.emit_signal("endless_mode")
 	#endless mode

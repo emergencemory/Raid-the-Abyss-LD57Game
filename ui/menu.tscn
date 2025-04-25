@@ -1,10 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://g3half8qtsa"]
+[gd_scene load_steps=10 format=3 uid="uid://g3half8qtsa"]
 
 [ext_resource type="Script" uid="uid://cagls3xcdvut3" path="res://ui/menu.gd" id="1_4c782"]
 [ext_resource type="Script" uid="uid://camn067plnl2x" path="res://ui/input_settings.gd" id="1_bwjgb"]
 [ext_resource type="PackedScene" uid="uid://bu75qpwk3isq6" path="res://ui/input_button.tscn" id="2_udkah"]
+[ext_resource type="FontFile" uid="uid://c2fmrsalewht8" path="res://ui/scribish.ttf" id="3_l8jcj"]
 [ext_resource type="Theme" uid="uid://cn38knnhoa4y8" path="res://ui/menu_theme.tres" id="4_7toyc"]
 [ext_resource type="Texture2D" uid="uid://dop34ibp1gt6v" path="res://ui/round_shield_large.png" id="5_0bcp5"]
+[ext_resource type="Theme" uid="uid://du20olnqpp5wh" path="res://ui/input_button.tres" id="5_cop0s"]
 [ext_resource type="Texture2D" uid="uid://bef5guqs7615m" path="res://ui/boss_jump.png" id="6_l8jcj"]
 [ext_resource type="Texture2D" uid="uid://d1bvxpyg6v26k" path="res://ui/knight_large_2.png" id="7_cp6tm"]
 
@@ -30,6 +32,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("3_l8jcj")
 theme_override_font_sizes/font_size = 32
 text = "Raid The Abyss!"
 
@@ -72,23 +75,30 @@ Ctrls"
 [node name="ControlContainer" type="HBoxContainer" parent="MenuDivider/TitleScreen"]
 layout_mode = 2
 tooltip_text = "Rebind controls by clicking on them and then pressing the desired key"
+alignment = 1
 
 [node name="Controls" type="VBoxContainer" parent="MenuDivider/TitleScreen/ControlContainer"]
 layout_direction = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+alignment = 1
+
+[node name="TouchscreenToggle" type="CheckButton" parent="MenuDivider/TitleScreen/ControlContainer/Controls"]
+layout_mode = 2
+theme = ExtResource("5_cop0s")
+text = "Touchscreen Controls Toggle"
 
 [node name="ControlsLabel" type="Label" parent="MenuDivider/TitleScreen/ControlContainer/Controls"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
-text = "Controls (left click to rebind):"
+text = "Controls (click to rebind):"
 vertical_alignment = 1
 
 [node name="ActionList" type="VBoxContainer" parent="MenuDivider/TitleScreen/ControlContainer/Controls"]
 layout_mode = 2
-size_flags_horizontal = 4
+alignment = 1
 script = ExtResource("1_bwjgb")
 
 [node name="InputButton" parent="MenuDivider/TitleScreen/ControlContainer/Controls/ActionList" instance=ExtResource("2_udkah")]

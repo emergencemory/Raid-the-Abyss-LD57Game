@@ -1,6 +1,4 @@
-[gd_resource type="Theme" load_steps=5 format=3 uid="uid://ifeuanprlh1n"]
-
-[ext_resource type="FontFile" uid="uid://c2fmrsalewht8" path="res://ui/scribish.ttf" id="1_4lnw6"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://ifeuanprlh1n"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4lnw6"]
 content_margin_left = 1.0
@@ -72,10 +70,8 @@ Button/colors/icon_hover_color = Color(0.247059, 0.27451, 0.309804, 1)
 Button/colors/icon_hover_pressed_color = Color(0.247059, 0.27451, 0.309804, 1)
 Button/colors/icon_normal_color = Color(0.247059, 0.27451, 0.309804, 1)
 Button/colors/icon_pressed_color = Color(0.247059, 0.27451, 0.309804, 1)
-Button/fonts/font = ExtResource("1_4lnw6")
 Button/styles/focus = SubResource("StyleBoxFlat_4lnw6")
 Button/styles/hover = SubResource("StyleBoxFlat_4lnw6")
 Button/styles/normal = SubResource("StyleBoxFlat_yl8sm")
 Button/styles/pressed = SubResource("StyleBoxFlat_o5who")
 Label/colors/font_color = Color(0.957549, 0.850771, 0.659616, 1)
-Label/fonts/font = ExtResource("1_4lnw6")

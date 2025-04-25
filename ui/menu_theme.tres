@@ -1,6 +1,5 @@
-[gd_resource type="Theme" load_steps=15 format=3 uid="uid://cn38knnhoa4y8"]
+[gd_resource type="Theme" load_steps=14 format=3 uid="uid://cn38knnhoa4y8"]
 
-[ext_resource type="FontFile" uid="uid://c2fmrsalewht8" path="res://ui/scribish.ttf" id="1_u64f1"]
 [ext_resource type="Texture2D" uid="uid://bqktonvo7qquc" path="res://ui/sword_small_horizontal.png" id="3_w5svx"]
 [ext_resource type="Texture2D" uid="uid://dop34ibp1gt6v" path="res://ui/round_shield_large.png" id="4_tluwm"]
 [ext_resource type="Texture2D" uid="uid://cffwkg4co7w7g" path="res://ui/kite_shield_icon_2.png" id="5_l0kx3"]
@@ -29,7 +28,7 @@ texture_margin_right = 40.1197
 texture_margin_bottom = 43.3852
 region_rect = Rect2(12.3254, 6.25839, 115.694, 126.89)
 
-[sub_resource type="Image" id="Image_w5svx"]
+[sub_resource type="Image" id="Image_sojpq"]
 data = {
 "data": PackedByteArray(0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 64, 255, 255, 255, 64, 0, 0, 0, 0),
 "format": "RGBA8",
@@ -39,7 +38,7 @@ data = {
 }
 
 [sub_resource type="ImageTexture" id="ImageTexture_u64f1"]
-image = SubResource("Image_w5svx")
+image = SubResource("Image_sojpq")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1uptb"]
 bg_color = Color(0.212, 0.431, 0.661, 0.8)
@@ -79,21 +78,17 @@ bg_color = Color(1, 0.2, 0.2, 1)
 
 [resource]
 AcceptDialog/constants/buttons_separation = 10
-AcceptDialog/fonts/title_font = ExtResource("1_u64f1")
 AcceptDialog/styles/panel = SubResource("StyleBoxFlat_y7e74")
 Button/colors/font_color = Color(0.914789, 0.770427, 0.510385, 1)
 Button/colors/font_focus_color = Color(0.913725, 0.768627, 0.509804, 1)
 Button/colors/font_hover_color = Color(0.904586, 0.545887, 0.444382, 1)
 Button/colors/font_hover_pressed_color = Color(0.905882, 0.545098, 0.443137, 1)
 Button/colors/font_pressed_color = Color(0.905882, 0.545098, 0.443137, 1)
-Button/fonts/font = ExtResource("1_u64f1")
 Button/styles/disabled = SubResource("StyleBoxTexture_fvhrp")
 Button/styles/focus = SubResource("StyleBoxTexture_fvhrp")
 Button/styles/hover = SubResource("StyleBoxTexture_fvhrp")
 Button/styles/normal = SubResource("StyleBoxTexture_fvhrp")
 Button/styles/pressed = SubResource("StyleBoxTexture_il8ly")
-CheckBox/fonts/font = ExtResource("1_u64f1")
-CheckButton/fonts/font = ExtResource("1_u64f1")
 HSlider/constants/center_grabber = 0
 HSlider/constants/grabber_offset = 0
 HSlider/icons/grabber = ExtResource("5_l0kx3")
@@ -106,13 +101,8 @@ HSlider/styles/slider = SubResource("StyleBoxTexture_q6c3w")
 Label/colors/font_color = Color(0.950817, 0.849293, 0.564548, 1)
 Label/colors/font_outline_color = Color(0, 0, 0, 1)
 Label/colors/font_shadow_color = Color(0, 0, 0, 0.3)
-Label/fonts/font = ExtResource("1_u64f1")
 Panel/styles/panel = SubResource("StyleBoxTexture_u3tyk")
 ProgressBar/colors/font_color = Color(0.781938, 0.625867, 0.393029, 1)
 ProgressBar/colors/font_outline_color = Color(0, 0, 0, 1)
-ProgressBar/fonts/font = ExtResource("1_u64f1")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_ae6r1")
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_7i1di")
-TabBar/fonts/font = ExtResource("1_u64f1")
-Tree/fonts/font = ExtResource("1_u64f1")
-Tree/fonts/title_button_font = ExtResource("1_u64f1")

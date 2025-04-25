@@ -4,6 +4,7 @@ class_name Menu
 @onready var resume: Button = $MenuDivider/TitleScreen/GameControls/Resume
 @onready var action_list: VBoxContainer = $MenuDivider/TitleScreen/ControlContainer/Controls/ActionList
 @onready var quit: Button = $MenuDivider/TitleScreen/GameControls/Quit
+@onready var touchscreen_toggle: CheckButton = $MenuDivider/TitleScreen/ControlContainer/Controls/TouchscreenToggle
 
 var resume_modulate : float
 
@@ -34,6 +35,12 @@ func _physics_process(delta: float) -> void:
 		resume_modulate += delta*3
 	else:
 		set_physics_process(false)
+
+func _on_touchscreen_toggle_toggled(toggled_on : bool) -> void:
+	if toggled_on:
+		SignalBus.touchscreen_toggled.emit(true)
+	else:
+		SignalBus.touchscreen_toggled.emit(false)
 
 func _on_sfx_volume_value_changed(value:float) -> void:
 	SignalBus.sfx_volume_slider_changed.emit(value)

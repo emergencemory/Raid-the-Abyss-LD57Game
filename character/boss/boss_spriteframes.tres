@@ -477,7 +477,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("45_fl5qj")
 }],
-"loop": false,
+"loop": true,
 "name": &"idle",
 "speed": 8.0
 }, {

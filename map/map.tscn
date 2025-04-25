@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=4 uid="uid://1e231ub6i8rj"]
+[gd_scene load_steps=43 format=4 uid="uid://1e231ub6i8rj"]
 
 [ext_resource type="Script" uid="uid://twvrtpgkny2o" path="res://map/map_manager.gd" id="1_hgrid"]
 [ext_resource type="Shader" uid="uid://dqijjwnp6q830" path="res://map/ground_shader.tres" id="2_7lyie"]
@@ -8,7 +8,14 @@
 [ext_resource type="Shader" uid="uid://dmal7yf7fwg07" path="res://map/cliff_shader.tres" id="5_e8e5r"]
 [ext_resource type="TileSet" uid="uid://dcfb4o11pmbvl" path="res://map/tileset/cliff_tileset.tres" id="6_112ik"]
 [ext_resource type="Texture2D" uid="uid://b0xcqnrdo2mdi" path="res://map/effects/rubble.png" id="9_e8e5r"]
+[ext_resource type="Texture2D" uid="uid://c6rr4j2p122ua" path="res://character/effects/blood.png" id="10_58xwf"]
 [ext_resource type="AudioStream" uid="uid://bxplvglmcrhmu" path="res://audio/SFX/Tile Break.wav" id="10_112ik"]
+[ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="11_w1ifk"]
+[ext_resource type="Texture2D" uid="uid://do6se7sicec2s" path="res://character/effects/fire.png" id="12_sjjp3"]
+[ext_resource type="Material" uid="uid://bb8jcqx4a6coi" path="res://character/effects/boss_fire_2.tres" id="13_g0u07"]
+[ext_resource type="Material" uid="uid://blq41btse82h8" path="res://character/effects/boss_smoke_1.tres" id="14_8lto5"]
+[ext_resource type="Material" uid="uid://5fn45lqyhn8w" path="res://character/effects/explosion.tres" id="15_21p51"]
+[ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="16_xar17"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i5grx"]
 shader = ExtResource("2_7lyie")
@@ -171,6 +178,57 @@ gravity = Vector3(0, 0, 0)
 damping_max = 10.094
 damping_curve = SubResource("CurveTexture_tthh3")
 
+[sub_resource type="Curve" id="Curve_iqbtl"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, -276.831, 0, 0, Vector2(0.107527, 100), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_8vtqr"]
+curve = SubResource("Curve_iqbtl")
+
+[sub_resource type="Curve" id="Curve_81obp"]
+_limits = [0.0, 3.0, 0.0, 1.0]
+_data = [Vector2(0, 3), 0.0, 0.0, 0, 0, Vector2(1, 0.980769), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_gw5x3"]
+curve = SubResource("Curve_81obp")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wwcqt"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+spread = 180.0
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+damping_max = 10.094
+damping_curve = SubResource("CurveTexture_8vtqr")
+scale_over_velocity_curve = SubResource("CurveTexture_gw5x3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ofiht"]
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+spread = 180.0
+initial_velocity_min = 246.06
+initial_velocity_max = 296.53
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_05mli"]
+particle_flag_disable_z = true
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 1.0
+emission_ring_inner_radius = 0.0
+emission_ring_cone_angle = 90.0
+spread = 180.0
+initial_velocity_max = 173.5
+angular_velocity_min = -1.60933e-05
+angular_velocity_max = 720.0
+orbit_velocity_min = -0.19
+orbit_velocity_max = 2.0
+gravity = Vector3(0, 0, 0)
+
 [node name="Map" type="Node2D"]
 y_sort_enabled = true
 texture_filter = 1
@@ -314,3 +372,73 @@ process_mode = 1
 stream = ExtResource("10_112ik")
 volume_db = 5.0
 bus = &"SFX"
+
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2(-9000, -9000)
+
+[node name="BloodParticle" type="GPUParticles2D" parent="Node2D"]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+texture = ExtResource("10_58xwf")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_wwcqt")
+
+[node name="SparkParticle" type="GPUParticles2D" parent="Node2D"]
+position = Vector2(-2, -141)
+emitting = false
+texture = ExtResource("11_w1ifk")
+lifetime = 0.5
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_ofiht")
+
+[node name="FireSword" type="GPUParticles2D" parent="Node2D"]
+show_behind_parent = true
+position = Vector2(154, -6)
+emitting = false
+amount = 300
+texture = ExtResource("12_sjjp3")
+lifetime = 0.8
+process_material = ExtResource("13_g0u07")
+
+[node name="SmokeSword" type="GPUParticles2D" parent="Node2D"]
+position = Vector2(88, -113)
+amount = 30
+texture = ExtResource("12_sjjp3")
+lifetime = 5.0
+process_material = ExtResource("14_8lto5")
+
+[node name="Explosion1" type="GPUParticles2D" parent="Node2D"]
+position = Vector2(1, 2)
+emitting = false
+amount = 100
+texture = ExtResource("12_sjjp3")
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = ExtResource("15_21p51")
+
+[node name="StunParticle" type="GPUParticles2D" parent="Node2D"]
+emitting = false
+texture = ExtResource("16_xar17")
+process_material = SubResource("ParticleProcessMaterial_05mli")
+
+[node name="RubbleParticle1" type="GPUParticles2D" parent="Node2D"]
+self_modulate = Color(1, 1, 1, 0.8)
+show_behind_parent = true
+emitting = false
+amount = 25
+texture = ExtResource("9_e8e5r")
+lifetime = 30.0
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = SubResource("ParticleProcessMaterial_lct0g")

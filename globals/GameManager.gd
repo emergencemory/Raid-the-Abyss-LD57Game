@@ -15,6 +15,7 @@ var map
 var match_manager
 var loading_screen_instance
 var loading_screen_timer: float = 0.0
+var touchscreen_toggled: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -30,9 +31,12 @@ func _ready() -> void:
 	SignalBus.change_pause.connect(_pause_unpause)
 	SignalBus.next_layer.connect(next_layer)
 	SignalBus.cue_game_over.connect(_on_game_over)
+	SignalBus.touchscreen_toggled.connect(_on_touchscreen_toggled)
 	loading_screen_instance.hide()
 	soundtrack_player.playing = true
 
+func _on_touchscreen_toggled(toggled_on: bool) -> void:
+	touchscreen_toggled = toggled_on
 
 func next_layer() -> void:
 	loading_screen_instance.show()

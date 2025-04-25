@@ -72,6 +72,7 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "Lvl: 2"
 horizontal_alignment = 1
 
@@ -101,6 +102,7 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "Kills: 0"
 horizontal_alignment = 1
 
@@ -131,6 +133,7 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "Deaths: 0"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="StatusAnchor/Status"]
@@ -180,7 +183,6 @@ layout_mode = 2
 size_flags_vertical = 8
 theme = ExtResource("8_xtm2r")
 theme_override_colors/font_color = Color(0.913725, 0.768627, 0.509804, 1)
-theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "Hide Log"
 
 [node name="CheckBox" type="CheckBox" parent="CombatLog/LabelContainer"]
@@ -200,7 +202,6 @@ theme_override_colors/font_outline_color = Color(0.913725, 0.768627, 0.509804, 1
 theme_override_colors/font_color = Color(0.913725, 0.768627, 0.509804, 1)
 theme_override_colors/font_focus_color = Color(0.913725, 0.768627, 0.509804, 1)
 theme_override_colors/font_pressed_color = Color(0.913725, 0.768627, 0.509804, 1)
-theme_override_fonts/font = ExtResource("8_mp5xd")
 button_pressed = true
 text = "Auto Scroll"
 
@@ -423,6 +424,7 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "0"
 horizontal_alignment = 1
 
@@ -447,6 +449,7 @@ offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "0"
 horizontal_alignment = 1
 
@@ -471,6 +474,7 @@ offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "Layer : Wave"
 horizontal_alignment = 1
 
@@ -495,6 +499,7 @@ offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "0"
 horizontal_alignment = 1
 
@@ -517,6 +522,7 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("8_mp5xd")
 text = "0"
 horizontal_alignment = 1
 
@@ -526,6 +532,30 @@ size_flags_horizontal = 8
 size_flags_vertical = 0
 theme = ExtResource("8_xtm2r")
 text = "Hide Minimap"
+
+[node name="TouchscreenRight" type="MarginContainer" parent="."]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -20.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="KickButton" type="TouchScreenButton" parent="TouchscreenRight"]
+action = "kick"
+
+[node name="TouchscreenLeft" type="MarginContainer" parent="."]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -20.0
+offset_right = 40.0
+offset_bottom = 20.0
+grow_vertical = 2
 
 [connection signal="pressed" from="CombatLog/LabelContainer/LogLabel" to="." method="_on_hide_log"]
 [connection signal="pressed" from="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/BackButton" to="." method="_on_previous_button_pressed"]

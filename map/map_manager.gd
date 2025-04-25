@@ -19,6 +19,8 @@ class_name MapManager
 @onready var rubble_particle_8: GPUParticles2D = $RubbleParticle8
 @onready var environment_audio: AudioStreamPlayer2D = $EnvironmentAudio
 
+@onready var particle_init: Node2D = $Node2D
+
 var rubble_emitters: Array = []
 var emitter_index : int = 0
 var chunk_height: int = 16  
@@ -51,6 +53,12 @@ func _ready() -> void:
 		rubble_particle_7,
 		rubble_particle_8
 	]
+	init_particles()
+
+func init_particles() -> void:
+	for child in particle_init.get_children():
+		child.emitting = true
+	get_tree().create_timer(5.0).timeout.connect(particle_init.queue_free)
 
 func _on_shockwave(char_pos: Vector2) -> void:
 	var shockwave_pos : Vector2i = ground_layer.local_to_map(char_pos)

@@ -19,7 +19,7 @@ var player : CharacterBody2D
 var hud_scene : PackedScene = preload("res://ui/hud.tscn")
 var character_data : Dictionary
 var _layer : int = 1
-var wave: int = 1
+var wave: int = 0
 var current_orcs : int = 0
 var current_knights : int = 0
 var boss_spawned : int = 0
@@ -45,6 +45,8 @@ func _ready() -> void:
 	add_child(player_controller)
 	hud = hud_scene.instantiate()
 	update_player_hud.connect(hud._on_update_player_hud)
+	hud.touchscreen_toggled = get_parent().touchscreen_toggled
+	SignalBus.touchscreen_toggled.connect(hud._on_touchscreen_toggled)
 	player_controller.add_child(hud)
 	SignalBus.health_signal.connect(hud._on_health_changed)
 	SignalBus.request_reinforcements.connect(spawn_ai)
@@ -53,7 +55,7 @@ func _ready() -> void:
 	SignalBus.next_layer.connect(layer_cleared)
 	SignalBus.boss_killed.connect(_on_endless_mode)
 	SignalBus.cue_game_over.connect(_on_game_over)
-	get_tree().create_timer(1.0).timeout.connect(spawn_player)
+	get_tree().create_timer(1.0).timeout.connect(spawn_player.bind(1))
 
 func _on_game_over(highest_level: int) -> void:
 	SignalBus.emit_signal("game_over", highest_level, _layer, your_kills, your_deaths, enemy_deaths, knight_deaths)
@@ -119,7 +121,7 @@ func _on_console_kill_ai() -> void:
 func update_spawn_area(player_pos : Vector2) -> void:
 	spawn_center = player_pos
 
-func spawn_player() -> void:
+func spawn_player(level:int) -> void:
 	player = character_scene.instantiate()
 	set_data(player)
 	player.is_player = true
@@ -135,10 +137,11 @@ func spawn_player() -> void:
 	player.killed_by_knight.connect(_on_knight_kill)
 	player.killed_by_orc.connect(_on_orc_kill)
 	player.killed_by_player.connect(_on_player_kill)
+	player.level_up(level)
 	var player_camera = Camera2D.new()
 	player_camera.position_smoothing_enabled = true
 	player.player_camera = player_camera
-	player.add_child(player_camera)
+	player.character_sprite.add_child(player_camera)
 	SignalBus.shake_screen.connect(player.shake_screen)
 	SignalBus.emit_signal("reset_input")
 	SignalBus.emit_signal("player_move", player.global_position)
@@ -151,7 +154,8 @@ func spawn_player() -> void:
 	player.block_left_sprite.texture = kite_shield_icon
 	player.attack_from_right_sprite.texture = sword_icon
 	player.attack_from_left_sprite.texture = sword_icon
-	spawn_ai("orc")
+	if current_orcs < 1:
+		spawn_wave("orc")
 	spawn_ai("knight")
 
 func set_data(character:CharacterBody2D) -> void:
@@ -255,7 +259,7 @@ func set_layer(new_layer : int) -> void:
 
 func set_wave(new_wave : int) -> void:
 	wave = new_wave
-	if new_wave >= 7:
+	if new_wave >= 5:
 		if boss_spawned < 1:
 			boss_spawned += 1
 			var boss = boss_scene.instantiate()
@@ -306,6 +310,8 @@ func _on_endless_mode() -> void:
 
 func spawn_wave(team:String) -> void:
 	var spawns_number : int = wave + _layer*2
+	if team == "orc":
+		spawns_number *= 2
 	for i in range(spawns_number):
 		spawn_ai(team)
 		update_hud()

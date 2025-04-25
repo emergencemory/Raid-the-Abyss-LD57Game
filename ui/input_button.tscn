@@ -13,7 +13,6 @@ custom_minimum_size = Vector2(0, 18)
 anchors_preset = 10
 anchor_right = 1.0
 grow_horizontal = 2
-size_flags_horizontal = 0
 focus_mode = 0
 theme = ExtResource("1_m0td1")
 theme_override_styles/hover = SubResource("StyleBoxFlat_8sys2")
