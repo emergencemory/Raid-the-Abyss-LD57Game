@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bfu3esac8trv1"]
+[gd_scene load_steps=19 format=3 uid="uid://bfu3esac8trv1"]
 
 [ext_resource type="Script" uid="uid://c4s2x55wkc3tv" path="res://ui/hud.gd" id="1_1v5rv"]
 [ext_resource type="Texture2D" uid="uid://o1ir26vc6gwh" path="res://ui/knight_icon.png" id="1_en2x2"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://dop34ibp1gt6v" path="res://ui/round_shield_large.png" id="11_b00kl"]
 [ext_resource type="Texture2D" uid="uid://bdno7pb3g5ijk" path="res://ui/round_shield_icon.png" id="12_u6vop"]
 [ext_resource type="Texture2D" uid="uid://bu8a5njdwlfri" path="res://ui/axe_large_horizontal.png" id="13_65xic"]
+[ext_resource type="PackedScene" uid="uid://bnnwbxfcxnnkf" path="res://ui/joystick.tscn" id="18_kc1f2"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_1v5rv")
@@ -533,29 +534,114 @@ size_flags_vertical = 0
 theme = ExtResource("8_xtm2r")
 text = "Hide Minimap"
 
+[node name="Button" type="Button" parent="TopLeftMargin/TopHUD"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+text = " X -to-Menu"
+
 [node name="TouchscreenRight" type="MarginContainer" parent="."]
 anchors_preset = 6
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-offset_left = -40.0
-offset_top = -20.0
-offset_bottom = 20.0
+offset_left = -128.0
+offset_top = -64.0
+offset_bottom = 64.0
 grow_horizontal = 0
 grow_vertical = 2
+scale = Vector2(1.06969, 1)
+size_flags_horizontal = 0
+theme_override_constants/margin_right = 128
 
-[node name="KickButton" type="TouchScreenButton" parent="TouchscreenRight"]
-action = "kick"
+[node name="VBoxContainer" type="VBoxContainer" parent="TouchscreenRight"]
+layout_mode = 2
 
-[node name="TouchscreenLeft" type="MarginContainer" parent="."]
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_top = -20.0
-offset_right = 40.0
-offset_bottom = 20.0
-grow_vertical = 2
+[node name="HSeparator" type="HSeparator" parent="TouchscreenRight/VBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="KickButton" type="Button" parent="TouchscreenRight/VBoxContainer"]
+self_modulate = Color(1, 1, 1, 0.8)
+layout_mode = 2
+size_flags_vertical = 4
+theme = ExtResource("8_xtm2r")
+text = "
+.-Kick-.
+.
+"
+
+[node name="HSeparator2" type="HSeparator" parent="TouchscreenRight/VBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TouchscreenRight/VBoxContainer"]
+layout_mode = 2
+
+[node name="BlockLeft" type="Button" parent="TouchscreenRight/VBoxContainer/HBoxContainer"]
+self_modulate = Color(1, 1, 1, 0.8)
+layout_mode = 2
+theme = ExtResource("8_xtm2r")
+text = "
+.-Block Left-.
+."
+
+[node name="VSeparator" type="VSeparator" parent="TouchscreenRight/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="BlockRight" type="Button" parent="TouchscreenRight/VBoxContainer/HBoxContainer"]
+self_modulate = Color(1, 1, 1, 0.8)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("8_xtm2r")
+text = "
+.-Block Right-.
+.
+"
+
+[node name="AttackLabel" type="Label" parent="TouchscreenRight/VBoxContainer"]
+self_modulate = Color(1, 1, 1, 0.8)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme = ExtResource("8_xtm2r")
+text = "Parry(hold)/Attack(release):"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Joystick" parent="TouchscreenRight/VBoxContainer" instance=ExtResource("18_kc1f2")]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 2
+
+[node name="TouchscreenLeft" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 48.0
+offset_top = 304.0
+offset_right = 88.0
+offset_bottom = 344.0
+
+[node name="MoveLabel" type="Label" parent="TouchscreenLeft"]
+self_modulate = Color(1, 1, 1, 0.8)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -45.0
+offset_top = -128.0
+offset_right = 45.0
+offset_bottom = -105.0
+grow_horizontal = 2
+theme = ExtResource("8_xtm2r")
+text = "Turn/Move:"
+
+[node name="Joystick" parent="TouchscreenLeft" instance=ExtResource("18_kc1f2")]
+layout_mode = 1
+scale = Vector2(1.5, 1.5)
 
 [connection signal="pressed" from="CombatLog/LabelContainer/LogLabel" to="." method="_on_hide_log"]
 [connection signal="pressed" from="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/BackButton" to="." method="_on_previous_button_pressed"]
@@ -565,3 +651,7 @@ grow_vertical = 2
 [connection signal="pressed" from="DialogueContainer/DialogueBox/VBoxContainer/HBoxContainer/ForwardButton" to="." method="_on_next_button_pressed"]
 [connection signal="pressed" from="DialogueContainer/HideButton" to="." method="_on_hide_button_pressed"]
 [connection signal="pressed" from="TopLeftMargin/TopHUD/HideMap" to="." method="_on_hide_minimap"]
+[connection signal="pressed" from="TopLeftMargin/TopHUD/Button" to="." method="_on_menu_pressed"]
+[connection signal="button_down" from="TouchscreenRight/VBoxContainer/KickButton" to="." method="_on_kick_pressed"]
+[connection signal="button_down" from="TouchscreenRight/VBoxContainer/HBoxContainer/BlockLeft" to="." method="_on_block_left_pressed"]
+[connection signal="button_down" from="TouchscreenRight/VBoxContainer/HBoxContainer/BlockRight" to="." method="_on_block_right_pressed"]

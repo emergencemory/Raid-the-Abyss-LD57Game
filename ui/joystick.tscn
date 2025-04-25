@@ -1,0 +1,58 @@
+[gd_scene load_steps=5 format=3 uid="uid://bnnwbxfcxnnkf"]
+
+[ext_resource type="Texture2D" uid="uid://drdagmlnydsfv" path="res://ui/joystick_knob.png" id="1_stdeo"]
+[ext_resource type="Script" uid="uid://dk0o8pyt6o4rd" path="res://ui/joystick.gd" id="1_tpg7w"]
+[ext_resource type="Texture2D" uid="uid://decn443vuoj4k" path="res://ui/joystick_base.png" id="2_vnbae"]
+[ext_resource type="Script" uid="uid://155fjco401ul" path="res://ui/knob.gd" id="3_v3i42"]
+
+[node name="Joystick" type="Control"]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 3
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -64.0
+offset_right = 128.0
+offset_bottom = 64.0
+grow_vertical = 2
+pivot_offset = Vector2(64, 64)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_tpg7w")
+
+[node name="JoystickMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(64, 64)
+
+[node name="Control" type="Control" parent="JoystickMargin"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="JoystickBase" type="Sprite2D" parent="JoystickMargin/Control"]
+self_modulate = Color(1, 1, 1, 0.8)
+position = Vector2(-64, -64)
+texture = ExtResource("2_vnbae")
+
+[node name="JoystickKnob" type="Sprite2D" parent="JoystickMargin/Control"]
+self_modulate = Color(1, 1, 1, 0.8)
+position = Vector2(-64, -64)
+texture = ExtResource("1_stdeo")
+script = ExtResource("3_v3i42")
+
+[node name="Button" type="Button" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="button_down" from="Button" to="JoystickMargin/Control/JoystickKnob" method="_on_button_button_down"]
+[connection signal="button_up" from="Button" to="JoystickMargin/Control/JoystickKnob" method="_on_button_button_up"]

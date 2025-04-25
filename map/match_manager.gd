@@ -47,6 +47,7 @@ func _ready() -> void:
 	update_player_hud.connect(hud._on_update_player_hud)
 	hud.touchscreen_toggled = get_parent().touchscreen_toggled
 	SignalBus.touchscreen_toggled.connect(hud._on_touchscreen_toggled)
+	SignalBus.touchscreen_toggled.connect(player_controller._on_touchscreen_toggled)
 	player_controller.add_child(hud)
 	SignalBus.health_signal.connect(hud._on_health_changed)
 	SignalBus.request_reinforcements.connect(spawn_ai)

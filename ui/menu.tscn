@@ -201,5 +201,6 @@ flip_h = true
 [connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Start" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Reset" to="MenuDivider/TitleScreen/ControlContainer/Controls/ActionList" method="_on_reset_button_pressed"]
+[connection signal="toggled" from="MenuDivider/TitleScreen/ControlContainer/Controls/TouchscreenToggle" to="." method="_on_touchscreen_toggle_toggled"]
 [connection signal="value_changed" from="MenuDivider/TitleScreen/MainOptions/SoundContainer/SFXVolume" to="." method="_on_sfx_volume_value_changed"]
 [connection signal="value_changed" from="MenuDivider/VBoxContainer/MusicContainer/MusicVolume" to="." method="_on_music_volume_value_changed"]

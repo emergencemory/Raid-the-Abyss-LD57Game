@@ -32,6 +32,7 @@ func _ready() -> void:
 	SignalBus.next_layer.connect(next_layer)
 	SignalBus.cue_game_over.connect(_on_game_over)
 	SignalBus.touchscreen_toggled.connect(_on_touchscreen_toggled)
+	SignalBus.menu_pressed.connect(_pause_unpause)
 	loading_screen_instance.hide()
 	soundtrack_player.playing = true
 

@@ -26,6 +26,13 @@ signal next_layer
 signal cue_game_over(highest_level: int)
 signal game_over(highest_level: int, deepest_layer: int, player_kills: int, player_deaths: int, enemy_deaths: int, allied_deaths: int)
 signal touchscreen_toggled(toggled_on: bool)
+signal joystick_vector_left(vector: Vector2)
+signal joystick_vector_right(vector: Vector2)
+signal touch_block_left
+signal touch_block_right
+signal touch_kick_pressed
+signal release_attack
+signal menu_pressed
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS

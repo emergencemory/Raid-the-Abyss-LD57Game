@@ -3,6 +3,7 @@ class_name InputParser
 
 @onready var hud_scene : PackedScene = preload("res://ui/hud.tscn")
 
+var touch_input: bool = false
 var player: CharacterManager
 var speed: float = 50.0
 var held_directions: Dictionary = { 
@@ -20,6 +21,74 @@ func _ready() -> void:
 	marker = Marker2D.new()
 	add_child(marker)
 	SignalBus.reset_input.connect(_on_reset_input)
+	SignalBus.joystick_vector_left.connect(touch_move)
+	SignalBus.joystick_vector_right.connect(touch_prep_attack)
+	SignalBus.release_attack.connect(touch_release_attack)
+	SignalBus.touch_block_left.connect(touch_block_left)
+	SignalBus.touch_block_right.connect(touch_block_right)
+	SignalBus.touch_kick_pressed.connect(touch_kick_pressed)
+
+func touch_move(vector: Vector2) -> void:
+	if abs(vector.x) > abs(vector.y):
+		if vector.x < 0.0:
+			held_directions["left"] = true
+			held_directions["right"] = false
+			held_directions["up"] = false
+			held_directions["down"] = false
+		else:
+			held_directions["left"] = false
+			held_directions["right"] = true
+			held_directions["up"] = false
+			held_directions["down"] = false
+	elif vector.y > 0.0:
+		held_directions["up"] = false
+		held_directions["down"] = true
+		held_directions["left"] = false
+		held_directions["right"] = false
+	else:
+		held_directions["up"] = true
+		held_directions["down"] = false
+		held_directions["left"] = false
+		held_directions["right"] = false
+
+func touch_block_left() -> void:
+	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
+		return
+	player.block_to_right = false
+	player.block()
+
+func touch_block_right() -> void:
+	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
+		return
+	player.block_to_right = true
+	player.block()
+
+func touch_kick_pressed() -> void:
+	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
+		return
+	player.kick()
+
+func touch_prep_attack(vector: Vector2) -> void:
+	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
+		return
+	match player.facing_direction:
+		player.DIR.NORTH:
+			player.swing_from_right = vector.x > 0.0
+		player.DIR.SOUTH:
+			player.swing_from_right = vector.x < 0.0
+		player.DIR.WEST:
+			player.swing_from_right = vector.y < 0.0
+		player.DIR.EAST:
+			player.swing_from_right = vector.y > 0.0
+	held_directions["attack"] = true
+	player.prepare_attack()
+
+func touch_release_attack() -> void:
+	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
+		return
+	held_directions["attack"] = false
+	player.attack()
+
 
 func _on_reset_input() -> void:
 	for key in held_directions.keys():
@@ -27,7 +96,7 @@ func _on_reset_input() -> void:
 
 func _input(event: InputEvent) -> void:
 	## Player control inputs
-	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead"):
+	if player == null or player.is_queued_for_deletion() or player.is_in_group("dead") or touch_input:
 		return
 	if event.is_action_pressed("move up"):
 		player.turn(player.DIR.NORTH)
@@ -112,3 +181,9 @@ func _physics_process(_delta: float) -> void:
 			player.turn(player.DIR.EAST)
 	if held_directions["attack"]:
 		player.swing_from_right = calc_relative_mouse_pos()
+
+func _on_touchscreen_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		touch_input = true
+	else:
+		touch_input = false

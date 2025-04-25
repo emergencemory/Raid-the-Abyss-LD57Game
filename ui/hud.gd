@@ -30,8 +30,10 @@ class_name Hud
 @onready var console_input: LineEdit = $DevConsole/ConsoleInput
 @onready var console_history: TextEdit = $DevConsole/ConsoleHistory
 @onready var dev_console: VBoxContainer = $DevConsole
-@onready var touchscreen_left: MarginContainer = $TouchscreenLeft
+@onready var touchscreen_left: Control = $TouchscreenLeft
 @onready var touchscreen_right: MarginContainer = $TouchscreenRight
+@onready var joystick_left: Control = $TouchscreenLeft/Joystick
+@onready var joystick_right: Control = $TouchscreenRight/VBoxContainer/Joystick
 
 var layer_level: int = 0
 var highest_level: int = 0
@@ -54,6 +56,8 @@ func _ready() -> void:
 	SignalBus.hide_hud.connect(_pause_unpause)
 	SignalBus.boss_killed.connect(_on_layer_cleared)
 	_on_touchscreen_toggled(touchscreen_toggled)
+	joystick_left.joystick_knob.stick = "left"
+	joystick_right.joystick_knob.stick = "right"
 
 func _pause_unpause(pause:bool) -> void:
 	if pause:
@@ -82,6 +86,9 @@ func _on_hide_minimap() -> void:
 		top_right_margin.show()
 		nine_patch_rect.show()
 		minimap_container.show()
+
+func _on_menu_pressed() -> void:
+	SignalBus.emit_signal("menu_pressed")
 
 func _on_touchscreen_toggled(toggled_on: bool) -> void:
 	touchscreen_left.visible = toggled_on
@@ -135,6 +142,12 @@ func _on_block_cooldown_started(value: float) -> void:
 	block_cooldown = value
 	set_physics_process(true)
 
+func _on_block_left_pressed() -> void:
+	SignalBus.emit_signal("touch_block_left")
+
+func _on_block_right_pressed() -> void:
+	SignalBus.emit_signal("touch_block_right")
+
 func _on_move_cooldown_started(value: float) -> void:
 	move.value = 0
 	move_cooldown = value
@@ -144,6 +157,9 @@ func _on_kick_cooldown_started(value: float) -> void:
 	kick.value = 0
 	kick_cooldown = value
 	set_physics_process(true)
+
+func _on_kick_pressed() -> void:
+	SignalBus.emit_signal("touch_kick_pressed")
 
 func _physics_process(delta: float) -> void:
 	if attack.value < 100:
