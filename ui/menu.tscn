@@ -89,6 +89,12 @@ layout_mode = 2
 theme = ExtResource("5_cop0s")
 text = "Touchscreen Controls Toggle"
 
+[node name="FullscreenToggle" type="CheckButton" parent="MenuDivider/TitleScreen/ControlContainer/Controls"]
+layout_mode = 2
+size_flags_vertical = 4
+theme = ExtResource("5_cop0s")
+text = "Fullscreen"
+
 [node name="ControlsLabel" type="Label" parent="MenuDivider/TitleScreen/ControlContainer/Controls"]
 layout_mode = 2
 size_flags_horizontal = 0
@@ -202,5 +208,6 @@ flip_h = true
 [connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MenuDivider/TitleScreen/GameControls/Reset" to="MenuDivider/TitleScreen/ControlContainer/Controls/ActionList" method="_on_reset_button_pressed"]
 [connection signal="toggled" from="MenuDivider/TitleScreen/ControlContainer/Controls/TouchscreenToggle" to="." method="_on_touchscreen_toggle_toggled"]
+[connection signal="toggled" from="MenuDivider/TitleScreen/ControlContainer/Controls/FullscreenToggle" to="." method="_on_fullscreen_toggled"]
 [connection signal="value_changed" from="MenuDivider/TitleScreen/MainOptions/SoundContainer/SFXVolume" to="." method="_on_sfx_volume_value_changed"]
 [connection signal="value_changed" from="MenuDivider/VBoxContainer/MusicContainer/MusicVolume" to="." method="_on_music_volume_value_changed"]

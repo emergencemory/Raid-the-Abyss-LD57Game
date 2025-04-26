@@ -42,6 +42,12 @@ func _on_touchscreen_toggle_toggled(toggled_on : bool) -> void:
 	else:
 		SignalBus.touchscreen_toggled.emit(false)
 
+func _on_fullscreen_toggled(toggled_on : bool) -> void:
+	if toggled_on:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
 func _on_sfx_volume_value_changed(value:float) -> void:
 	SignalBus.sfx_volume_slider_changed.emit(value)
 
