@@ -650,6 +650,6 @@ func shake_screen() -> void:
 		var strength = randf_range(1.0, 10.0)
 		var duration = randf_range(0.1, 0.5)
 		var direction = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0))
-		player_camera.offset = Vector2(direction.x*strength, direction.y*strength)
+		player_camera.offset += Vector2(direction.x*strength, direction.y*strength)
 		var shake_tween = create_tween()
 		shake_tween.tween_property(player_camera, "offset", original_offset, duration)
