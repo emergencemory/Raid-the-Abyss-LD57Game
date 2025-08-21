@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=4 uid="uid://1e231ub6i8rj"]
+[gd_scene load_steps=32 format=4 uid="uid://1e231ub6i8rj"]
 
 [ext_resource type="Script" uid="uid://twvrtpgkny2o" path="res://map/map_manager.gd" id="1_hgrid"]
 [ext_resource type="Shader" uid="uid://dqijjwnp6q830" path="res://map/ground_shader.tres" id="2_7lyie"]
@@ -8,14 +8,20 @@
 [ext_resource type="Shader" uid="uid://dmal7yf7fwg07" path="res://map/cliff_shader.tres" id="5_e8e5r"]
 [ext_resource type="TileSet" uid="uid://dcfb4o11pmbvl" path="res://map/tileset/cliff_tileset.tres" id="6_112ik"]
 [ext_resource type="Texture2D" uid="uid://b0xcqnrdo2mdi" path="res://map/effects/rubble.png" id="9_e8e5r"]
+[ext_resource type="Material" uid="uid://8uvbojxkc6mf" path="res://map/effects/rubble_particle.tres" id="9_xar17"]
 [ext_resource type="Texture2D" uid="uid://c6rr4j2p122ua" path="res://character/effects/blood.png" id="10_58xwf"]
 [ext_resource type="AudioStream" uid="uid://bxplvglmcrhmu" path="res://audio/SFX/Tile Break.wav" id="10_112ik"]
 [ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="11_w1ifk"]
+[ext_resource type="Material" uid="uid://0eho20rh71ov" path="res://character/effects/blood_particle.tres" id="12_iqbtl"]
 [ext_resource type="Texture2D" uid="uid://do6se7sicec2s" path="res://character/effects/fire.png" id="12_sjjp3"]
 [ext_resource type="Material" uid="uid://bb8jcqx4a6coi" path="res://character/effects/boss_fire_2.tres" id="13_g0u07"]
 [ext_resource type="Material" uid="uid://blq41btse82h8" path="res://character/effects/boss_smoke_1.tres" id="14_8lto5"]
+[ext_resource type="Material" uid="uid://cg0ytpf3fq0b1" path="res://character/effects/spark_particle.tres" id="14_81obp"]
 [ext_resource type="Material" uid="uid://5fn45lqyhn8w" path="res://character/effects/explosion.tres" id="15_21p51"]
+[ext_resource type="Material" uid="uid://k2knhns0aqs8" path="res://character/effects/boss_spark_particle.tres" id="15_gw5x3"]
 [ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="16_xar17"]
+[ext_resource type="Material" uid="uid://c6tevw173s7gx" path="res://character/effects/stun_particle.tres" id="21_wwcqt"]
+[ext_resource type="Material" uid="uid://eflslajy77kq" path="res://character/effects/boss_stun_particle.tres" id="22_ofiht"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i5grx"]
 shader = ExtResource("2_7lyie")
@@ -57,177 +63,6 @@ sources/0 = SubResource("TileSetAtlasSource_o2xrn")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wnugf"]
 shader = ExtResource("5_e8e5r")
-
-[sub_resource type="Curve" id="Curve_112ik"]
-_limits = [0.0, 100.0, 0.0, 1.0]
-_data = [Vector2(0, 0), 0.0, -276.831, 0, 0, Vector2(0.107527, 100), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_tthh3"]
-curve = SubResource("Curve_112ik")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_lct0g"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-angle_min = -358.9
-angle_max = -358.9
-inherit_velocity_ratio = 0.175
-direction = Vector3(0, 1, 0)
-spread = 91.169
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_e8e5r"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-angle_min = -358.9
-angle_max = -358.9
-inherit_velocity_ratio = 0.175
-direction = Vector3(0, 1, 0)
-spread = 91.169
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_112ik"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-angle_min = -358.9
-angle_max = -358.9
-inherit_velocity_ratio = 0.175
-direction = Vector3(0, 1, 0)
-spread = 91.169
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_i5grx"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-angle_min = -358.9
-angle_max = -358.9
-inherit_velocity_ratio = 0.175
-direction = Vector3(0, 1, 0)
-spread = 91.169
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_k8tny"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-angle_min = -358.9
-angle_max = -358.9
-inherit_velocity_ratio = 0.175
-direction = Vector3(0, 1, 0)
-spread = 91.169
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ap8vc"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-angle_min = -358.9
-angle_max = -358.9
-inherit_velocity_ratio = 0.175
-direction = Vector3(0, 1, 0)
-spread = 91.169
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wnugf"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-angle_min = -358.9
-angle_max = -358.9
-inherit_velocity_ratio = 0.175
-direction = Vector3(0, 1, 0)
-spread = 91.169
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_58xwf"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-angle_min = -358.9
-angle_max = -358.9
-inherit_velocity_ratio = 0.175
-direction = Vector3(0, 1, 0)
-spread = 91.169
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_tthh3")
-
-[sub_resource type="Curve" id="Curve_iqbtl"]
-_limits = [0.0, 100.0, 0.0, 1.0]
-_data = [Vector2(0, 0), 0.0, -276.831, 0, 0, Vector2(0.107527, 100), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_8vtqr"]
-curve = SubResource("Curve_iqbtl")
-
-[sub_resource type="Curve" id="Curve_81obp"]
-_limits = [0.0, 3.0, 0.0, 1.0]
-_data = [Vector2(0, 3), 0.0, 0.0, 0, 0, Vector2(1, 0.980769), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_gw5x3"]
-curve = SubResource("Curve_81obp")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wwcqt"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-spread = 180.0
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_8vtqr")
-scale_over_velocity_curve = SubResource("CurveTexture_gw5x3")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ofiht"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-spread = 180.0
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_05mli"]
-particle_flag_disable_z = true
-emission_shape = 6
-emission_ring_axis = Vector3(0, 0, 1)
-emission_ring_height = 1.0
-emission_ring_radius = 1.0
-emission_ring_inner_radius = 0.0
-emission_ring_cone_angle = 90.0
-spread = 180.0
-initial_velocity_max = 173.5
-angular_velocity_min = -1.60933e-05
-angular_velocity_max = 720.0
-orbit_velocity_min = -0.19
-orbit_velocity_max = 2.0
-gravity = Vector3(0, 0, 0)
 
 [node name="Map" type="Node2D"]
 y_sort_enabled = true
@@ -274,7 +109,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_lct0g")
+process_material = ExtResource("9_xar17")
 
 [node name="RubbleParticle2" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)
@@ -287,7 +122,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_e8e5r")
+process_material = ExtResource("9_xar17")
 
 [node name="RubbleParticle3" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)
@@ -300,7 +135,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_112ik")
+process_material = ExtResource("9_xar17")
 
 [node name="RubbleParticle4" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)
@@ -313,7 +148,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_i5grx")
+process_material = ExtResource("9_xar17")
 
 [node name="RubbleParticle5" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)
@@ -326,7 +161,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_k8tny")
+process_material = ExtResource("9_xar17")
 
 [node name="RubbleParticle6" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)
@@ -339,7 +174,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_ap8vc")
+process_material = ExtResource("9_xar17")
 
 [node name="RubbleParticle7" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)
@@ -352,7 +187,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_wnugf")
+process_material = ExtResource("9_xar17")
 
 [node name="RubbleParticle8" type="GPUParticles2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.8)
@@ -365,7 +200,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_58xwf")
+process_material = ExtResource("9_xar17")
 
 [node name="EnvironmentAudio" type="AudioStreamPlayer2D" parent="."]
 process_mode = 1
@@ -386,7 +221,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_wwcqt")
+process_material = ExtResource("12_iqbtl")
 
 [node name="SparkParticle" type="GPUParticles2D" parent="Node2D"]
 position = Vector2(-2, -141)
@@ -397,7 +232,18 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_ofiht")
+process_material = ExtResource("14_81obp")
+
+[node name="SparkParticle2" type="GPUParticles2D" parent="Node2D"]
+position = Vector2(-2, -141)
+emitting = false
+texture = ExtResource("11_w1ifk")
+lifetime = 0.5
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.98
+randomness = 0.1
+process_material = ExtResource("15_gw5x3")
 
 [node name="FireSword" type="GPUParticles2D" parent="Node2D"]
 show_behind_parent = true
@@ -428,7 +274,12 @@ process_material = ExtResource("15_21p51")
 [node name="StunParticle" type="GPUParticles2D" parent="Node2D"]
 emitting = false
 texture = ExtResource("16_xar17")
-process_material = SubResource("ParticleProcessMaterial_05mli")
+process_material = ExtResource("21_wwcqt")
+
+[node name="StunParticle2" type="GPUParticles2D" parent="Node2D"]
+emitting = false
+texture = ExtResource("16_xar17")
+process_material = ExtResource("22_ofiht")
 
 [node name="RubbleParticle1" type="GPUParticles2D" parent="Node2D"]
 self_modulate = Color(1, 1, 1, 0.8)
@@ -441,4 +292,4 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_lct0g")
+process_material = ExtResource("9_xar17")

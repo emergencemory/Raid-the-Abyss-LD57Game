@@ -1,7 +1,8 @@
-[gd_scene load_steps=31 format=3 uid="uid://n1koaitsyfef"]
+[gd_scene load_steps=27 format=3 uid="uid://n1koaitsyfef"]
 
 [ext_resource type="Script" uid="uid://dueotlvuna3ex" path="res://character/character_manager.gd" id="1_2xl0c"]
 [ext_resource type="SpriteFrames" uid="uid://cn2o2v7sl57ow" path="res://character/orc/orc_spriteframes.tres" id="2_waqkf"]
+[ext_resource type="Material" uid="uid://0eho20rh71ov" path="res://character/effects/blood_particle.tres" id="3_2qlfl"]
 [ext_resource type="Material" uid="uid://bp4rrh6m1a52b" path="res://character/character_shader_material.tres" id="3_8vtqr"]
 [ext_resource type="AudioStream" uid="uid://cu1cpquh4inh8" path="res://audio/SFX/Impact Body.wav" id="5_55pft"]
 [ext_resource type="AudioStream" uid="uid://dqmi0udhr2ncg" path="res://audio/SFX/Impact Metal Armour.wav" id="6_uealk"]
@@ -18,33 +19,8 @@
 [ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="11_1px7v"]
 [ext_resource type="AudioStream" uid="uid://el6o5gd3da" path="res://audio/SFX/500-milliseconds-of-silence.mp3" id="12_to0ii"]
 [ext_resource type="AudioStream" uid="uid://cclf6boykbog" path="res://audio/SFX/Shield Ready.wav" id="13_0fqca"]
-
-[sub_resource type="Curve" id="Curve_8vtqr"]
-_limits = [0.0, 100.0, 0.0, 1.0]
-_data = [Vector2(0, 0), 0.0, -276.831, 0, 0, Vector2(0.107527, 100), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_0fqca"]
-curve = SubResource("Curve_8vtqr")
-
-[sub_resource type="Curve" id="Curve_y6277"]
-_limits = [0.0, 3.0, 0.0, 1.0]
-_data = [Vector2(0, 3), 0.0, 0.0, 0, 0, Vector2(1, 0.980769), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_ofgb4"]
-curve = SubResource("Curve_y6277")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_k67b1"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-spread = 180.0
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_0fqca")
-scale_over_velocity_curve = SubResource("CurveTexture_ofgb4")
+[ext_resource type="Material" uid="uid://cg0ytpf3fq0b1" path="res://character/effects/spark_particle.tres" id="19_6tom0"]
+[ext_resource type="Material" uid="uid://c6tevw173s7gx" path="res://character/effects/stun_particle.tres" id="21_g6sh8"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chf46"]
 radius = 40.0
@@ -93,30 +69,6 @@ clip_0/stream = ExtResource("10_kteb8")
 clip_0/auto_advance = 1
 clip_0/next_clip = 0
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kteb8"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-spread = 180.0
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_8vtqr"]
-particle_flag_disable_z = true
-emission_shape = 6
-emission_ring_axis = Vector3(0, 0, 1)
-emission_ring_height = 1.0
-emission_ring_radius = 1.0
-emission_ring_inner_radius = 0.0
-emission_ring_cone_angle = 90.0
-spread = 180.0
-initial_velocity_max = 173.5
-angular_velocity_min = -1.60933e-05
-angular_velocity_max = 720.0
-orbit_velocity_min = -0.19
-orbit_velocity_max = 2.0
-gravity = Vector3(0, 0, 0)
-
 [node name="CharacterModel" type="CharacterBody2D"]
 z_index = 1
 y_sort_enabled = true
@@ -134,7 +86,7 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_k67b1")
+process_material = ExtResource("3_2qlfl")
 
 [node name="CharacterSprite" type="AnimatedSprite2D" parent="."]
 show_behind_parent = true
@@ -231,11 +183,11 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_kteb8")
+process_material = ExtResource("19_6tom0")
 
 [node name="StunParticle" type="GPUParticles2D" parent="."]
 emitting = false
 texture = ExtResource("11_1px7v")
-process_material = SubResource("ParticleProcessMaterial_8vtqr")
+process_material = ExtResource("21_g6sh8")
 
 [connection signal="area_entered" from="CharacterSprite/HitBox" to="." method="_on_attack_area_entered"]

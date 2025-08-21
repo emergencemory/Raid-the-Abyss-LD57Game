@@ -1,7 +1,8 @@
-[gd_scene load_steps=43 format=3 uid="uid://dod1i16ch7ab1"]
+[gd_scene load_steps=39 format=3 uid="uid://dod1i16ch7ab1"]
 
 [ext_resource type="Script" uid="uid://18ryjkbov22f" path="res://character/boss/boss_controller.gd" id="1_pr7xm"]
 [ext_resource type="Texture2D" uid="uid://c6rr4j2p122ua" path="res://character/effects/blood.png" id="2_nonme"]
+[ext_resource type="Material" uid="uid://88ef5nxa07bs" path="res://character/effects/boss_blood_particle.tres" id="3_55eni"]
 [ext_resource type="SpriteFrames" uid="uid://bn75xs8thdfpi" path="res://character/boss/boss_spriteframes.tres" id="4_fef42"]
 [ext_resource type="Material" uid="uid://k5uyriechjol" path="res://character/orc_shader_material.tres" id="4_rosqn"]
 [ext_resource type="Texture2D" uid="uid://do6se7sicec2s" path="res://character/effects/fire.png" id="5_k1fd1"]
@@ -21,33 +22,8 @@
 [ext_resource type="Texture2D" uid="uid://d3ns2is7lv6ld" path="res://character/effects/flash.png" id="11_n01wj"]
 [ext_resource type="AudioStream" uid="uid://bxplvglmcrhmu" path="res://audio/SFX/Tile Break.wav" id="11_vx3ar"]
 [ext_resource type="Texture2D" uid="uid://crpwp88kaul0t" path="res://character/effects/star.png" id="12_tw6fv"]
-
-[sub_resource type="Curve" id="Curve_8vtqr"]
-_limits = [0.0, 100.0, 0.0, 1.0]
-_data = [Vector2(0, 0), 0.0, -276.831, 0, 0, Vector2(0.107527, 100), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_8vtqr"]
-curve = SubResource("Curve_8vtqr")
-
-[sub_resource type="Curve" id="Curve_y6277"]
-_limits = [0.0, 3.0, 0.0, 1.0]
-_data = [Vector2(0, 3), 0.0, 0.0, 0, 0, Vector2(1, 0.980769), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_tthh3"]
-curve = SubResource("Curve_y6277")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ob7ij"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-spread = 180.0
-initial_velocity_min = 246.06
-initial_velocity_max = 422.71
-gravity = Vector3(0, 0, 0)
-damping_max = 10.094
-damping_curve = SubResource("CurveTexture_8vtqr")
-scale_over_velocity_curve = SubResource("CurveTexture_tthh3")
+[ext_resource type="Material" uid="uid://k2knhns0aqs8" path="res://character/effects/boss_spark_particle.tres" id="17_78vhu"]
+[ext_resource type="Material" uid="uid://eflslajy77kq" path="res://character/effects/boss_stun_particle.tres" id="19_ixhqr"]
 
 [sub_resource type="Animation" id="Animation_ixhqr"]
 length = 0.001
@@ -1169,30 +1145,6 @@ clip_3/name = &"Impact Sword and Swipe"
 clip_3/stream = ExtResource("7_ge60q")
 clip_3/auto_advance = 0
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kteb8"]
-particle_flag_disable_z = true
-particle_flag_damping_as_friction = true
-spread = 180.0
-initial_velocity_min = 246.06
-initial_velocity_max = 296.53
-gravity = Vector3(0, 0, 0)
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_8vtqr"]
-particle_flag_disable_z = true
-emission_shape = 6
-emission_ring_axis = Vector3(0, 0, 1)
-emission_ring_height = 1.0
-emission_ring_radius = 1.0
-emission_ring_inner_radius = 0.0
-emission_ring_cone_angle = 90.0
-spread = 180.0
-initial_velocity_max = 173.5
-angular_velocity_min = -1.60933e-05
-angular_velocity_max = 720.0
-orbit_velocity_min = -0.19
-orbit_velocity_max = 2.0
-gravity = Vector3(0, 0, 0)
-
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_i5ah4"]
 clip_count = 6
 clip_0/name = &"500-milliseconds-of-silence"
@@ -1231,7 +1183,7 @@ lifetime = 30.0
 speed_scale = 3.0
 explosiveness = 0.39
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_ob7ij")
+process_material = ExtResource("3_55eni")
 
 [node name="ShadowSprite" type="AnimatedSprite2D" parent="."]
 self_modulate = Color(0.2, 0.2, 0.2, 0.4)
@@ -1449,12 +1401,12 @@ one_shot = true
 speed_scale = 3.0
 explosiveness = 0.98
 randomness = 0.1
-process_material = SubResource("ParticleProcessMaterial_kteb8")
+process_material = ExtResource("17_78vhu")
 
 [node name="StunParticle" type="GPUParticles2D" parent="."]
 emitting = false
 texture = ExtResource("12_tw6fv")
-process_material = SubResource("ParticleProcessMaterial_8vtqr")
+process_material = ExtResource("19_ixhqr")
 
 [node name="BossAudio" type="AudioStreamPlayer2D" parent="."]
 stream = SubResource("AudioStreamInteractive_i5ah4")

@@ -53,7 +53,7 @@ func _ready() -> void:
 		rubble_particle_7,
 		rubble_particle_8
 	]
-	init_particles()
+	#init_particles()
 
 func init_particles() -> void:
 	for child in particle_init.get_children():
